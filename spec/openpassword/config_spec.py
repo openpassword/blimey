@@ -1,5 +1,5 @@
 from nose.tools import *
-from openpassword.config import Config
+from openpassword import Config
 
 class ConfigSpec:
 
