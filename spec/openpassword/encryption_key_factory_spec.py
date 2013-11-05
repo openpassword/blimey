@@ -1,6 +1,7 @@
 from nose.tools import *
 from openpassword.encryption_key_factory import EncryptionKeyFactory
 
+
 class EncryptionKeyFactorySpec:
     def setUp(self):
         keys = {
