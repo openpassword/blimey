@@ -1,1 +1,2 @@
 from openpassword.config import Config
+from openpassword.encryption_key_factory import EncryptionKeyFactory

@@ -1,5 +1,5 @@
 from nose.tools import *
-from openpassword.encryption_key_factory import EncryptionKeyFactory
+from openpassword import EncryptionKeyFactory
 
 
 class EncryptionKeyFactorySpec:
