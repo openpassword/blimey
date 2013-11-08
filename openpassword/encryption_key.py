@@ -2,6 +2,7 @@ from pbkdf2 import PBKDF2
 from Crypto.Cipher import AES
 from Crypto.Hash import MD5
 from base64 import b64decode
+from openpassword.exceptions import InvalidPasswordException
 
 
 def derive_openssl_key(key, salt, hash=MD5):
@@ -28,10 +29,9 @@ class EncryptionKey:
         validation_key = self._decrypt_validation_key(decryption_key)
 
         if decryption_key == validation_key:
-            self.decrypted_key = decryption_key
-            return True
-
-        return False
+            return decryption_key
+        else:
+            raise InvalidPasswordException
 
     def _decrypt_encryption_key(self, password):
         data_key = self._derive_password_key(password)
