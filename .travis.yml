@@ -2,7 +2,7 @@ language: python
 python:
   - "3.3"
 # command to run tests
-script: nosetests
+script: sh bin/tests
 
 notifications:
   irc:

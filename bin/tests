@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+nosetests
+pep8 --statistics --count --show-source --format=default  --max-line-length=120
