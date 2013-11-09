@@ -1,3 +1,5 @@
+# CONTRIBUTING
+
 ## The Development Philosophy
 
 OpenPassword is developed under the MIT license, which means it's Open Source and that we're accepting contributions to the project.
