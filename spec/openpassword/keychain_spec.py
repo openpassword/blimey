@@ -61,6 +61,7 @@ class KeychainSpec:
 
         eq_(keychain.is_locked(), True)
 
+
 class Spy:
     def __init__(self):
         self.called = False

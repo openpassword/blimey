@@ -1,6 +1,11 @@
 language: python
 python:
   - "3.3"
+
+install:
+  # Deal with issue on Travis builders re: multiprocessing.Queue :(
+  - "sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm"
+
 # command to run tests
 script: sh bin/tests
 
