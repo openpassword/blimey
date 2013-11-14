@@ -4,7 +4,6 @@ from openpassword import Keychain
 from openpassword.exceptions import InvalidPasswordException
 
 import fudge
-import time
 
 
 class KeychainSpec:
@@ -47,11 +46,3 @@ class KeychainSpec:
         eq_(keychain.is_locked(), False)
         keychain.lock()
         eq_(keychain.is_locked(), True)
-
-
-class Spy:
-    def __init__(self):
-        self.called = False
-
-    def callback(self):
-        self.called = True
