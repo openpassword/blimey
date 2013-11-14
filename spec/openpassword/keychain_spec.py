@@ -38,27 +38,14 @@ class KeychainSpec:
 
         eq_(keychain.is_locked(), True)
 
-    def it_triggers_a_callback_when_lock_timesout(self):
+    def it_locks_when_lock_is_called(self):
         EncryptionKey = fudge.Fake('encryption_key')
         EncryptionKey.provides("decrypt")
 
-        spy = Spy()
-
-        keychain = Keychain(EncryptionKey, 0.0005, spy.callback)
-        keychain.unlock('rightpassword')
-        time.sleep(0.005)
-        eq_(spy.called, True)
-
-    def it_locks_after_a_timeout_period(self):
-        EncryptionKey = fudge.Fake('encryption_key')
-        EncryptionKey.provides("decrypt")
-
-        keychain = Keychain(EncryptionKey, 0.05)
+        keychain = Keychain(EncryptionKey)
         keychain.unlock('rightpassword')
         eq_(keychain.is_locked(), False)
-
-        time.sleep(0.5)
-
+        keychain.lock()
         eq_(keychain.is_locked(), True)
 
 
