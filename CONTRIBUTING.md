@@ -38,22 +38,128 @@ For the remaining tools, you can take advantage of the requirements.txt containe
 
 `pip3 install -r requirements.txt --use-mirrors`
 
-## Writing a feature
-
-WIP
-
 ## Running the examples
 
-To run the examples you'll just need to run nose, as all the options are already taken care of by the setup.cfg file:
+To run the examples you'll just need to run the script provided in bin/tests. From the root of the project execute the following:
 
-`nosetests`
+`bin/tests`
+
+This will run nosetests and pep8 with the appropriate parameters.
+
+## Writing a feature
+
+Here's a guide for how to develop a feature following the development philosophy described above.
+Let's imagine we're writing a class called *LightBulb* inside the *openpassword* package:
+
+- Create a file called `spec/openpassword/light_bulb_spec.py`
+- Import the (still inexistent) class you're going to write:
+
+```python
+from openpassword.light_bulb import LightBulb
+```
+
+- Inside that file, create a class called *LightBulbSpec*
+- Create the first example, describing one behaviour of your class, start with the word "it". Let's say *it_should_be_lit_after_being_turned_on* which shoud look something like this:
+
+```python
+from nose.tools import *
+from openpassword.light_bulb import LightBulb
+
+
+class LightBulbSpec:
+    def it_should_be_lit_after_being_turned_on(self):
+        bulb = LightBulb()
+        bulb.turn_on()
+    
+        eq_(bulb.turned_on(), True)
+
+```
+- Run `bin/tests`
+- Fix any code styling issues that it may report
+- At this point you should get the following error `ImportError: No module named 'openpassword.light_bulb'`. Fix it by creating the file `openpassword/light_bulb.py`.
+- Run `bin/tests` again. You should now get the error `ImportError: cannot import name LightBulb`.
+- Create the *LightBulb* class inside the `openpassword.light_bulb`. At this point your class should have nothing else other then a *pass* statement.
+
+```python
+class LightBulb:
+    pass
+
+```
+- Run `bin/tests` again. The error should now be `AttributeError: 'LightBulb' object has no attribute 'turn_on'`. So let's create it.
+
+```python
+class LightBulb:
+
+    def turn_on(self):
+        pass
+
+```
+- Once more run `bin/tests`. You should be getting the hang of this now, we're letting our example lead what we do. It's important not to write more than what our example is leading us to do, otherwise our design won't emerge from our idealised example. Now you should get this error `AttributeError: 'LightBulb' object has no attribute 'turned_on'`, so let's write our turned_on method.
+
+```python
+class LightBulb:
+
+    def turn_on(self):
+        pass
+        
+    def turned_on(self):
+        return True
+
+```
+- Run `bin/tests` and all our tests should now pass. But..., our LightBulb class doesn't seem all that useful. turned_on always return *True*. What's up with that? Well, that's all we need it to do for now, but our light bulb does more that just stay lit. So, let's describe another behaviour. Let's say, `it_should_not_lit_before_being_turned_on`.
+ 
+```python
+from nose.tools import *
+from openpassword.light_bulb import LightBulb
+
+
+class LightBulbSpec:
+    def it_should_be_lit_after_being_turned_on(self):
+        bulb = LightBulb()
+        bulb.turn_on()
+    
+        eq_(bulb.turned_on(), True)
+
+    def it_should_not_lit_before_being_turned_on(self):
+        bulb = LightBulb()
+        eq_(bulb.turned_on(), False)
+
+```
+- Now our `it should not lit before being turned on` test is failling with the following error `AssertionError: True != False`. Ok, so our example is telling us to change our behaviour, so let's do it. Although we could do this in one step, for clarity sake let's do it in two:
+
+```python
+class LightBulb:
+    def __init__(self):
+        self._on = False
+
+    def turn_on(self):
+        pass
+
+    def turned_on(self):
+        return self._on
+
+```
+- We fixed our test, but we broke `it should be lit after being turned on`. This is our example driving us to change our incorrect implementation. In response to this we fix the turn_on method:
+
+```python
+class LightBulb:
+    def __init__(self):
+        self._on = False
+
+    def turn_on(self):
+        self._on = True
+
+    def turned_on(self):
+        return self._on
+
+```
+
+This should drive our implementation to be simple and make our interface a result of what we wish we had, producing better and clear code.
+In this example refactoring is not needed due to it's extreme simplicity, but **every time you get green, stop, look at both your code and your tests, and search for possible ways of improving it without changing or adding functionality**. Rename methods and properties which have names that are not explicit enough, remove complexity, generally clean your code. Do only one change at a time and alway run the tests after making the change. This step is vital to achieve the goals to which this methodology aspires.
 
 ## Making pull requests
 
-Before making a pull request, be sure to run nose to make sure all the specs are still passing. It's advisable, as well, to check for code styling issues using pep8:
-
- `pep8 --statistics --count --show-source --format=default`
-
+Before making a pull request, be sure to run nose and pep8, using the bin/tests script, to ensure that your code is ready to be merged.
 Both specs and code should follow the pep8 standards.
 
 To make this easier, we provide a git_hooks folder that contains a pre-commit hook, that will do the work for you. Just copy it to your repository git hooks folder. From the base folder of your repository do:
