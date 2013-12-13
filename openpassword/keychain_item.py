@@ -1,7 +1,7 @@
 from Crypto.Cipher import AES
 from base64 import b64decode
 import json
-from openpassword.pksc_utils import strip_byte_padding
+from openpassword.pkcs_utils import strip_byte_padding
 from openpassword.openssl_utils import derive_openssl_key
 
 

@@ -1,5 +1,5 @@
 from nose.tools import *
-from openpassword.pksc_utils import *
+from openpassword.pkcs_utils import *
 
 
 class PkscUtilsSpec:
