@@ -7,6 +7,7 @@ from openpassword.openssl_utils import derive_openssl_key
 
 class KeychainItem:
     def __init__(self, item):
+        self.key_id = item["keyID"]
         self.encrypted = b64decode(item["encrypted"])
 
     def decrypt(self, decryption_key):
