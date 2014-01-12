@@ -6,22 +6,22 @@ from base64 import b64decode
 class KeychainItemSpec:
     def setUp(self):
         item = {
-           "createdAt": 1383517732,
-           "locationKey": "someotherwebsite.com",
-           "updatedAt": 1383517785,
-           "keyID": "98EB2E946008403280A3A8D9261018A4",
-           "openContents": {
-              "contentsHash": "476e4c70",
-              "tags": [
-                 "tag2"
-              ],
-              "usernameHash": "451fb2b0e27676633a9677dbfa5f6f23f4d21fbbadc6af0b20a676770c7f9b47"
-           },
-           "uuid": "97019BEBCF9E402F8F0C033474B1B85D",
-           "encrypted": "U2FsdGVkX19TftTVzivSyCJAgFfjwPRvhLzOGUCim+SAat+JZBeOdP86oh7B/rfV/k08DmJn2+ZwgQuss8KJMCb+P/mu+sISK7LRpXgCZJ1dx0D+DWQOZB+gXJXtlz9TmKNNOVBswYHl0qhfaGpFAQgwnPEcDoubmxK2sh2AU88hnmJNND054M0i4QXjdO4xsyalzK09fEDlaoRRjd+TlbKVoycBIwWDihbUloMezTs=\u0000",  # nopep8
-           "typeName": "webforms.WebForm",
-           "location": "http://www.someotherwebsite.com",
-           "title": "Some Other Website"
+            "createdAt": 1383517732,
+            "locationKey": "someotherwebsite.com",
+            "updatedAt": 1383517785,
+            "keyID": "98EB2E946008403280A3A8D9261018A4",
+            "openContents": {
+                "contentsHash": "476e4c70",
+                "tags": [
+                    "tag2"
+                ],
+                "usernameHash": "451fb2b0e27676633a9677dbfa5f6f23f4d21fbbadc6af0b20a676770c7f9b47"
+            },
+            "uuid": "97019BEBCF9E402F8F0C033474B1B85D",
+            "encrypted": "U2FsdGVkX19TftTVzivSyCJAgFfjwPRvhLzOGUCim+SAat+JZBeOdP86oh7B/rfV/k08DmJn2+ZwgQuss8KJMCb+P/mu+sISK7LRpXgCZJ1dx0D+DWQOZB+gXJXtlz9TmKNNOVBswYHl0qhfaGpFAQgwnPEcDoubmxK2sh2AU88hnmJNND054M0i4QXjdO4xsyalzK09fEDlaoRRjd+TlbKVoycBIwWDihbUloMezTs=\u0000",  # nopep8
+            "typeName": "webforms.WebForm",
+            "location": "http://www.someotherwebsite.com",
+            "title": "Some Other Website"
         }
 
         self.keychain_item = KeychainItem(item)
