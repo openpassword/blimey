@@ -6,7 +6,10 @@ def byte_pad(input_bytes, length=8):
         raise ValueError("Maximum padding length is 256")
 
     # Modulo input bytes length with padding length to see how many bytes to pad with
-    bytes_to_pad = int(fmod(len(input_bytes), length))
+    bytes_to_pad = length - int(fmod(len(input_bytes), length))
+
+    if bytes_to_pad == length:
+        bytes_to_pad = 0
 
     # Pad input bytes with a sequence of bytes containing the number of padded bytes
     input_bytes += bytes([bytes_to_pad] * bytes_to_pad)
