@@ -3,6 +3,7 @@ from base64 import b64decode
 import json
 from openpassword.pkcs_utils import byte_pad, strip_byte_padding
 from openpassword.openssl_utils import derive_openssl_key
+from os import urandom
 
 
 class KeychainItem:
@@ -35,7 +36,7 @@ class KeychainItem:
         self.data = json.loads(data.decode('utf8'))
 
     def _generate_iv(self):
-        return b"01234567"
+        return urandom(8)
 
     def _derive_key(self, key, iv):
         return derive_openssl_key(key, iv)
