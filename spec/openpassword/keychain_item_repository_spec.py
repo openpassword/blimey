@@ -1,6 +1,7 @@
 import os
 from nose.tools import *
 from openpassword.keychain_item_repository import KeychainItemRepository
+from openpassword.exceptions import InvalidUuidException
 
 
 class KeychainItemRepositorySpec:
@@ -15,3 +16,7 @@ class KeychainItemRepositorySpec:
         item = self.repository.item_for_uuid('2E21D652E0754BD59F6B94B0323D0142')
 
         eq_(item.key_id, 'BE4CC37CD7C044E79B5CC1CC19A82A13')
+
+    @raises(InvalidUuidException)
+    def it_raises_invaliduuidexception_with_unknown_uuid(self):
+        item = self.repository.item_for_uuid('nonexistinguuid')
