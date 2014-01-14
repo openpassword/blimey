@@ -1,5 +1,4 @@
 from nose.tools import *
-from openpassword import EncryptionKey
 from openpassword import Keychain
 from openpassword.exceptions import InvalidPasswordException
 

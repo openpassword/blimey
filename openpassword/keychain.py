@@ -13,7 +13,7 @@ class Keychain:
             self._locked = False
         except InvalidPasswordException as e:
             self._locked = True
-            raise(e)
+            raise e
 
     def lock(self):
         self._locked = True
