@@ -25,8 +25,8 @@ def strip_byte_padding(input_bytes, length=8):
     # of bytes padded. So we can read the padding value from the last byte..
     padding_byte = byte_block[0:1]
 
-    for i in range(1, ord(padding_byte)):
+    for i in range(1, ord(padding_byte.decode())):
         if byte_block[i:i+1] != padding_byte:
             return input_bytes
 
-    return input_bytes[0:-ord(padding_byte)]
+    return input_bytes[0:-ord(padding_byte.decode())]
