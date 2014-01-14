@@ -20,7 +20,8 @@ class KeychainItem:
     def _derive_decryption_key(self, decryption_key):
         return derive_openssl_key(decryption_key, self.encrypted[8:16])
 
-    def _decrypt(self, data, key_iv):
+    @staticmethod
+    def _decrypt(data, key_iv):
         key = key_iv[0:16]
         iv = key_iv[16:]
         cipher = AES.new(key, AES.MODE_CBC, iv)
