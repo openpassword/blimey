@@ -1,6 +1,3 @@
-import traceback
-
-
 class Config:
     def __init__(self):
         self._keychain_path = None
