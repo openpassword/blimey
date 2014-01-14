@@ -8,16 +8,16 @@ class KeychainItemRepository:
     def __init__(self, path):
         self.path = path
 
-    def item_for_uuid(self, uuid):
-        path = self._resolve_path_for_uuid(uuid)
-        data = self._load_item_data(path)
+    def get_item_by_uuid(self, uuid):
+        keychain_item_path = self._resolve_keychain_item_path(uuid)
+        keychain_item = self._load_keychain_item_data(keychain_item_path)
 
-        return KeychainItem(data)
+        return KeychainItem(keychain_item)
 
-    def _resolve_path_for_uuid(self, uuid):
+    def _resolve_keychain_item_path(self, uuid):
         return self.path + '/data/default/%s.1password' % uuid
 
-    def _load_item_data(self, path):
+    def _load_keychain_item_data(self, path):
         try:
             file = open(path)
         except IOError:
