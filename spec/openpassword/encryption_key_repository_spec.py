@@ -1,8 +1,8 @@
 from nose.tools import *
-from openpassword import EncryptionKeyFactory
+from openpassword import EncryptionKeyRepository
 
 
-class EncryptionKeyFactorySpec:
+class EncryptionKeyRepositorySpec:
     def setUp(self):
         keys = {
             "SL3": "BE4CC37CD7C044E79B5CC1CC19A82A13",
@@ -25,11 +25,11 @@ class EncryptionKeyFactorySpec:
             ]
         }
 
-        self.key_factory = EncryptionKeyFactory(keys)
+        self.key_repository = EncryptionKeyRepository(keys)
 
     def it_returns_encryption_key_for_given_security_level(self):
-        sl3 = self.key_factory.key_for_security_level("SL3")
-        sl5 = self.key_factory.key_for_security_level("SL5")
+        sl3 = self.key_repository.key_for_security_level("SL3")
+        sl5 = self.key_repository.key_for_security_level("SL5")
 
         eq_(sl3["identifier"], "BE4CC37CD7C044E79B5CC1CC19A82A13")
         eq_(sl5["identifier"], "98EB2E946008403280A3A8D9261018A4")
