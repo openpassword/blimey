@@ -1,10 +1,9 @@
 import json
-from Crypto.Cipher import AES
 from base64 import b64decode
 from openpassword.pkcs_utils import byte_pad, strip_byte_padding
 from openpassword.openssl_utils import derive_openssl_key
 from os import urandom
-from openpassword.crypt_utils import decrypt
+from openpassword.crypt_utils import *
 
 
 class KeychainItem:
@@ -23,7 +22,7 @@ class KeychainItem:
 
         data = json.dumps(self.data)
         data = byte_pad(data.encode('utf8'))
-        data = self._encrypt(data, derived_key)
+        data = encrypt(data, derived_key)
 
         self.encrypted = b''.join(['Salted__'.encode('utf8'), keygen_iv, data])
 
@@ -41,12 +40,6 @@ class KeychainItem:
 
     def _derive_key(self, key, iv):
         return derive_openssl_key(key, iv)
-
-    def _encrypt(self, data, key_iv):
-        key = key_iv[0:16]
-        iv = key_iv[16:]
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        return cipher.encrypt(data)
 
     def _derive_decryption_key(self, decryption_key):
         return derive_openssl_key(decryption_key, self.encrypted[8:16])
