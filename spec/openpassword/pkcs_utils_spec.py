@@ -13,7 +13,7 @@ class PkscUtilsSpec:
         strip_byte_padding(b"12345678abc\x05\x05\x05\x05")
 
     def it_pads_input_bytes_to_padding_length(self):
-        eq_(byte_pad(b"abcd"), b"abcd\x04\x04\x04\x04")
+        eq_(byte_pad(b'{"foo": "bar"}', 16), b'{"foo": "bar"}\x02\x02')
 
     @raises(ValueError)
     def it_raises_value_error_if_padding_to_greater_than_256_bytes(self):
