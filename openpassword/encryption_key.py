@@ -1,8 +1,8 @@
 from pbkdf2 import PBKDF2
-from Crypto.Cipher import AES
 from base64 import b64decode
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.openssl_utils import derive_openssl_key
+from openpassword.crypt_utils import decrypt
 
 
 class EncryptionKey:
@@ -24,7 +24,7 @@ class EncryptionKey:
 
     def _decrypt_encryption_key(self, password):
         data_key = self._derive_password_key(password)
-        return self._decrypt(self.data[16:], data_key)
+        return decrypt(self.data[16:], data_key)
 
     def _derive_password_key(self, password):
         kdf = PBKDF2(password, self.data[8:16], self.iterations)
@@ -32,14 +32,7 @@ class EncryptionKey:
 
     def _decrypt_validation_key(self, decryption_key):
         validation_key = self._derive_validation_key(decryption_key)
-        return self._decrypt(self.validation[16:], validation_key)
+        return decrypt(self.validation[16:], validation_key)
 
     def _derive_validation_key(self, decryption_key):
         return derive_openssl_key(decryption_key, self.validation[8:16])
-
-    @staticmethod
-    def _decrypt(data, key_iv):
-        key = key_iv[0:16]
-        iv = key_iv[16:]
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        return cipher.decrypt(data)
