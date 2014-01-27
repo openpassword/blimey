@@ -4,3 +4,7 @@ class InvalidPasswordException(Exception):
 
 class InvalidUuidException(Exception):
     pass
+
+
+class KeychainLockedException(Exception):
+    pass
