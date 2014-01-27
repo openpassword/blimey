@@ -9,10 +9,10 @@ class Keychain:
         self._locked = True
 
     def unlock(self, password, security_level="SL5"):
-        key = self.key_repository.key_for_security_level(security_level)
+        master_key = self.key_repository.key_for_security_level(security_level)
 
         try:
-            key.decrypt(password)
+            master_key.decrypt(password)
             self._locked = False
         except InvalidPasswordException as e:
             self._locked = True
