@@ -1,46 +1,42 @@
 from nose.tools import *
 from openpassword import Keychain
 from openpassword.keychain_item import KeychainItem
+from openpassword import EncryptionKey
+from openpassword import EncryptionKeyRepository
+from openpassword import KeychainItemRepository
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.exceptions import KeychainLockedException
 
 import fudge
+import spec.openpassword.fudge_wrapper as f
 
 
 class KeychainSpec:
-
     def it_unlocks_the_keychain_with_the_right_password(self):
-        key_repository = self._unlockable_key_repository()
-        item_repository = fudge.Fake('keychain_item_repository')
+        encryption_key = self._encryption_keys_that_provides_decrypt()
+        encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
+        keychain_item_repository = f.getMock(KeychainItemRepository)
 
-        keychain = Keychain(key_repository, item_repository)
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
         keychain.unlock('rightpassword')
 
         eq_(keychain.is_locked(), False)
 
     @raises(InvalidPasswordException)
     def it_raises_invalidpasswordexception_with_wrong_password(self):
-        key = fudge.Fake('encryption_key')
-        key.provides("decrypt").raises(InvalidPasswordException)
+        encryption_key = self._encryption_key_that_raises_invalid_password_exception()
+        encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
+        keychain_item_repository = f.getMock(KeychainItemRepository)
 
-        key_repository = fudge.Fake('encryption_key_repository')
-        key_repository.provides("key_for_security_level").with_args("SL5").returns(key)
-
-        item_repository = fudge.Fake('keychain_item_repository')
-
-        keychain = Keychain(key_repository, item_repository)
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
         keychain.unlock('wrongpassword')
 
     def it_fails_to_unlock_with_wrong_password(self):
-        key = fudge.Fake('encryption_key')
-        key.provides("decrypt").raises(InvalidPasswordException)
+        encryption_key = self._encryption_key_that_raises_invalid_password_exception()
+        encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
+        keychain_item_repository = f.getMock(KeychainItemRepository)
 
-        key_repository = fudge.Fake('encryption_key_repository')
-        key_repository.provides("key_for_security_level").with_args("SL5").returns(key)
-
-        item_repository = fudge.Fake('keychain_item_repository')
-
-        keychain = Keychain(key_repository, item_repository)
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
         try:
             keychain.unlock('wrongpassword')
         except InvalidPasswordException:
@@ -49,10 +45,11 @@ class KeychainSpec:
         eq_(keychain.is_locked(), True)
 
     def it_locks_when_lock_is_called(self):
-        key_repository = self._unlockable_key_repository()
-        item_repository = fudge.Fake('keychain_item_repository')
+        encryption_key = self._encryption_keys_that_provides_decrypt()
+        encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
+        keychain_item_repository = f.getMock(KeychainItemRepository)
 
-        keychain = Keychain(key_repository, item_repository)
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
 
         keychain.unlock('rightpassword')
         eq_(keychain.is_locked(), False)
@@ -60,13 +57,14 @@ class KeychainSpec:
         eq_(keychain.is_locked(), True)
 
     def it_returns_an_item_by_unique_id(self):
-        key_repository = self._unlockable_key_repository()
+        encryption_key = self._encryption_keys_that_provides_decrypt()
+        encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
 
-        keychain_item = fudge.Fake('keychain_item')
-        item_repository = fudge.Fake('keychain_item_repository')
-        item_repository.provides('get_item_by_unique_id').with_args('random_unique_id').returns(keychain_item)
+        keychain_item = f.getMock(KeychainItem)
+        keychain_item_repository = f.getMock(KeychainItemRepository)
+        keychain_item_repository.provides('get_item_by_unique_id').with_args('random_unique_id').returns(keychain_item)
 
-        keychain = Keychain(key_repository, item_repository)
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
         keychain.unlock("password")
 
         eq_(keychain_item, keychain.get_item_by_unique_id('random_unique_id'))
@@ -79,11 +77,17 @@ class KeychainSpec:
         keychain = Keychain(key_repository, item_repository)
         keychain.get_item_by_unique_id('some_random_item')
 
-    def _unlockable_key_repository(self):
-        key = fudge.Fake('encryption_key')
-        key.provides("decrypt")
+    def _encryption_key_that_raises_invalid_password_exception(self):
+        encryption_key = f.getMock(EncryptionKey)
+        encryption_key.provides("decrypt").raises(InvalidPasswordException)
+        return encryption_key
 
-        key_repository = fudge.Fake('encryption_key_repository')
+    def _encryption_keys_that_provides_decrypt(self):
+        encryption_key = f.getMock(EncryptionKey)
+        encryption_key.provides("decrypt")
+        return encryption_key
+
+    def _encryption_key_repository_that_returns_key(self, key):
+        key_repository = f.getMock(EncryptionKeyRepository)
         key_repository.provides("key_for_security_level").with_args("SL5").returns(key)
-
         return key_repository
