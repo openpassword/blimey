@@ -19,7 +19,7 @@ class FudgeWrapper(fudge.Fake):
 
     def provides(self, call_name):
         self._check_method_availability_on_mocked_object(call_name)
-        super(FudgeWrapper, self).provides(call_name)
+        return super(FudgeWrapper, self).provides(call_name)
 
     def _check_method_availability_on_mocked_object(self, call_name):
         if call_name not in dir(self._class_to_mock):
