@@ -8,8 +8,8 @@ class KeychainItemRepository:
     def __init__(self, path):
         self.path = path
 
-    def get_item_by_uuid(self, uuid):
-        keychain_item_path = self._resolve_keychain_item_path(uuid)
+    def get_item_by_unique_id(self, unique_id):
+        keychain_item_path = self._resolve_keychain_item_path(unique_id)
         keychain_item = self._load_keychain_item_data(keychain_item_path)
 
         return KeychainItem(keychain_item)

@@ -8,8 +8,10 @@ from openpassword.crypt_utils import *
 
 class KeychainItem:
     def __init__(self, item):
-        self.key_id = item["keyID"]
-        self.encrypted = b64decode(item["encrypted"])
+        if "keyID" in item:
+            self.key_id = item["keyID"]
+        if "encrypted" in item:
+            self.encrypted = b64decode(item["encrypted"])
         self.data = None
 
     def set_private_contents(self, data):
