@@ -13,7 +13,7 @@ from spec.openpassword.fudge_wrapper import getMock
 
 class KeychainSpec:
     def it_unlocks_the_keychain_with_the_right_password(self):
-        encryption_key = self._encryption_keys_that_provides_decrypt()
+        encryption_key = self._encryption_key_that_provides_decrypt()
         encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
         keychain_item_repository = getMock(KeychainItemRepository)
 
@@ -45,7 +45,7 @@ class KeychainSpec:
         eq_(keychain.is_locked(), True)
 
     def it_locks_when_lock_is_called(self):
-        encryption_key = self._encryption_keys_that_provides_decrypt()
+        encryption_key = self._encryption_key_that_provides_decrypt()
         encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
         keychain_item_repository = getMock(KeychainItemRepository)
 
@@ -57,7 +57,7 @@ class KeychainSpec:
         eq_(keychain.is_locked(), True)
 
     def it_returns_an_item_by_unique_id(self):
-        encryption_key = self._encryption_keys_that_provides_decrypt()
+        encryption_key = self._encryption_key_that_provides_decrypt()
         encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
 
         keychain_item = getMock(KeychainItem)
@@ -82,7 +82,7 @@ class KeychainSpec:
         encryption_key.provides("decrypt").raises(InvalidPasswordException)
         return encryption_key
 
-    def _encryption_keys_that_provides_decrypt(self):
+    def _encryption_key_that_provides_decrypt(self):
         encryption_key = getMock(EncryptionKey)
         encryption_key.provides("decrypt")
         return encryption_key
