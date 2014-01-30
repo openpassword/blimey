@@ -62,13 +62,14 @@ class KeychainSpec:
     def it_returns_an_item_by_unique_id(self):
         key_repository = self._unlockable_key_repository()
 
+        keychain_item = fudge.Fake('keychain_item')
         item_repository = fudge.Fake('keychain_item_repository')
-        item_repository.provides('get_item_by_unique_id').with_args('random_unique_id').returns(KeychainItem({}))
+        item_repository.provides('get_item_by_unique_id').with_args('random_unique_id').returns(keychain_item)
 
         keychain = Keychain(key_repository, item_repository)
         keychain.unlock("password")
 
-        eq_(KeychainItem, type(keychain.get_item_by_unique_id('random_unique_id')))
+        eq_(keychain_item, keychain.get_item_by_unique_id('random_unique_id'))
 
     @raises(KeychainLockedException)
     def it_raises_keychainlocked_exception_when_trying_to_get_item_from_locked_keychain(self):
