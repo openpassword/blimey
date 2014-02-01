@@ -61,6 +61,8 @@ class KeychainSpec:
         encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
 
         keychain_item = getMock(KeychainItem)
+        keychain_item.expects('decrypt').with_args("master_key")
+
         keychain_item_repository = getMock(KeychainItemRepository)
         keychain_item_repository.provides('get_item_by_unique_id').with_args('random_unique_id').returns(keychain_item)
 
@@ -68,6 +70,8 @@ class KeychainSpec:
         keychain.unlock("password")
 
         eq_(keychain_item, keychain.get_item_by_unique_id('random_unique_id'))
+
+        fudge.verify()
 
     @raises(KeychainLockedException)
     def it_raises_keychainlocked_exception_when_trying_to_get_item_from_locked_keychain(self):
@@ -84,7 +88,7 @@ class KeychainSpec:
 
     def _encryption_key_that_provides_decrypt(self):
         encryption_key = getMock(EncryptionKey)
-        encryption_key.provides("decrypt")
+        encryption_key.provides("decrypt").returns("master_key")
         return encryption_key
 
     def _encryption_key_repository_that_returns_key(self, key):
