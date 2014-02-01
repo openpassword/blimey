@@ -1,4 +1,5 @@
 import json
+from openpassword.encryption_key import EncryptionKey
 
 
 class EncryptionKeyRepository:
@@ -13,7 +14,7 @@ class EncryptionKeyRepository:
 
         for key in keys["list"]:
             if key["identifier"] == identifier:
-                return key
+                return EncryptionKey(key)
 
     def _resolve_key_file_path(self):
         return self._path + '/data/default/encryptionKeys.js'

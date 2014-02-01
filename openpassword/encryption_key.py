@@ -10,8 +10,12 @@ class EncryptionKey:
         self.data = b64decode(key["data"])
         self.validation = b64decode(key["validation"])
         self.iterations = key["iterations"]
+        self.identifier = key["identifier"]
 
         self.decrypted_key = None
+
+    def get_id(self):
+        return self.identifier
 
     def decrypt(self, password):
         decryption_key = self._decrypt_encryption_key(password)
