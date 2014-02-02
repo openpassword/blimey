@@ -56,7 +56,7 @@ class KeychainSpec:
         keychain.lock()
         eq_(keychain.is_locked(), True)
 
-    def it_returns_an_item_by_unique_id(self):
+    def it_returns_a_decrypted_item_by_unique_id(self):
         encryption_key = self._encryption_key_that_provides_decrypt()
         encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
 
