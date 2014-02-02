@@ -1,6 +1,6 @@
 import os
 from nose.tools import *
-from openpassword.agilekeychain import KeychainItemRepository
+from openpassword.agile_keychain import KeychainItemRepository
 from openpassword.exceptions import InvalidUuidException
 
 

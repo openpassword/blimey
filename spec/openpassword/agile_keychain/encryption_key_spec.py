@@ -1,5 +1,5 @@
 from nose.tools import *
-from openpassword.agilekeychain import EncryptionKey
+from openpassword.agile_keychain import EncryptionKey
 from openpassword.exceptions import InvalidPasswordException
 from base64 import b64encode
 

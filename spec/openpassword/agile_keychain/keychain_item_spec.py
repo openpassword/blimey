@@ -1,5 +1,5 @@
 from nose.tools import *
-from openpassword.agilekeychain.keychain_item import KeychainItem
+from openpassword.agile_keychain.keychain_item import KeychainItem
 from base64 import b64decode
 
 

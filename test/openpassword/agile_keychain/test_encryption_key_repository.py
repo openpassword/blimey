@@ -1,6 +1,6 @@
 import os
 from nose.tools import *
-from openpassword.agilekeychain import EncryptionKeyRepository
+from openpassword.agile_keychain import EncryptionKeyRepository
 
 
 class EncryptionKeyRepositoryTest:

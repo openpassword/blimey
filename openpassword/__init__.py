@@ -1,3 +1,3 @@
 from openpassword.config import Config
 from openpassword.keychain import Keychain
-from openpassword.agilekeychain.agile_keychain import AgileKeychain
+from openpassword.agile_keychain.agile_keychain import AgileKeychain

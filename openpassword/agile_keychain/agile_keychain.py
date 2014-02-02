@@ -1,6 +1,6 @@
 from openpassword import Keychain
-from openpassword.agilekeychain.encryption_key_repository import EncryptionKeyRepository
-from openpassword.agilekeychain.keychain_item_repository import KeychainItemRepository
+from openpassword.agile_keychain.encryption_key_repository import EncryptionKeyRepository
+from openpassword.agile_keychain.keychain_item_repository import KeychainItemRepository
 
 
 class AgileKeychain(Keychain):

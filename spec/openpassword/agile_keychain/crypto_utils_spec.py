@@ -1,5 +1,5 @@
 from nose.tools import *
-from openpassword.agilekeychain.crypto_utils import *
+from openpassword.agile_keychain.crypto_utils import *
 
 
 class CryptUtilsSpec:
