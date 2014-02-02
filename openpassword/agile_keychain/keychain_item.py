@@ -10,6 +10,10 @@ class KeychainItem:
     def __init__(self, item):
         if "keyID" in item:
             self.key_id = item["keyID"]
+        if "title" in item:
+            self.title = item["title"]
+        if "uuid" in item:
+            self.uuid = item["uuid"]
         if "encrypted" in item:
             self.encrypted = b64decode(item["encrypted"])
         self.data = None
