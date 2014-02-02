@@ -8,3 +8,7 @@ class InvalidUuidException(Exception):
 
 class KeychainLockedException(Exception):
     pass
+
+
+class EncryptionKeyNotFoundException(Exception):
+    pass

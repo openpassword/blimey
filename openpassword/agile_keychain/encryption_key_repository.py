@@ -1,5 +1,6 @@
 import json
 from openpassword.agile_keychain.encryption_key import EncryptionKey
+from openpassword.exceptions import EncryptionKeyNotFoundException
 
 
 class EncryptionKeyRepository:
@@ -10,7 +11,10 @@ class EncryptionKeyRepository:
         key_file_path = self._resolve_key_file_path()
         keys = self._load_key_data(key_file_path)
 
-        identifier = keys[security_level]
+        try:
+            identifier = keys[security_level]
+        except KeyError:
+            raise EncryptionKeyNotFoundException("Unknown security level: {0}".format(security_level))
 
         for key in keys["list"]:
             if key["identifier"] == identifier:
