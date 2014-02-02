@@ -6,7 +6,7 @@ import openpassword
 class AgileKeychainTest:
     def test_unlock_and_get_item_by_unique_id(self):
         current_path = os.path.dirname(os.path.realpath(__file__))
-        fixture_path = current_path + '/../../spec/fixtures/test.agilekeychain'
+        fixture_path = current_path + '/../fixtures/test.agilekeychain'
 
         key_repository = openpassword.EncryptionKeyRepository(fixture_path)
         item_repository = openpassword.KeychainItemRepository(fixture_path)
