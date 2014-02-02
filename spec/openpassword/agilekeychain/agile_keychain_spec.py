@@ -1,9 +1,9 @@
 from nose.tools import *
 from openpassword import Keychain
-from openpassword.keychain_item import KeychainItem
-from openpassword import EncryptionKey
-from openpassword import EncryptionKeyRepository
-from openpassword import KeychainItemRepository
+from openpassword.agilekeychain import KeychainItem
+from openpassword.agilekeychain import EncryptionKey
+from openpassword.agilekeychain import EncryptionKeyRepository
+from openpassword.agilekeychain import KeychainItemRepository
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.exceptions import KeychainLockedException
 
@@ -11,7 +11,7 @@ import fudge
 from spec.openpassword.fudge_wrapper import getMock
 
 
-class KeychainSpec:
+class AgileKeychainSpec:
     def it_unlocks_the_keychain_with_the_right_password(self):
         encryption_key = self._encryption_key_that_provides_decrypt()
         encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)

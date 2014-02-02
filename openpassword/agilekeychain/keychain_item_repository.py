@@ -1,5 +1,5 @@
 import json
-from openpassword.keychain_item import KeychainItem
+from openpassword.agilekeychain.keychain_item import KeychainItem
 from openpassword.exceptions import InvalidUuidException
 
 

@@ -1,5 +1,5 @@
 import json
-from openpassword.encryption_key import EncryptionKey
+from openpassword.agilekeychain.encryption_key import EncryptionKey
 
 
 class EncryptionKeyRepository:
