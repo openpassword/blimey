@@ -25,7 +25,7 @@ class EncryptionKeyRepository:
         try:
             file = open(path)
         except IOError:
-            raise InvalidUuidException("Invalid path: %s" % path)
+            raise InvalidUuidException("Invalid path: {0}".format(path))
 
         data = json.load(file)
         file.close()
