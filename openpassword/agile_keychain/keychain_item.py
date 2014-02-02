@@ -3,7 +3,7 @@ from base64 import b64decode
 from openpassword.pkcs_utils import byte_pad, strip_byte_padding
 from openpassword.openssl_utils import derive_openssl_key
 from os import urandom
-from openpassword.crypt_utils import *
+from openpassword.agile_keychain.crypto_utils import *
 
 
 class KeychainItem:

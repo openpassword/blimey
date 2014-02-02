@@ -2,7 +2,7 @@ from pbkdf2 import PBKDF2
 from base64 import b64decode
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.openssl_utils import derive_openssl_key
-from openpassword.crypt_utils import decrypt
+from openpassword.agile_keychain.crypto_utils import decrypt
 
 
 class EncryptionKey:
