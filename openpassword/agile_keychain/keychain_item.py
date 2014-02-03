@@ -45,7 +45,7 @@ class KeychainItem:
 
         self.data = json.loads(data.decode('utf8'))
 
-    def search(self, query):
+    def contains(self, query):
         for property in self._searchable_properties:
             try:
                 value = getattr(self, property)

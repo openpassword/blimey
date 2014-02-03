@@ -39,7 +39,7 @@ class Keychain:
 
     def _get_search_function(self, query):
         def _search_callback(item):
-            return item.search(query)
+            return item.contains(query)
 
         return _search_callback
 

@@ -65,7 +65,7 @@ class KeychainItemSpec:
 
         eq_(self.keychain_item.data, test_data)
 
-    def it_searches_meta_properties_for_matching_string(self):
-        eq_(self.keychain_item.search("website.com"), True)
-        eq_(self.keychain_item.search("Some Other"), True)
-        eq_(self.keychain_item.search("foobar"), False)
+    def it_tests_meta_properties_contain_given_string(self):
+        eq_(self.keychain_item.contains("website.com"), True)
+        eq_(self.keychain_item.contains("Some Other"), True)
+        eq_(self.keychain_item.contains("foobar"), False)
