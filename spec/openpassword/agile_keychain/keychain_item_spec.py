@@ -64,3 +64,8 @@ class KeychainItemSpec:
         self.keychain_item.decrypt(self.decryption_key)
 
         eq_(self.keychain_item.data, test_data)
+
+    def it_searches_meta_properties_for_matching_string(self):
+        eq_(self.keychain_item.search("website.com"), True)
+        eq_(self.keychain_item.search("Some Other"), True)
+        eq_(self.keychain_item.search("foobar"), False)

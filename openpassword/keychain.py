@@ -38,22 +38,10 @@ class Keychain:
         return self.item_repository.filter(self._get_search_function(query))
 
     def _get_search_function(self, query):
-        def f(item):
-            for property in dir(item):
-                if property.startswith("_"):
-                    continue
+        def _search_callback(item):
+            return item.search(query)
 
-                property_value = getattr(item, property)
-
-                if isinstance(property_value, str) is False:
-                    continue
-
-                if property_value is not None and query in getattr(item, property):
-                    return True
-
-            return False
-
-        return f
+        return _search_callback
 
     def _check_is_locked(self):
         if self.is_locked():
