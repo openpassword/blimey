@@ -1,6 +1,7 @@
 import os
 from nose.tools import *
 from openpassword.agile_keychain import EncryptionKeyRepository
+from openpassword.exceptions import EncryptionKeyNotFoundException
 
 
 class EncryptionKeyRepositoryTest:
@@ -14,3 +15,7 @@ class EncryptionKeyRepositoryTest:
         key = self.repository.key_for_security_level("SL5")
 
         eq_(key.get_id(), "98EB2E946008403280A3A8D9261018A4")
+
+    @raises(EncryptionKeyNotFoundException)
+    def it_raises_invalidsecuritylevelexception_if_no_key_found(self):
+        item = self.repository.key_for_security_level("SL4")
