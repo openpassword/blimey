@@ -81,6 +81,18 @@ class AgileKeychainSpec:
         keychain = Keychain(key_repository, item_repository)
         keychain.get_item_by_unique_id('some_random_item')
 
+    def it_searches_keychain_items_using_search_function(self):
+        encryption_key = self._encryption_key_that_provides_decrypt()
+        encryption_key_repository = self._encryption_key_repository_that_returns_key(encryption_key)
+
+        keychain_item_repository = getMock(KeychainItemRepository)
+        keychain_item_repository.provides('filter').returns(["something"])
+
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
+        keychain.unlock("password")
+
+        eq_(["something"], keychain.search('random_unique_id'))
+
     def _encryption_key_that_raises_invalid_password_exception(self):
         encryption_key = getMock(EncryptionKey)
         encryption_key.provides("decrypt").raises(InvalidPasswordException)

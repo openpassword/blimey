@@ -34,6 +34,15 @@ class Keychain:
 
         return item
 
+    def search(self, query):
+        return self.item_repository.filter(self._get_search_function(query))
+
+    def _get_search_function(self, query):
+        def _search_callback(item):
+            return item.contains(query)
+
+        return _search_callback
+
     def _check_is_locked(self):
         if self.is_locked():
             raise KeychainLockedException

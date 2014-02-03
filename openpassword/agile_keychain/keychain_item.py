@@ -10,9 +10,17 @@ class KeychainItem:
     def __init__(self, item):
         if "keyID" in item:
             self.key_id = item["keyID"]
+        if "title" in item:
+            self.title = item["title"]
+        if "location" in item:
+            self.location = item["location"]
+        if "uuid" in item:
+            self.uuid = item["uuid"]
         if "encrypted" in item:
             self.encrypted = b64decode(item["encrypted"])
         self.data = None
+
+        self._searchable_properties = "title", "location"
 
     def set_private_contents(self, data):
         self.encrypted = None
@@ -36,6 +44,21 @@ class KeychainItem:
         data = strip_byte_padding(data)
 
         self.data = json.loads(data.decode('utf8'))
+
+    def contains(self, query):
+        for property in self._searchable_properties:
+            try:
+                value = getattr(self, property)
+            except AttributeError:
+                continue
+
+            if isinstance(value, str) is False:
+                continue
+
+            if query in value:
+                return True
+
+        return False
 
     def _generate_iv(self):
         return urandom(8)

@@ -19,3 +19,11 @@ class KeychainItemRepositoryTest:
     @raises(InvalidUuidException)
     def it_raises_invaliduuidexception_with_unknown_unique_id(self):
         item = self.repository.get_item_by_unique_id('nonexistinguuid')
+
+    def it_returns_list_of_items_filtered_by_a_callback(self):
+        def f(item):
+            return "Some Folder" in item.title
+
+        items = self.repository.filter(f)
+
+        eq_(items[0].uuid, "D05009E62D7D401CB8ACF2FE6981C031")
