@@ -93,6 +93,14 @@ class AgileKeychainSpec:
 
         eq_(["something"], keychain.search('random_unique_id'))
 
+    @raises(KeychainLockedException)
+    def it_raises_keychainlocked_exception_when_trying_to_search_from_locked_keychain(self):
+        key_repository = fudge.Fake('encryption_key_repository')
+        item_repository = fudge.Fake('keychain_item_repository')
+
+        keychain = Keychain(key_repository, item_repository)
+        keychain.search('something')
+
     def _encryption_key_that_raises_invalid_password_exception(self):
         encryption_key = getMock(EncryptionKey)
         encryption_key.provides("decrypt").raises(InvalidPasswordException)
