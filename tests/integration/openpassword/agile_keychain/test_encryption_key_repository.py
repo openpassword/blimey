@@ -7,7 +7,7 @@ from openpassword.exceptions import EncryptionKeyNotFoundException
 class EncryptionKeyRepositoryTest:
     def setUp(self):
         current_path = os.path.dirname(os.path.realpath(__file__))
-        fixture_path = current_path + '/../../fixtures/test.agilekeychain'
+        fixture_path = current_path + '/../../../fixtures/test.agilekeychain'
 
         self.repository = EncryptionKeyRepository(fixture_path)
 

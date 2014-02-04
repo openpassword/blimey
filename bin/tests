@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
-nosetests spec test && \
+echo "### Specs" && \
+nosetests spec && \
+echo "### Integration tests" && \
+nosetests tests/integration && \
+echo "### Acceptance tests" && \
+nosetests tests/acceptance && \
 pep8 --statistics --count --show-source --format=default  --max-line-length=120
