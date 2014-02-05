@@ -1,6 +1,7 @@
 import json
 from openpassword.agile_keychain.encryption_key import EncryptionKey
 from openpassword.exceptions import EncryptionKeyNotFoundException
+from openpassword.exceptions import InvalidUuidException
 
 
 class EncryptionKeyRepository:
