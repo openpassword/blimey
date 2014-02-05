@@ -75,8 +75,8 @@ class AgileKeychainSpec:
 
     @raises(KeychainLockedException)
     def it_raises_keychainlocked_exception_when_trying_to_get_item_from_locked_keychain(self):
-        key_repository = fudge.Fake('encryption_key_repository')
-        item_repository = fudge.Fake('keychain_item_repository')
+        key_repository = getMock(EncryptionKeyRepository)
+        item_repository = getMock(KeychainItemRepository)
 
         keychain = Keychain(key_repository, item_repository)
         keychain.get_item_by_unique_id('some_random_item')
@@ -95,8 +95,8 @@ class AgileKeychainSpec:
 
     @raises(KeychainLockedException)
     def it_raises_keychainlocked_exception_when_trying_to_search_from_locked_keychain(self):
-        key_repository = fudge.Fake('encryption_key_repository')
-        item_repository = fudge.Fake('keychain_item_repository')
+        key_repository = getMock(EncryptionKeyRepository)
+        item_repository = getMock(KeychainItemRepository)
 
         keychain = Keychain(key_repository, item_repository)
         keychain.search('something')
