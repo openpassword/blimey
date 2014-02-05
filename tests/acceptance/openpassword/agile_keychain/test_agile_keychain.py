@@ -21,5 +21,5 @@ class AgileKeychainTest:
         self.keychain.unlock("masterpassword123")
         items = self.keychain.search("Folder")
 
-        eq_(items[0].title, "Some Other Folder")
-        eq_(items[1].title, "Some Folder")
+        assert "Some Other Folder" in [item.title for item in items]
+        assert "Some Folder" in [item.title for item in items]
