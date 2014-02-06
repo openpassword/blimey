@@ -3,7 +3,7 @@ from openpassword import Keychain
 from openpassword.agile_keychain import KeychainItem
 from openpassword.agile_keychain import EncryptionKey
 from openpassword.agile_keychain import EncryptionKeyRepository
-from openpassword.agile_keychain import KeychainItemRepository
+from openpassword.abstract import KeychainItemRepository
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.exceptions import KeychainLockedException
 
@@ -64,7 +64,7 @@ class AgileKeychainSpec:
         keychain_item.expects('decrypt').with_args("master_key")
 
         keychain_item_repository = getMock(KeychainItemRepository)
-        keychain_item_repository.provides('get_item_by_unique_id').with_args('random_unique_id').returns(keychain_item)
+        keychain_item_repository.provides('item_by_unique_id').with_args('random_unique_id').returns(keychain_item)
 
         keychain = Keychain(encryption_key_repository, keychain_item_repository)
         keychain.unlock("password")

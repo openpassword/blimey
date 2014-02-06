@@ -2,14 +2,15 @@ import json
 from glob import glob
 from openpassword.agile_keychain.keychain_item import KeychainItem
 from openpassword.exceptions import InvalidUuidException
+from openpassword import abstract
 
 
-class KeychainItemRepository:
+class KeychainItemRepository(abstract.KeychainItemRepository):
 
     def __init__(self, path):
         self._path = path
 
-    def get_item_by_unique_id(self, unique_id):
+    def item_by_unique_id(self, unique_id):
         keychain_item_path = self._resolve_keychain_item_path(unique_id)
         keychain_item = self._load_keychain_item_data(keychain_item_path)
 
