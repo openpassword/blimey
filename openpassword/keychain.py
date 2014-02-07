@@ -1,6 +1,5 @@
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.exceptions import KeychainLockedException
-from openpassword.abstract import KeychainItemRepository
 
 
 class Keychain:

@@ -2,7 +2,7 @@ from nose.tools import *
 from openpassword import Keychain
 from openpassword.agile_keychain import KeychainItem
 from openpassword.agile_keychain import EncryptionKey
-from openpassword.agile_keychain import EncryptionKeyRepository
+from openpassword.abstract import EncryptionKeyRepository
 from openpassword.abstract import KeychainItemRepository
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.exceptions import KeychainLockedException

@@ -1,1 +1,2 @@
 from openpassword.abstract.keychain_item_repository import KeychainItemRepository
+from openpassword.abstract.encryption_key_repository import EncryptionKeyRepository
