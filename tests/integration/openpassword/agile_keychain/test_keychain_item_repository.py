@@ -12,13 +12,13 @@ class KeychainItemRepositoryTest:
         self.repository = KeychainItemRepository(fixture_path)
 
     def it_returns_keychain_item_for_given_unique_id(self):
-        item = self.repository.get_item_by_unique_id('2E21D652E0754BD59F6B94B0323D0142')
+        item = self.repository.item_by_unique_id('2E21D652E0754BD59F6B94B0323D0142')
 
         eq_(item.key_id, 'BE4CC37CD7C044E79B5CC1CC19A82A13')
 
     @raises(InvalidUuidException)
     def it_raises_invaliduuidexception_with_unknown_unique_id(self):
-        item = self.repository.get_item_by_unique_id('nonexistinguuid')
+        item = self.repository.item_by_unique_id('nonexistinguuid')
 
     def it_returns_list_of_items_filtered_by_a_callback(self):
         def f(item):

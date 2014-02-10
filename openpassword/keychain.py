@@ -7,6 +7,7 @@ class Keychain:
     def __init__(self, key_repository, item_repository):
         self.key_repository = key_repository
         self.item_repository = item_repository
+
         self._locked = True
         self._master_key = None
 
@@ -29,7 +30,7 @@ class Keychain:
     def get_item_by_unique_id(self, unique_id):
         self._check_is_locked()
 
-        item = self.item_repository.get_item_by_unique_id(unique_id)
+        item = self.item_repository.item_by_unique_id(unique_id)
         item.decrypt(self._master_key)
 
         return item

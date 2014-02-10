@@ -2,9 +2,10 @@ import json
 from openpassword.agile_keychain.encryption_key import EncryptionKey
 from openpassword.exceptions import EncryptionKeyNotFoundException
 from openpassword.exceptions import InvalidUuidException
+from openpassword import abstract
 
 
-class EncryptionKeyRepository:
+class EncryptionKeyRepository(abstract.EncryptionKeyRepository):
     def __init__(self, path):
         self._path = path
         self._keys = None
