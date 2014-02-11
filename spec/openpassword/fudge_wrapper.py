@@ -1,5 +1,4 @@
 import fudge
-import inspect
 
 
 class MethodNotAvailableInMockedObjectException(Exception):
@@ -23,4 +22,5 @@ class FudgeWrapper(fudge.Fake):
 
     def _check_method_availability_on_mocked_object(self, call_name):
         if call_name not in dir(self._class_to_mock):
-            raise MethodNotAvailableInMockedObjectException
+            raise MethodNotAvailableInMockedObjectException(
+                "{0} method does not exist in class {1}.".format(call_name, self._class_to_mock.__name__))

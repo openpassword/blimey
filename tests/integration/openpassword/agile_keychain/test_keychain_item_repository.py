@@ -27,3 +27,7 @@ class KeychainItemRepositoryTest:
         items = self.repository.filter(f)
 
         eq_(items[0].uuid, "D05009E62D7D401CB8ACF2FE6981C031")
+
+    def it_return_all_items_in_the_keychain(self):
+        items = self.repository.all_items()
+        eq_(len(items), 9)

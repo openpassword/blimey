@@ -1,4 +1,6 @@
 from nose.tools import *
+import fudge
+
 from openpassword import Keychain
 from openpassword.agile_keychain import KeychainItem
 from openpassword.agile_keychain import EncryptionKey
@@ -6,8 +8,6 @@ from openpassword.abstract import EncryptionKeyRepository
 from openpassword.abstract import KeychainItemRepository
 from openpassword.exceptions import InvalidPasswordException
 from openpassword.exceptions import KeychainLockedException
-
-import fudge
 from spec.openpassword.fudge_wrapper import getMock
 
 
@@ -100,6 +100,18 @@ class AgileKeychainSpec:
 
         keychain = Keychain(key_repository, item_repository)
         keychain.search('something')
+
+    def it_returns_all_the_items_in_an_item_repository(self):
+        encryption_key_repository = getMock(EncryptionKeyRepository)
+
+        keychain_item = getMock(KeychainItem)
+        keychain_item_repository = getMock(KeychainItemRepository)
+
+        list_of_items = [keychain_item]
+
+        keychain_item_repository.provides('all_items').returns(list_of_items)
+        keychain = Keychain(encryption_key_repository, keychain_item_repository)
+        assert keychain.all_items() is list_of_items
 
     def _encryption_key_that_raises_invalid_password_exception(self):
         encryption_key = getMock(EncryptionKey)

@@ -40,6 +40,9 @@ class Keychain:
 
         return self.item_repository.filter(self._get_search_function(query))
 
+    def all_items(self):
+        return self.item_repository.all_items()
+
     def _get_search_function(self, query):
         def _search_callback(item):
             return item.contains(query)
