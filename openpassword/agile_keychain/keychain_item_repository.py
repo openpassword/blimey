@@ -5,6 +5,7 @@ from openpassword.agile_keychain.keychain_item import KeychainItem
 from openpassword.exceptions import InvalidPathException
 from openpassword import abstract
 from openpassword.item_collection import ItemCollection
+from openpassword.data_object import MetaItem
 
 
 class KeychainItemRepository(abstract.KeychainItemRepository):
@@ -18,14 +19,16 @@ class KeychainItemRepository(abstract.KeychainItemRepository):
 
         return KeychainItem(keychain_item_data)
 
+    def all_items(self):
         items = []
 
         for path in glob(self._resolve_keychain_item_path('*')):
+            keychain_item_data = self._load_keychain_item_data(path)
+            keychain_item_data['unique_id'] = keychain_item_data['uuid']
+            item = MetaItem(keychain_item_data)
+            items.append(item)
 
         return ItemCollection(items)
-
-    def all_items(self):
-        return self.filter(lambda x: True)
 
     def _resolve_keychain_item_path(self, uuid):
         return self._path + '/data/default/{0}.1password'.format(uuid)

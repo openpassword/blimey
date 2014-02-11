@@ -12,3 +12,7 @@ class KeychainLockedException(Exception):
 
 class EncryptionKeyNotFoundException(Exception):
     pass
+
+
+class InvalidMetadataException(Exception):
+    pass
