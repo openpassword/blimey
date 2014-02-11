@@ -4,6 +4,7 @@ from glob import glob
 from openpassword.agile_keychain.keychain_item import KeychainItem
 from openpassword.exceptions import InvalidUuidException
 from openpassword import abstract
+from openpassword.item_collection import ItemCollection
 
 
 class KeychainItemRepository(abstract.KeychainItemRepository):
@@ -26,7 +27,7 @@ class KeychainItemRepository(abstract.KeychainItemRepository):
             if callback(item):
                 items.append(item)
 
-        return tuple(items)
+        return ItemCollection(items)
 
     def all_items(self):
         return self.filter(lambda x: True)
