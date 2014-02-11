@@ -16,10 +16,3 @@ class AgileKeychainTest:
 
         eq_(item.data["fields"][0]["value"], "someuser")
         eq_(item.data["fields"][1]["value"], "password123")
-
-    def test_search_returns_matching_items(self):
-        self.keychain.unlock("masterpassword123")
-        items = self.keychain.search("Folder")
-
-        assert "Some Other Folder" in [item.title for item in items]
-        assert "Some Folder" in [item.title for item in items]

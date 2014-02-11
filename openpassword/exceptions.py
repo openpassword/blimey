@@ -2,7 +2,7 @@ class InvalidPasswordException(Exception):
     pass
 
 
-class InvalidUuidException(Exception):
+class InvalidPathException(Exception):
     pass
 
 
@@ -11,4 +11,8 @@ class KeychainLockedException(Exception):
 
 
 class EncryptionKeyNotFoundException(Exception):
+    pass
+
+
+class InvalidMetadataException(Exception):
     pass

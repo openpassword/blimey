@@ -1,7 +1,7 @@
 import os
 from nose.tools import *
 from openpassword.agile_keychain import KeychainItemRepository
-from openpassword.exceptions import InvalidUuidException
+from openpassword.exceptions import InvalidPathException
 
 
 class KeychainItemRepositoryTest:
@@ -16,14 +16,10 @@ class KeychainItemRepositoryTest:
 
         eq_(item.key_id, 'BE4CC37CD7C044E79B5CC1CC19A82A13')
 
-    @raises(InvalidUuidException)
-    def it_raises_invaliduuidexception_with_unknown_unique_id(self):
-        item = self.repository.item_by_unique_id('nonexistinguuid')
+    @raises(InvalidPathException)
+    def it_raises_invalidpathexception_for_invalid_item(self):
+        item = self.repository.item_by_unique_id('E21D652E0754BD59F6B94B0323D0')
 
-    def it_returns_list_of_items_filtered_by_a_callback(self):
-        def f(item):
-            return "Some Folder" in item.title
-
-        items = self.repository.filter(f)
-
-        eq_(items[0].uuid, "D05009E62D7D401CB8ACF2FE6981C031")
+    def it_return_all_items_in_the_keychain(self):
+        items = self.repository.all_items()
+        eq_(len(items), 9)
