@@ -2,7 +2,7 @@ class InvalidPasswordException(Exception):
     pass
 
 
-class InvalidUuidException(Exception):
+class InvalidPathException(Exception):
     pass
 
 

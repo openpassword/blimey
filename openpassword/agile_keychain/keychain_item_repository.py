@@ -2,7 +2,7 @@ import json
 from glob import glob
 
 from openpassword.agile_keychain.keychain_item import KeychainItem
-from openpassword.exceptions import InvalidUuidException
+from openpassword.exceptions import InvalidPathException
 from openpassword import abstract
 from openpassword.item_collection import ItemCollection
 
@@ -18,14 +18,9 @@ class KeychainItemRepository(abstract.KeychainItemRepository):
 
         return KeychainItem(keychain_item_data)
 
-    def filter(self, callback):
         items = []
 
         for path in glob(self._resolve_keychain_item_path('*')):
-            keychain_item = self._load_keychain_item_data(path)
-            item = KeychainItem(keychain_item)
-            if callback(item):
-                items.append(item)
 
         return ItemCollection(items)
 
@@ -39,7 +34,7 @@ class KeychainItemRepository(abstract.KeychainItemRepository):
         try:
             file = open(path)
         except IOError:
-            raise InvalidUuidException("Invalid path: {0}".format(path))
+            raise InvalidPathException("Invalid path: {0}".format(path))
 
         data = json.load(file)
         file.close()

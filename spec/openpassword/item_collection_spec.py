@@ -1,5 +1,4 @@
 from nose.tools import *
-import fudge
 
 from openpassword.item_collection import ItemCollection
 

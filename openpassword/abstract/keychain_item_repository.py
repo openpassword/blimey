@@ -8,9 +8,5 @@ class KeychainItemRepository(metaclass=ABCMeta):
         return NotImplemented
 
     @abstractmethod
-    def filter(self, callback):
-        return NotImplemented
-
-    @abstractmethod
     def all_items(self):
         return NotImplemented

@@ -1,7 +1,7 @@
 import json
 from openpassword.agile_keychain.encryption_key import EncryptionKey
 from openpassword.exceptions import EncryptionKeyNotFoundException
-from openpassword.exceptions import InvalidUuidException
+from openpassword.exceptions import InvalidPathException
 from openpassword import abstract
 
 
@@ -27,7 +27,7 @@ class EncryptionKeyRepository(abstract.EncryptionKeyRepository):
         try:
             file = open(path)
         except IOError:
-            raise InvalidUuidException("Invalid path: {0}".format(path))
+            raise InvalidPathException("Invalid path: {0}".format(path))
 
         data = json.load(file)
         file.close()
