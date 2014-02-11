@@ -22,7 +22,10 @@ def strip_byte_padding(input_bytes, length=8):
         raise ValueError("Input byte length is not divisible by %s " % length)
 
     # Get the last {length} bytes of the input bytes, reversed
-    byte_block = bytes(input_bytes[:length:-1])
+    if len(input_bytes) == length:
+        byte_block = bytes(input_bytes[::-1])
+    else:
+        byte_block = bytes(input_bytes[:length:-1])
 
     # If input bytes is padded, the padding is equal to byte value of the number
     # of bytes padded. So we can read the padding value from the last byte..
