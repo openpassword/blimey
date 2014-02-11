@@ -3,7 +3,6 @@ from openpassword.exceptions import KeychainLockedException
 
 
 class Keychain:
-
     def __init__(self, key_repository, item_repository):
         self.key_repository = key_repository
         self.item_repository = item_repository
@@ -35,19 +34,8 @@ class Keychain:
 
         return item
 
-    def search(self, query):
-        self._check_is_locked()
-
-        return self.item_repository.filter(self._get_search_function(query))
-
     def all_items(self):
         return self.item_repository.all_items()
-
-    def _get_search_function(self, query):
-        def _search_callback(item):
-            return item.contains(query)
-
-        return _search_callback
 
     def _check_is_locked(self):
         if self.is_locked():
