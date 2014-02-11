@@ -26,7 +26,7 @@ class KeychainItemRepository(abstract.KeychainItemRepository):
             if callback(item):
                 items.append(item)
 
-        return items
+        return tuple(items)
 
     def all_items(self):
         return self.filter(lambda x: True)

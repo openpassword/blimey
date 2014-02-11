@@ -107,11 +107,11 @@ class AgileKeychainSpec:
         keychain_item = getMock(KeychainItem)
         keychain_item_repository = getMock(KeychainItemRepository)
 
-        list_of_items = [keychain_item]
+        all_items = (keychain_item, )
 
-        keychain_item_repository.provides('all_items').returns(list_of_items)
+        keychain_item_repository.provides('all_items').returns(all_items)
         keychain = Keychain(encryption_key_repository, keychain_item_repository)
-        assert keychain.all_items() is list_of_items
+        assert keychain.all_items() is all_items
 
     def _encryption_key_that_raises_invalid_password_exception(self):
         encryption_key = getMock(EncryptionKey)
