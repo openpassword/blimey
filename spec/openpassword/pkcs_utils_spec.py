@@ -3,6 +3,8 @@ from openpassword.pkcs_utils import *
 
 
 class PkscUtilsSpec:
+    def it_leaves_bytes_of_correct_length_unpadded(self):
+        eq_(strip_byte_padding(b"12345678"), b"12345678")
 
     def it_strips_byte_padding(self):
         eq_(strip_byte_padding(b"12345678abc\x05\x05\x05\x05\x05"), b"12345678abc")
