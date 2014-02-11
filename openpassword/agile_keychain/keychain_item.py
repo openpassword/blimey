@@ -31,7 +31,7 @@ class KeychainItem:
         derived_key = self._derive_key(original_key, keygen_iv)
 
         data = json.dumps(self.data)
-        data = byte_pad(data.encode('utf8'))
+        data = byte_pad(data.encode('utf8'), 16)
         data = encrypt(data, derived_key)
 
         self.encrypted = b''.join(['Salted__'.encode('utf8'), keygen_iv, data])
@@ -41,7 +41,7 @@ class KeychainItem:
         derived_key = self._derive_key(original_key, keygen_iv)
 
         data = decrypt(self.encrypted[16:], derived_key)
-        data = strip_byte_padding(data)
+        data = strip_byte_padding(data, 16)
 
         self.data = json.loads(data.decode('utf8'))
 
