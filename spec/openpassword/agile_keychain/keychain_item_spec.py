@@ -1,5 +1,6 @@
 from nose.tools import *
 from openpassword.agile_keychain.keychain_item import KeychainItem
+from openpassword.exceptions import DecryptionException
 from base64 import b64decode
 
 
@@ -45,6 +46,11 @@ class KeychainItemSpec:
         self.keychain_item.decrypt(self.decryption_key)
 
         eq_(self.keychain_item.data, self.test_data)
+
+    @raises(DecryptionException)
+    def it_raises_a_decryptionexception_if_decryption_fails(self):
+        wrong_decryption_key = b64decode("VvvspiWrNzItmGcelM+MM8w28CQCNQYGtVCB5GbihDktjUETw7/mEfg+nnEo3DthKXisz3R+NhvQbvqoF+yBHK/Z4LvQvEx8x5KagvxLvcojYmYhtfS6bDmiUqLC+Mdc3KQo9AffqGOmbklcvfzy+Yyczt4Wy6MXDXZT2lan6tzY+RlL5gOvbqcWPq8gv9Yw2I2enhiv5R4MNzlb/4nf4TsMVqV50dzzc0L9NNfunhweoaxZ3z0G9gRn0qPsK0P5IzfGCPvycqgL1gqwUqVW1kTHJcEKWp1OE/xnwBwA3mNJmPWBYlOEX+8W6UT5RcHfdkM2rUe3ublPQ1UaLWNMwQoLlLWzqSOEdX4sf9rFeZ5UOjDtvapFkFV8U7Z8cSnZyDdKlQ9lGT2/Qv3rLavuxc6yAw0l9jEaCy11KNgAKKy2Wyc6ubCGw1CEfH72CUKOTlx7yrtuGsaytxtlWI3AitU5tLYXU+S3RyJYKKOYrMTW7joww4j5BKtBg66SNXWzkQRksnrqMCxgOZBYrxLvbBf6dO8UtmtzxNoNOYcRe9doA/hAlIvVsUjDSvtMdzcJ+A56Rb+tpGZClHRuLCBkao9b7OHaW2JjxJaNibE3mONk/UDo6xq6HiOoVqDC2USvgqE/X1XiOy1yU1qUV5wVtbV5+OYf8ubqpRlSOuSytK8lAWxCq8oTOIIPcDR77rkqj6Ou4dMfMyCWIcQ7wtwEdVCU2GzUgro3JdArmXfXwUbRmoX+c/qas6LM5MQs3fTuMooCch6qvikyHA1FrCCPC3wBrwEeyqXPQcmyGeihYWvtmyWmdJcY5c2BsxRDGVfiofcCL6t9ytH3KN33qiOkrllbLauTSNPjf1bRWqZ8G0mBp6hLMk+cg+v1Mw6LQj3wP0+vY1+bZt0MCECRIDhHfh9zS+k6F+K4eOjIO0ZkTEKNeY/rkyQSQNSpA9aOJgY0tQM0PwQMhM9PpEn5oWu2Z9e6G+AkFQg6vHM/d0I5XHVrrVNZlPHK2gPUQ8q9ZsjmbiS6oR8K7IXOfMd5K5UZXizpX3YUr5Et8NTzBy4vExFkEuLFYxyCOzwZYfU3bk3HGEMJYByK3zJWsa84r8QUWk4flU3omQSfA5Mdc/caw74atm/VfP8yMLpuFTiP6wPz4gDhq67r46dNgDDCKDMWCAsigXI1mIPJzDG79/d0w0GyO7oLLnGoptsrYLQxHbfZ+IgzJyGQ2iFxwnLjQKsnJ9vG+7A1w8jyAZij0cRV7hjDs/KaJNXxenCzE0Ofkf6IuMMtIVjbYfD0s8GXIuIAltierebQiA6I1yQtyR8WYfBziSPVTpvYf9SdxzsShlcGihSK33O03enbc6UmAWWtlRAQEBAQEBAQEBAQEBAQEBA=")  # nopep8
+        self.keychain_item.decrypt(wrong_decryption_key)
 
     def it_invalidates_encrypted_data_when_data_is_set(self):
         self.keychain_item.decrypt(self.decryption_key)

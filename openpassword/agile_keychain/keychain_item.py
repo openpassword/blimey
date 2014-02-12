@@ -2,6 +2,7 @@ import json
 from base64 import b64decode
 from openpassword.pkcs_utils import byte_pad, strip_byte_padding
 from openpassword.openssl_utils import derive_openssl_key
+from openpassword.exceptions import DecryptionException
 from os import urandom
 from openpassword.agile_keychain.crypto_utils import *
 
@@ -43,7 +44,12 @@ class KeychainItem:
         data = decrypt(self.encrypted[16:], derived_key)
         data = strip_byte_padding(data, 16)
 
-        self.data = json.loads(data.decode('utf8'))
+        try:
+            decoded_data = data.decode('utf8')
+        except UnicodeDecodeError:
+            raise DecryptionException("Item decryption failed")
+
+        self.data = json.loads(decoded_data)
 
     def contains(self, query):
         for property in self._searchable_properties:

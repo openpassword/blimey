@@ -16,3 +16,7 @@ class EncryptionKeyNotFoundException(Exception):
 
 class InvalidMetadataException(Exception):
     pass
+
+
+class DecryptionException(Exception):
+    pass
