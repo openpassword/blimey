@@ -1,7 +1,11 @@
+import os
+import pickle
+
 from nose.tools import *
 from nose import SkipTest
-import os
+
 import openpassword
+from openpassword.item_collection import ItemCollection
 
 
 def skip(f):
@@ -31,9 +35,11 @@ class AgileKeychainTest:
         eq_(item.data["fields"][0]["value"], "somedifferentusername")
         eq_(item.data["fields"][1]["value"], "password123")
 
-    @skip
-    def test_get_all_items(self):
-        pass
+    def test_get_all_items_returns_collection_of_9_items_for_a_9_item_keychain(self):
+        self.keychain.unlock("masterpassword123")
+        all_items = self.keychain.all_items()
+        eq_(type(all_items), ItemCollection)
+        eq_(len(all_items), 9)
 
     def test_lock_keychain(self):
         eq_(self.keychain.is_locked(), True)
@@ -42,3 +48,4 @@ class AgileKeychainTest:
         eq_(self.keychain.is_locked(), False)
         self.keychain.lock()
         eq_(self.keychain.is_locked(), True)
+
