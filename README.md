@@ -1,5 +1,6 @@
 OpenPassword
 ============
+![License MIT](http://b.repl.ca/v1/License-MIT-blue.png)
 
 Master Build Status
 -------------------
