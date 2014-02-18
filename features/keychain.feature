@@ -7,8 +7,9 @@ Scenario: Unlocking a keychain
 
 Scenario: Getting item by unique id
   Given I have an unlocked keychain
-  When I request item with id "9E7673CCBB5B4AC9A7A8838835CB7E83"
-  Then I should get an item with the same id
+  And  the keychain has an item with id "9E7673CCBB5B4AC9A7A8838835CB7E83"
+  When I request item with the given id
+  Then I should get the item with that id
 
   Scenario: Getting all items of a keychain
     Given I have an unlocked keychain

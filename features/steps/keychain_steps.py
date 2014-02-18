@@ -28,15 +28,21 @@ def step_impl(context):
     assert context.keychain.is_locked() is False
 
 
-@when('I request item with id "{id}"')
-def step_impl(context, id):
-    context.item_unique_id = id
-    context.item = context.keychain.get_item_by_unique_id(context.item_unique_id)
+@given('the keychain has an item with id "{item_id}"')
+def step_impl(context, item_id):
+    context.item_id = item_id
+    assert len([a for a in glob(_get_keychain_path() + "/data/default/*.1password") if
+                a.endswith(context.item_id + ".1password") > 0])
 
 
-@then('I should get an item with the same id')
+@when('I request item with the given id')
 def step_impl(context):
-    assert context.item.uuid == context.item_unique_id
+    context.item = context.keychain.get_item_by_unique_id(context.item_id)
+
+
+@then('I should get the item with that id')
+def step_impl(context):
+    assert context.item.uuid == context.item_id
 
 
 @given('the keychain has a given number of items')
