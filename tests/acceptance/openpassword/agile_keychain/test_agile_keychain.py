@@ -1,5 +1,4 @@
 import os
-import pickle
 
 from nose.tools import *
 from nose import SkipTest
