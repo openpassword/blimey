@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 echo "### Acceptance tests" && \
-behave -qT --no-summary && \
-nosetests tests/acceptance && \
+behave -sT --no-summary && \
 echo "### Specs" && \
 nosetests spec && \
 echo "### Integration tests" && \

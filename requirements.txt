@@ -1,6 +1,5 @@
 spec
 fudge
-tissue
 pbkdf2
 pycrypto
 behave
