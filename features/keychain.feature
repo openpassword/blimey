@@ -12,9 +12,9 @@ Scenario: Getting item by unique id
 
   Scenario: Getting all items of a keychain
     Given I have an unlocked keychain
-    And the keychain has 9 items
+    And the keychain has a given number of items
     When I request all items from the keychain
-    Then I should get a collection with 9 items
+    Then I should get a collection with the right number of items
 
   Scenario: Locking a keychain
     Given I have an unlocked keychain

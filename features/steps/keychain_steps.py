@@ -39,9 +39,9 @@ def step_impl(context):
     assert context.item.uuid == context.item_unique_id
 
 
-@given('the keychain has 9 items')
+@given('the keychain has a given number of items')
 def step_impl(context):
-    assert len(glob(_get_keychain_path() + "/data/default/*.1password")) is 9
+    context.keychain_len = len(glob(_get_keychain_path() + "/data/default/*.1password"))
 
 
 @when('I request all items from the keychain')
@@ -49,10 +49,10 @@ def step_impl(context):
     context.items = context.keychain.all_items()
 
 
-@then('I should get a collection with 9 items')
+@then('I should get a collection with the right number of items')
 def step_impl(context):
     assert type(context.items) is ItemCollection
-    assert len(context.items) is 9
+    assert len(context.items) is context.keychain_len
 
 
 @when('I lock the keychain')
