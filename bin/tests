@@ -4,5 +4,5 @@ nosetests spec && \
 echo "### Integration tests" && \
 nosetests tests/integration && \
 echo "### Acceptance tests" && \
-nosetests tests/acceptance && \
+behave -sT --no-summary && \
 pep8 --statistics --count --show-source --format=default  --max-line-length=120
