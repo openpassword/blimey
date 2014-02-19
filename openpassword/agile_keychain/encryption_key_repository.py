@@ -3,6 +3,7 @@ from openpassword.agile_keychain.encryption_key import EncryptionKey
 from openpassword.exceptions import EncryptionKeyNotFoundException
 from openpassword.exceptions import InvalidPathException
 from openpassword import abstract
+import os
 
 
 class EncryptionKeyRepository(abstract.EncryptionKeyRepository):
@@ -21,7 +22,7 @@ class EncryptionKeyRepository(abstract.EncryptionKeyRepository):
         self.keys = self._load_key_data(key_file_path)
 
     def _resolve_key_file_path(self):
-        return self._path + '/data/default/encryptionKeys.js'
+        return os.path.join(self._path, 'data', 'default', 'encryptionKeys.js')
 
     def _load_key_data(self, path):
         try:

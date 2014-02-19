@@ -1,5 +1,6 @@
 import json
 from glob import glob
+import os
 
 from openpassword.agile_keychain.keychain_item import KeychainItem
 from openpassword.exceptions import InvalidPathException
@@ -31,7 +32,7 @@ class KeychainItemRepository(abstract.KeychainItemRepository):
         return ItemCollection(items)
 
     def _resolve_keychain_item_path(self, uuid):
-        return self._path + '/data/default/{0}.1password'.format(uuid)
+        return os.path.join(self._path, 'data', 'default', "{0}.1password".format(uuid))
 
     def _load_keychain_item_data(self, path):
         try:

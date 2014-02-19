@@ -7,7 +7,7 @@ from openpassword.exceptions import InvalidPathException
 class KeychainItemRepositoryTest:
     def setUp(self):
         current_path = os.path.dirname(os.path.realpath(__file__))
-        fixture_path = current_path + '/../../../fixtures/test.agilekeychain'
+        fixture_path = os.path.join(current_path, '..', '..', '..', 'fixtures', 'test.agilekeychain')
 
         self.repository = KeychainItemRepository(fixture_path)
 
