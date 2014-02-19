@@ -33,7 +33,7 @@ def step_impl(context):
 @given('the keychain has an item with id "{item_id}"')
 def step_impl(context, item_id):
     context.item_id = item_id
-    assert len(glob("{0}/data/default/{1}.1password".format(_get_keychain_path(), context.item_id))) > 0
+    assert len(glob(os.path.join(_get_keychain_path(), 'data', 'default', "{0}.1password".format(context.item_id)))) > 0
 
 
 @when('I request item with the given id')
@@ -48,7 +48,7 @@ def step_impl(context):
 
 @given('the keychain has a given number of items')
 def step_impl(context):
-    context.number_of_items = len(glob("{0}/data/default/*.1password".format(_get_keychain_path())))
+    context.number_of_items = len(glob(os.path.join(_get_keychain_path(), 'data', 'default', '*.1password')))
 
 
 @when('I request all items from the keychain')
@@ -78,4 +78,4 @@ def _get_keychain():
 
 def _get_keychain_path():
     current_path = os.path.dirname(os.path.realpath(__file__))
-    return '{0}/../../tests/fixtures/test.agilekeychain'.format(current_path)
+    return os.path.join(current_path, '..', '..', 'tests', 'fixtures', 'test.agilekeychain')
