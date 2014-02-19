@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-echo "### Acceptance tests" && \
-behave -sT --no-summary && \
 echo "### Specs" && \
 nosetests spec && \
 echo "### Integration tests" && \
 nosetests tests/integration && \
+echo "### Acceptance tests" && \
+behave -sT --no-summary && \
 pep8 --statistics --count --show-source --format=default  --max-line-length=120
