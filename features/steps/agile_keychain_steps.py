@@ -48,7 +48,7 @@ def step_impl(context):
 
 @given('the keychain has a given number of items')
 def step_impl(context):
-    context.keychain_len = len(glob("{0}/data/default/*.1password".format(_get_keychain_path())))
+    context.number_of_items = len(glob("{0}/data/default/*.1password".format(_get_keychain_path())))
 
 
 @when('I request all items from the keychain')
@@ -59,7 +59,7 @@ def step_impl(context):
 @then('I should get a collection with the right number of items')
 def step_impl(context):
     assert type(context.items) is ItemCollection
-    assert len(context.items) is context.keychain_len
+    assert len(context.items) is context.number_of_items
 
 
 @when('I lock the keychain')
