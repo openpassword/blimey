@@ -1,8 +1,6 @@
 from behave import given, when, then, step
 import os
 import openpassword
-from openpassword.item_collection import ItemCollection
-from glob import glob
 
 MASTER_PASSWORD = "masterpassword123"
 
@@ -23,43 +21,24 @@ def step_impl(context):
     assert context.keychain.is_locked() is False
 
 
+@then('I will be able to see it\'s contents')
+def step_impl(context):
+    try:
+        items = list(context.keychain)
+    except TypeError:
+        assert False
+
+    if isinstance(items, list):
+        assert True
+    else:
+        assert False
+
+
 @given('I have an unlocked keychain')
 def step_impl(context):
     context.keychain = _get_keychain()
     context.keychain.unlock(MASTER_PASSWORD)
     assert context.keychain.is_locked() is False
-
-
-@given('the keychain has an item with id "{item_id}"')
-def step_impl(context, item_id):
-    context.item_id = item_id
-    assert len(glob(os.path.join(_get_keychain_path(), 'data', 'default', "{0}.1password".format(context.item_id)))) > 0
-
-
-@when('I request item with the given id')
-def step_impl(context):
-    context.item = context.keychain.get_item_by_unique_id(context.item_id)
-
-
-@then('I should get the item with that id')
-def step_impl(context):
-    assert context.item.uuid == context.item_id
-
-
-@given('the keychain has a given number of items')
-def step_impl(context):
-    context.number_of_items = len(glob(os.path.join(_get_keychain_path(), 'data', 'default', '*.1password')))
-
-
-@when('I request all items from the keychain')
-def step_impl(context):
-    context.items = context.keychain.all_items()
-
-
-@then('I should get a collection with the right number of items')
-def step_impl(context):
-    assert type(context.items) is ItemCollection
-    assert len(context.items) is context.number_of_items
 
 
 @when('I lock the keychain')
