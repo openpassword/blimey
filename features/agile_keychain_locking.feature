@@ -1,8 +1,7 @@
-Feature:
-  In order to have a secure keychain
+Feature: Locking and Unlocking a keychain
+  So that I can control access to my keychain
   As an API user
-  I want to be able to lock and unlock a keychain
-  So I can make sure secret data is available only when authorised
+  I want to be able to lock and unlock my keychain at will
 
 Scenario: Unlocking a keychain
   Given I have a locked keychain
