@@ -1,0 +1,2 @@
+class NonInitialisedKeychainException(Exception):
+    pass

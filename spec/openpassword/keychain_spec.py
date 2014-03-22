@@ -2,6 +2,7 @@ from nose.tools import *
 import nose
 
 from openpassword._keychain import Keychain
+from openpassword.exceptions import NonInitialisedKeychainException
 from spec.openpassword.fudge_wrapper import getMock
 
 
@@ -31,3 +32,9 @@ class KeychainSpec:
 
         keychain.lock()
         eq_(keychain.is_locked(), True)
+
+    @raises(NonInitialisedKeychainException)
+    def it_raises_NonInitialisedKeychainException_when_unlocking_uninitialized_keychain(self):
+        keychain = Keychain()
+        keychain.initialised = False
+        keychain.unlock("somepassword")
