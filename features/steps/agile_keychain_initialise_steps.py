@@ -1,7 +1,7 @@
 import os
 from subprocess import call
 import openpassword
-from openpassword.exceptions import NonInitialisedKeychainException
+from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
 
 
 @given('I have an non-initialised keychain')
@@ -66,3 +66,22 @@ def step_impl(context):
 @then('It should be reported as initialised')
 def step_impl(context):
     assert context.keychain_initialisations_state is True
+
+
+@given('I have an initialised keychain')
+def step_impl(context):
+    context.keychain = openpassword.AgileKeychain(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
+
+
+@when('I try to initialise it')
+def step_impl(context):
+    context.initialisation_failed = False
+    try:
+        context.keychain.initialise("somepassword")
+    except KeychainAlreadyInitialisedException:
+        context.initialisation_failed = True
+
+
+@then('I should get a KeychainAlreadyInitialisedException')
+def step_impl(context):
+    assert context.initialisation_failed is True

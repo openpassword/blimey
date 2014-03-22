@@ -1,4 +1,4 @@
-from openpassword.exceptions import NonInitialisedKeychainException
+from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
 
 
 class Keychain(object):
@@ -20,6 +20,9 @@ class Keychain(object):
         return self.locked
 
     def initialise(self, password):
+        if self.initialised is True:
+            raise KeychainAlreadyInitialisedException
+
         self._data_source.initialise()
         self.initialised = True
 

@@ -4,7 +4,7 @@ import nose
 
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
-from openpassword.exceptions import NonInitialisedKeychainException
+from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
 from spec.openpassword.fudge_wrapper import getMock
 
 
@@ -78,6 +78,11 @@ class KeychainSpec:
 
         keychain = Keychain(data_source)
         eq_(keychain.is_initialised(), False)
+
+    @raises(KeychainAlreadyInitialisedException)
+    def it_throws_KeychainAlreadyInitialisedException_if_I_initialise_an_already_initialised_keychain(self):
+        keychain = self._get_simple_keychain()
+        keychain.initialise("somepassword")
 
     def _get_non_initialised_keychain(self):
         keychain = self._get_simple_keychain()

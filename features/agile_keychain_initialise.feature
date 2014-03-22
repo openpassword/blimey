@@ -18,7 +18,6 @@ Feature: Initialise keychain
     When I check it initialisation status
     Then It should be reported as initialised
 
-  @wip
   Scenario: Attempting to initialise an already initialised keychain
     Given I have an initialised keychain
     When I try to initialise it
