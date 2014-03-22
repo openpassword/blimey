@@ -2,10 +2,11 @@ from openpassword.exceptions import NonInitialisedKeychainException
 
 
 class Keychain(object):
-    def __init__(self):
+    def __init__(self, data_source):
         self.locked = True
-        self.initialised = True  # Generic keychain doesn't need initialisation
         self._items = []
+        self._data_source = data_source
+        self.initialised = self._data_source.keychain_is_already_initialised()
 
     def unlock(self, password):
         if not self.initialised:
@@ -17,6 +18,13 @@ class Keychain(object):
 
     def is_locked(self):
         return self.locked
+
+    def initialise(self, password):
+        self._data_source.initialise()
+        self.initialised = True
+
+    def is_initialised(self):
+        return self.initialised
 
     def __iter__(self):
         return iter(self._items)

@@ -9,11 +9,16 @@ Feature: Initialise keychain
     Then I should get a NonInitialisedKeychainException
 
   Scenario: Initialising a keychain
-    Given I have a non-initialised keychain
+    Given I have a non-initialised keychain in "keychainpath"
     When I initialise it using "mypassword"
     Then the agile keychain folder structure is created
-    And an encryption key is encrypted using the given password
 
+  Scenario: Already Initialised keychain
+    Given I have a keychain that is already initialised
+    When I check it initialisation status
+    Then It should be reported as initialised
+
+  @wip
   Scenario: Attempting to initialise an already initialised keychain
     Given I have an initialised keychain
     When I try to initialise it

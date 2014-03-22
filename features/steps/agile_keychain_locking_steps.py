@@ -56,5 +56,4 @@ def _get_keychain():
 
 
 def _get_keychain_path():
-    current_path = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(current_path, '..', '..', 'tests', 'fixtures', 'test.agilekeychain')
+    return os.path.join('tests', 'fixtures', 'test.agilekeychain')
