@@ -2,7 +2,6 @@ import os
 from nose.tools import *
 import shutil
 from openpassword import AgileKeychain
-from subprocess import call
 
 
 class AgileKeychainTest:

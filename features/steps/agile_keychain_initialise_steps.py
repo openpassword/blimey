@@ -1,5 +1,5 @@
+from behave import given, when, then, step
 import os
-from subprocess import call
 import openpassword
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
 
@@ -26,7 +26,7 @@ def step_impl(context):
 @given('I have a non-initialised keychain in "{somepath}"')
 def step_impl(context, somepath):
     context.keychain = openpassword.AgileKeychain(somepath)
-    context.path = somepath
+    context.new_keychain_path = somepath
 
 
 @when('I initialise it using "{password}"')
@@ -36,9 +36,10 @@ def step_impl(context, password):
 
 @then('the agile keychain folder structure is created')
 def step_impl(context):
-        assert os.path.exists(context.path) and os.path.isdir(context.path)
+        context.remove_path = context.new_keychain_path
+        assert os.path.exists(context.new_keychain_path) and os.path.isdir(context.new_keychain_path)
 
-        data_default_dir = os.path.join(context.path, "data", "default")
+        data_default_dir = os.path.join(context.new_keychain_path, "data", "default")
         assert os.path.exists(data_default_dir) and os.path.isdir(data_default_dir)
 
         keys_file = os.path.join(data_default_dir, '1password.keys')
@@ -49,8 +50,6 @@ def step_impl(context):
 
         encryption_keys_file = os.path.join(data_default_dir, 'encryptionKeys.js')
         assert os.path.exists(encryption_keys_file) and os.path.isfile(encryption_keys_file)
-
-        call(['rm', '-fr', context.path])
 
 
 @given('I have a keychain that is already initialised')

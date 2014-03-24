@@ -1,6 +1,5 @@
 import fudge
 from nose.tools import *
-import nose
 
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
