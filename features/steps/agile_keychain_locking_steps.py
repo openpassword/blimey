@@ -21,7 +21,7 @@ def step_impl(context):
     assert context.keychain.is_locked() is False
 
 
-@then('I will be able to see it\'s contents')
+@then('I will be able to see its contents')
 def step_impl(context):
     try:
         items = list(context.keychain)
@@ -56,5 +56,4 @@ def _get_keychain():
 
 
 def _get_keychain_path():
-    current_path = os.path.dirname(os.path.realpath(__file__))
-    return os.path.join(current_path, '..', '..', 'tests', 'fixtures', 'test.agilekeychain')
+    return os.path.join('tests', 'fixtures', 'test.agilekeychain')
