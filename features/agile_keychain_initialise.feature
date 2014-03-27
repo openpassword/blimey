@@ -13,7 +13,7 @@ Feature: Initialise keychain
     When I initialise it using "mypassword"
     Then the agile keychain folder structure is created
 
-  Scenario: Already Initialised keychain
+  Scenario: Checking status of an initialised keychain
     Given I have a keychain that is already initialised
     When I check it initialisation status
     Then It should be reported as initialised
