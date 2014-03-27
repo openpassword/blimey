@@ -7,7 +7,7 @@ Scenario: Unlocking a keychain
   Given I have a locked keychain
   When I unlock it
   Then it will become unlocked
-  And I will be able to see it's contents
+  And I will be able to see its contents
 
 Scenario: Locking a keychain
   Given I have an unlocked keychain

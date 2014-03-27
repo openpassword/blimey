@@ -57,12 +57,12 @@ def step_impl(context):
     context.keychain = openpassword.AgileKeychain(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
 
 
-@when('I check it initialisation status')
+@when('I check its initialisation status')
 def step_impl(context):
     context.keychain_initialisations_state = context.keychain.is_initialised()
 
 
-@then('It should be reported as initialised')
+@then('It should report it as initialised')
 def step_impl(context):
     assert context.keychain_initialisations_state is True
 
@@ -84,3 +84,13 @@ def step_impl(context):
 @then('I should get a KeychainAlreadyInitialisedException')
 def step_impl(context):
     assert context.initialisation_failed is True
+
+
+@given('I have a keychain that is not initialised')
+def step_impl(context):
+    context.keychain = openpassword.AgileKeychain('path_to_non_initialised_keychain')
+
+
+@then('It should report it as not initialised')
+def step_impl(context):
+    assert context.keychain.is_initialised() is False

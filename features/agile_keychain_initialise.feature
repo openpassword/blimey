@@ -15,8 +15,13 @@ Feature: Initialise keychain
 
   Scenario: Checking status of an initialised keychain
     Given I have a keychain that is already initialised
-    When I check it initialisation status
-    Then It should be reported as initialised
+    When I check its initialisation status
+    Then It should report it as initialised
+
+  Scenario: Checking status of a non initialised keychain
+    Given I have a keychain that is not initialised
+    When I check its initialisation status
+    Then It should report it as not initialised
 
   Scenario: Attempting to initialise an already initialised keychain
     Given I have an initialised keychain
