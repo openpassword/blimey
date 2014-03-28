@@ -1,10 +1,9 @@
-import fudge
+from mock import patch
 from nose.tools import *
 
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
-from spec.openpassword.fudge_wrapper import getMock
 
 
 class KeychainSpec:
@@ -48,32 +47,20 @@ class KeychainSpec:
         keychain = self._get_non_initialised_keychain()
         eq_(keychain.is_initialised(), False)
 
-    def it_delegates_initialisation_to_the_data_source(self):
-        fudge.clear_expectations()
-
-        data_source = getMock(DataSource)
-        data_source.provides("keychain_is_already_initialised")
-        data_source.expects("initialise")
-
+    @patch.object(DataSource, "initialise")
+    def it_delegates_initialisation_to_the_data_source(self, data_source):
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
-        fudge.verify()
+        assert data_source.initialise.called is True
 
     def it_is_created_initialised_for_an_initialised_data_source(self):
-        fudge.clear_expectations()
-
-        data_source = getMock(DataSource)
-        data_source.provides("keychain_is_already_initialised").returns(True)
-
-        keychain = Keychain(data_source)
+        keychain = self._get_simple_keychain()
         eq_(keychain.is_initialised(), True)
 
-    def it_is_created_non_initialised_for_a_non_initialised_data_source(self):
-        fudge.clear_expectations()
-
-        data_source = getMock(DataSource)
-        data_source.provides("keychain_is_already_initialised").returns(False)
+    @patch.object(DataSource, 'keychain_is_already_initialised')
+    def it_is_created_non_initialised_for_a_non_initialised_data_source(self, data_source):
+        data_source.keychain_is_already_initialised.return_value = False
 
         keychain = Keychain(data_source)
         eq_(keychain.is_initialised(), False)
@@ -88,8 +75,8 @@ class KeychainSpec:
         keychain.initialised = False
         return keychain
 
-    def _get_simple_keychain(self):
-        data_source = getMock(DataSource)
-        data_source.provides("initialise")
-        data_source.provides("keychain_is_already_initialised").returns(True)
+    @patch.object(DataSource, 'keychain_is_already_initialised')
+    def _get_simple_keychain(self, data_source):
+        data_source.keychain_is_already_initialised.return_value = True
+
         return Keychain(data_source)
