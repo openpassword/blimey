@@ -1,4 +1,5 @@
 spec
-fudge
+nose
+mock
 pep8
 behave
