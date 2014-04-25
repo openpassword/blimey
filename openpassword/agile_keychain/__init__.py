@@ -1,1 +1,2 @@
 from openpassword.agile_keychain.data_source import DataSource
+from openpassword.agile_keychain.id_generator import IdGenerator

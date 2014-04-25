@@ -2,11 +2,12 @@ from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlr
 
 
 class Keychain(object):
-    def __init__(self, data_source):
+    def __init__(self, data_source, id_generator):
         self.locked = True
-        self._items = []
+        self._items = {}
         self._data_source = data_source
-        self.initialised = self._data_source.keychain_is_already_initialised()
+        self._id_generator = id_generator
+        self.initialised = self._data_source.is_keychain_initialised()
 
     def unlock(self, password):
         if not self.initialised:
@@ -28,6 +29,12 @@ class Keychain(object):
 
     def is_initialised(self):
         return self.initialised
+
+    def append(self, value):
+        self._items[self._id_generator.generate_id()] = value
+
+    def __contains__(self, item):
+        return item in self._items.values()
 
     def __iter__(self):
         return iter(self._items)

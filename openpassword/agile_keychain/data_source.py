@@ -15,7 +15,7 @@ class DataSource(abstract.DataSource):
         for f in KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, f), "w+").close()
 
-    def keychain_is_already_initialised(self):
+    def is_keychain_initialised(self):
         is_initialised = True
         for f in KEYCHAIN_BASE_FILES:
             current_file = os.path.join(self._default_folder, f)
