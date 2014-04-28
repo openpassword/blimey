@@ -36,3 +36,12 @@ class AgileKeychainTest:
     def it_is_created_non_initialised_with_path_to_non_existing_keychain(self):
         agile_keychain = AgileKeychain("nonexistingfolder")
         eq_(agile_keychain.is_initialised(), False)
+
+    def it_creates_new_items_on_the_keychain(self):
+        agile_keychain = AgileKeychain(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
+        agile_keychain.append({'id': '79cd94b00ab34d209d62e487e77965a5'})
+
+        assert os.path.exists(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
+                                           '79cd94b00ab34d209d62e487e77965a5.1password')) is True
+        os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
+                               '79cd94b00ab34d209d62e487e77965a5.1password'))

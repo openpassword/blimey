@@ -22,3 +22,8 @@ class DataSource(abstract.DataSource):
             is_initialised = is_initialised and (os.path.exists(current_file) and os.path.isfile(current_file))
 
         return is_initialised and (os.path.exists(self._default_folder) and os.path.isdir(self._default_folder))
+
+    def add_item(self, item):
+        file_handler = open(os.path.join(self._default_folder, "{0}.1password".format(item['id'])), "w")
+        file_handler.write(str(item))
+        file_handler.close()

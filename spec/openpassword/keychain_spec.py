@@ -3,7 +3,6 @@ from nose.tools import *
 
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
-from openpassword.abstract import IdGenerator
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
 
 
@@ -49,23 +48,28 @@ class KeychainSpec:
         eq_(keychain.is_initialised(), False)
 
     @patch.object(DataSource, "initialise")
-    @patch.object(IdGenerator, "generate_id")
-    def it_delegates_initialisation_to_the_data_source(self, data_source, id_generator):
-        keychain = Keychain(data_source, id_generator)
+    def it_delegates_initialisation_to_the_data_source(self, data_source):
+        keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
         assert data_source.initialise.called is True
+
+    @patch.object(DataSource, "add_item")
+    def it_delegates_item_creation_to_the_data_source(self, data_source):
+        keychain = Keychain(data_source)
+        keychain.append({"id": "someitem_id"})
+
+        assert data_source.add_item.called is True
 
     def it_is_created_initialised_for_an_initialised_data_source(self):
         keychain = self._get_simple_keychain()
         eq_(keychain.is_initialised(), True)
 
     @patch.object(DataSource, 'is_keychain_initialised')
-    @patch.object(IdGenerator, "generate_id")
-    def it_is_created_non_initialised_for_a_non_initialised_data_source(self, data_source, id_generator):
+    def it_is_created_non_initialised_for_a_non_initialised_data_source(self, data_source):
         data_source.is_keychain_initialised.return_value = False
 
-        keychain = Keychain(data_source, id_generator)
+        keychain = Keychain(data_source)
         eq_(keychain.is_initialised(), False)
 
     @raises(KeychainAlreadyInitialisedException)
@@ -73,10 +77,17 @@ class KeychainSpec:
         keychain = self._get_simple_keychain()
         keychain.initialise("somepassword")
 
+    def it_adds_the_item_to_the_keychain_with_the_item_id_as_key(self):
+        keychain = self._get_simple_keychain()
+        item = {'id': 'new_item_id'}
+        keychain.append(item)
+        eq_(keychain['new_item_id'], item)
+
     def it_allows_for_items_to_be_appended(self):
         keychain = self._get_simple_keychain()
-        keychain.append("new_item")
-        eq_("new_item" in keychain, True)
+        new_item = {"id": "new_item"}
+        keychain.append(new_item)
+        eq_(new_item in keychain, True)
 
     def _get_non_initialised_keychain(self):
         keychain = self._get_simple_keychain()
@@ -84,9 +95,7 @@ class KeychainSpec:
         return keychain
 
     @patch.object(DataSource, 'is_keychain_initialised')
-    @patch.object(IdGenerator, 'generate_id')
-    def _get_simple_keychain(self, data_source, id_generator):
+    def _get_simple_keychain(self, data_source):
         data_source.is_keychain_initialised.return_value = True
-        id_generator.generate_id.return_value = 'ABCDEF1234567890ABCDEF1234567890A'
 
-        return Keychain(data_source, id_generator)
+        return Keychain(data_source)
