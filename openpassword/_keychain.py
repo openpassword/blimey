@@ -1,4 +1,5 @@
-from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
+from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
+    MissingIdAttributeException
 
 
 class Keychain(object):
@@ -30,8 +31,11 @@ class Keychain(object):
         return self.initialised
 
     def append(self, item):
-        self._data_source.add_item(item)
+        if 'id' not in item:
+            raise MissingIdAttributeException
+
         self._items[item['id']] = item
+        self._data_source.add_item(item)
 
     def __getitem__(self, item_key):
         return self._items[item_key]

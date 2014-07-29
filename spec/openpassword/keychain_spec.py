@@ -3,7 +3,8 @@ from nose.tools import *
 
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
-from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
+from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
+    MissingIdAttributeException
 
 
 class KeychainSpec:
@@ -88,6 +89,12 @@ class KeychainSpec:
         new_item = {"id": "new_item"}
         keychain.append(new_item)
         eq_(new_item in keychain, True)
+
+    @raises(MissingIdAttributeException)
+    def it_throws_an_missingidattributeexception_when_id_attribute_is_missing_from_item(self):
+        keychain = self._get_simple_keychain()
+        new_item = {}
+        keychain.append(new_item)
 
     def _get_non_initialised_keychain(self):
         keychain = self._get_simple_keychain()

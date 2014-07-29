@@ -1,4 +1,5 @@
 import os
+from openpassword.exceptions import MissingIdAttributeException
 
 
 @when('I append new data to the keychain')
@@ -21,3 +22,25 @@ def step_impl(context):
     assert("some random non secret stuff" in item_file.read())
     item_file.close()
     os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default', file_name))
+
+
+@when('I append data missing a usable id')
+def step_impl(context):
+    context.exception_was_raised = False
+
+    item = {
+        'username': 'me',
+        'password': 'my_awesome_password',
+        'no_secret_data': 'some random non secret stuff'
+    }
+
+    try:
+        context.keychain.append(item)
+    except MissingIdAttributeException:
+        context.exception_was_raised = True
+
+
+@then('a MissingIdAttributeException should be raised')
+def step_impl(context):
+    if not context.exception_was_raised:
+        assert False
