@@ -1,14 +1,14 @@
-Feature: Add credentials to an agile keychain via API
-  So that I can store my passwords
+Feature: Add an item to an agile keychain via API
+  So that I can store my secrets
   As an API user
-  I must be able to add credentials to the keychain
+  I must be able to add items to the keychain
 
-  Scenario: Adding website credentials to the keychain
+  Scenario: Adding a password to the keychain
     Given I have an initialised keychain
-    When I append new data to the keychain
-    Then that data should be stored in the agile keychain file structure
+    When I append a new password to the keychain
+    Then that password should be stored in the agile keychain file structure
 
-  Scenario: Adding credentials without an id attribute fails
+  Scenario: Adding an item without an id attribute fails
     Given I have an initialised keychain
-    When I append data missing a usable id
+    When I append an item missing a usable id
     Then a MissingIdAttributeException should be raised

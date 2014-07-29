@@ -2,7 +2,7 @@ import os
 from openpassword.exceptions import MissingIdAttributeException
 
 
-@when('I append new data to the keychain')
+@when('I append a new password to the keychain')
 def step_impl(context):
     context.item_id = '39da7e8b5f0d4f83898e247055dd9ea4'
     item = {
@@ -15,7 +15,7 @@ def step_impl(context):
     context.keychain.append(item)
 
 
-@then('that data should be stored in the agile keychain file structure')
+@then('that password should be stored in the agile keychain file structure')
 def step_impl(context):
     file_name = "{0}.1password".format(context.item_id)
     item_file = open(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default', file_name), "r")
@@ -24,7 +24,7 @@ def step_impl(context):
     os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default', file_name))
 
 
-@when('I append data missing a usable id')
+@when('I append an item missing a usable id')
 def step_impl(context):
     context.exception_was_raised = False
 
