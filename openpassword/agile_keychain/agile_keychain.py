@@ -1,10 +1,7 @@
-from openpassword import Keychain
-from openpassword.agile_keychain.encryption_key_repository import EncryptionKeyRepository
-from openpassword.agile_keychain.keychain_item_repository import KeychainItemRepository
+from openpassword._keychain import Keychain
+from openpassword.agile_keychain import DataSource
 
 
 class AgileKeychain(Keychain):
     def __init__(self, path):
-        key_repository = EncryptionKeyRepository(path)
-        item_repository = KeychainItemRepository(path)
-        super(AgileKeychain, self).__init__(key_repository, item_repository)
+        super(AgileKeychain, self).__init__(DataSource(path))

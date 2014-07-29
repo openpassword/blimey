@@ -1,6 +1,5 @@
 spec
-fudge
+nose
+mock
 pep8
-pbkdf2
-pycrypto
 behave

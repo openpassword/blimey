@@ -1,22 +1,10 @@
-class InvalidPasswordException(Exception):
+class NonInitialisedKeychainException(Exception):
     pass
 
 
-class InvalidPathException(Exception):
+class KeychainAlreadyInitialisedException(Exception):
     pass
 
 
-class KeychainLockedException(Exception):
-    pass
-
-
-class EncryptionKeyNotFoundException(Exception):
-    pass
-
-
-class InvalidMetadataException(Exception):
-    pass
-
-
-class DecryptionException(Exception):
+class MissingIdAttributeException(Exception):
     pass
