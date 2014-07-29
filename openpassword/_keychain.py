@@ -1,12 +1,13 @@
-from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
+from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
+    MissingIdAttributeException
 
 
 class Keychain(object):
     def __init__(self, data_source):
         self.locked = True
-        self._items = []
+        self._items = {}
         self._data_source = data_source
-        self.initialised = self._data_source.keychain_is_already_initialised()
+        self.initialised = self._data_source.is_keychain_initialised()
 
     def unlock(self, password):
         if not self.initialised:
@@ -28,6 +29,19 @@ class Keychain(object):
 
     def is_initialised(self):
         return self.initialised
+
+    def append(self, item):
+        if 'id' not in item:
+            raise MissingIdAttributeException
+
+        self._items[item['id']] = item
+        self._data_source.add_item(item)
+
+    def __getitem__(self, item_key):
+        return self._items[item_key]
+
+    def __contains__(self, item):
+        return item in self._items.values()
 
     def __iter__(self):
         return iter(self._items)

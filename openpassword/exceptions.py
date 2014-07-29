@@ -4,3 +4,7 @@ class NonInitialisedKeychainException(Exception):
 
 class KeychainAlreadyInitialisedException(Exception):
     pass
+
+
+class MissingIdAttributeException(Exception):
+    pass
