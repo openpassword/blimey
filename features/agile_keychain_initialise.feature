@@ -1,4 +1,4 @@
-Feature: Initialise keychain
+Feature: Initialise a keychain
   So that I can have a keychain to store my passwords
   As an API user
   I must be able to initialise a new keychain

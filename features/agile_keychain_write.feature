@@ -1,4 +1,4 @@
-Feature: API user adds credentials to an agile keychain
+Feature: Add credentials to an agile keychain via API
   So that I can store my passwords
   As an API user
   I must be able to add credentials to the keychain

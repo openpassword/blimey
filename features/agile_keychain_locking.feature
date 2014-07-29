@@ -1,4 +1,4 @@
-Feature: Locking and Unlocking a keychain
+Feature: Lock and Unlock a keychain
   So that I can control access to my keychain
   As an API user
   I want to be able to lock and unlock my keychain at will
