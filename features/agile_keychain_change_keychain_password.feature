@@ -1,7 +1,7 @@
 Feature: Change keychain password
   So that I can keep my keychain secured
   As an API user
-  I must be able to change the keychain password
+  I want to be able to change the keychain password
 
   Scenario: Changing keychain password
     Given I have a keychain initialised with "oldpassword"

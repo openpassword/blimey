@@ -37,7 +37,7 @@ class DataSource(abstract.DataSource):
         return password_found
 
     def set_password(self, password):
-        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w+")
+        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w")
         file_handle.write(password)
         file_handle.close()
 
