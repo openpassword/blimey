@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
-behave | grep -e "^Feature:" | sed s/^Feature:/-/
+behave -d | grep -e "^Feature:" | sed s/^Feature:/-/
 echo ""
 
