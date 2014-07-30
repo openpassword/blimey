@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 from nose.tools import *
 
 from openpassword._keychain import Keychain

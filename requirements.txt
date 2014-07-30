@@ -1,5 +1,4 @@
 spec
 nose
-mock
 pep8
 behave
