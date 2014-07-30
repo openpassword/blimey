@@ -8,3 +8,7 @@ class KeychainAlreadyInitialisedException(Exception):
 
 class MissingIdAttributeException(Exception):
     pass
+
+
+class IncorrectPasswordException(Exception):
+    pass

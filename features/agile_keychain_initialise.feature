@@ -4,24 +4,25 @@ Feature: Initialise a keychain
   I must be able to initialise a new keychain
 
   Scenario: Attempting to unlock a non-initialised keychain
-    Given I have an non-initialised keychain
+    Given I have a non-initialised keychain
     When I try to unlock it
     Then I should get a NonInitialisedKeychainException
 
   Scenario: Initialising a keychain
-    Given I have a non-initialised keychain in "keychainpath"
+    Given I have a non-initialised keychain
     When I initialise it using "mypassword"
-    Then the agile keychain folder structure is created
+    Then the agile keychain folder structure should be created
+    And I should be able to unlock the agile keychain with "mypassword"
 
   Scenario: Checking status of an initialised keychain
-    Given I have a keychain that is already initialised
+    Given I have an initialised keychain
     When I check its initialisation status
-    Then It should report it as initialised
+    Then it should be initialised
 
   Scenario: Checking status of a non initialised keychain
-    Given I have a keychain that is not initialised
+    Given I have a non-initialised keychain
     When I check its initialisation status
-    Then It should report it as not initialised
+    Then it should not be initialised
 
   Scenario: Attempting to initialise an already initialised keychain
     Given I have an initialised keychain

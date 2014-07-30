@@ -14,3 +14,7 @@ class DataSource(metaclass=ABCMeta):
     @abstractmethod
     def add_item(self, item):
         return NotImplemented
+
+    @abstractmethod
+    def verify_password(self, password):
+        return NotImplemented
