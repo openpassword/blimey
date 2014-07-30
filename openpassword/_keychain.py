@@ -1,5 +1,5 @@
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    MissingIdAttributeException
+    MissingIdAttributeException, IncorrectPasswordException
 
 
 class Keychain(object):
@@ -12,6 +12,10 @@ class Keychain(object):
     def unlock(self, password):
         if not self.initialised:
             raise NonInitialisedKeychainException
+
+        if self._data_source.verify_password(password) is False:
+            raise IncorrectPasswordException
+
         self.locked = False
 
     def lock(self):
@@ -24,7 +28,7 @@ class Keychain(object):
         if self.initialised is True:
             raise KeychainAlreadyInitialisedException
 
-        self._data_source.initialise()
+        self._data_source.initialise(password)
         self.initialised = True
 
     def is_initialised(self):

@@ -10,19 +10,34 @@ class DataSource(abstract.DataSource):
         self.base_path = path
         self._default_folder = os.path.join(self.base_path, "data", "default")
 
-    def initialise(self):
+    def initialise(self, password):
         os.makedirs(self._default_folder)
 
         for f in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, f), "w+").close()
 
+        # Intermediary solution before encryption is implemented
+        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w+")
+        file_handle.write(password)
+        file_handle.close()
+
     def is_keychain_initialised(self):
         return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
 
     def add_item(self, item):
-        file_handler = open(os.path.join(self._default_folder, "{0}.1password".format(item['id'])), "w")
-        json.dump(item, file_handler)
-        file_handler.close()
+        file_handle = open(os.path.join(self._default_folder, "{0}.1password".format(item['id'])), "w")
+        json.dump(item, file_handle)
+        file_handle.close()
+
+    def verify_password(self, password):
+        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "r")
+        password_found = False
+
+        if password in file_handle.read():
+            password_found = True
+
+        file_handle.close()
+        return password_found
 
     def _validate_agile_keychain_base_files(self):
         is_initialised = True
