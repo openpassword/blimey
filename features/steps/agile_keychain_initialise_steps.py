@@ -49,7 +49,7 @@ def step_impl(context):
         context.initialisation_failed = True
 
 
-@then('I should get a NonInitialisedKeychainException')
+@then('a NonInitialisedKeychainException should be raised')
 def step_impl(context):
     assert context.lock_failed is True
 
@@ -86,6 +86,6 @@ def step_impl(context):
     assert context.keychain.is_initialised() is False
 
 
-@then('I should get a KeychainAlreadyInitialisedException')
+@then('a KeychainAlreadyInitialisedException should be raised')
 def step_impl(context):
     assert context.initialisation_failed is True

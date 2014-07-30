@@ -6,7 +6,7 @@ Feature: Initialise a keychain
   Scenario: Attempting to unlock a non-initialised keychain
     Given I have a non-initialised keychain
     When I try to unlock it
-    Then I should get a NonInitialisedKeychainException
+    Then a NonInitialisedKeychainException should be raised
 
   Scenario: Initialising a keychain
     Given I have a non-initialised keychain
@@ -27,4 +27,4 @@ Feature: Initialise a keychain
   Scenario: Attempting to initialise an already initialised keychain
     Given I have an initialised keychain
     When I try to initialise it
-    Then I should get a KeychainAlreadyInitialisedException
+    Then a KeychainAlreadyInitialisedException should be raised
