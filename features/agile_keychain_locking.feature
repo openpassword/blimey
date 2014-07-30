@@ -6,8 +6,8 @@ Feature: Lock and Unlock a keychain
 Scenario: Unlocking a keychain
   Given I have a locked keychain
   When I unlock it
-  Then it will become unlocked
-  And I will be able to see its contents
+  Then it should become unlocked
+  And I should be able to see its contents
 
 Scenario: Failing to unlock a keychain
   Given I have a locked keychain
@@ -17,4 +17,4 @@ Scenario: Failing to unlock a keychain
 Scenario: Locking a keychain
   Given I have an unlocked keychain
   When I lock it
-  Then it will become locked
+  Then it should become locked

@@ -37,17 +37,17 @@ def step_impl(context):
         context.exception_was_raised = True
 
 
-@then('it will become locked')
+@then('it should become locked')
 def step_impl(context):
     assert context.keychain.is_locked() is True
 
 
-@then('it will become unlocked')
+@then('it should become unlocked')
 def step_impl(context):
     assert context.keychain.is_locked() is False
 
 
-@then('I will be able to see its contents')
+@then('I should be able to see its contents')
 def step_impl(context):
     try:
         items = list(context.keychain)
