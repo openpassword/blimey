@@ -5,7 +5,7 @@ from openpassword.agile_keychain import DataSource
 
 
 class AgileKeychainDataSourceTest:
-    _temporary_path = "somefolder"
+    _temporary_path = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
     _password = "somepassword"
 
     def it_creates_agile_keychain_folder_structure_on_initialisation(self):
@@ -37,6 +37,16 @@ class AgileKeychainDataSourceTest:
     def it_verifies_password(self):
         self._initialise_data_source()
         assert self._data_source.verify_password(self._password)
+
+    def it_sets_password(self):
+        self._initialise_data_source()
+        self._data_source.set_password("newpassword")
+
+        data_default_dir = os.path.join(self._temporary_path, "data", "default")
+        encryption_keys_file = open(os.path.join(data_default_dir, 'encryptionKeys.js'), "r")
+
+        assert "newpassword" in encryption_keys_file.read()
+        encryption_keys_file.close()
 
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)

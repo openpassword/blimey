@@ -4,7 +4,7 @@ from nose.tools import *
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    MissingIdAttributeException, IncorrectPasswordException
+    MissingIdAttributeException, IncorrectPasswordException, KeychainLockedException
 
 
 class KeychainSpec:
@@ -103,6 +103,21 @@ class KeychainSpec:
         keychain = self._get_simple_keychain()
         new_item = {}
         keychain.append(new_item)
+
+    @raises(KeychainLockedException)
+    def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self):
+        keychain = self._get_simple_keychain()
+        keychain.set_password("foobar")
+
+    @patch("openpassword.abstract.DataSource")
+    def it_changes_password(self, data_source_class):
+        data_source = data_source_class.return_value
+        data_source.verify_password.return_value = True
+        data_source.set_password.return_value = None
+
+        keychain = Keychain(data_source)
+        keychain.unlock("password")
+        keychain.set_password("foobar")
 
     def _get_non_initialised_keychain(self):
         keychain = self._get_simple_keychain()
