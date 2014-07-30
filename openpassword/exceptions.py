@@ -12,3 +12,7 @@ class MissingIdAttributeException(Exception):
 
 class IncorrectPasswordException(Exception):
     pass
+
+
+class KeychainLockedException(Exception):
+    pass

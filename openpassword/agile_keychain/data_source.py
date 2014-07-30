@@ -16,10 +16,7 @@ class DataSource(abstract.DataSource):
         for f in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, f), "w+").close()
 
-        # Intermediary solution before encryption is implemented
-        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w+")
-        file_handle.write(password)
-        file_handle.close()
+        self.set_password(password)
 
     def is_keychain_initialised(self):
         return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
@@ -38,6 +35,11 @@ class DataSource(abstract.DataSource):
 
         file_handle.close()
         return password_found
+
+    def set_password(self, password):
+        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w")
+        file_handle.write(password)
+        file_handle.close()
 
     def _validate_agile_keychain_base_files(self):
         is_initialised = True
