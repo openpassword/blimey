@@ -2,3 +2,4 @@ spec
 nose
 pep8
 behave
+coverage

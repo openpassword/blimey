@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 echo "### Specs" && \
 nosetests spec && \
+# mv .coverage .coverage.spec && \
 echo "### Integration tests" && \
 nosetests tests/integration && \
+# mv .coverage .coverage.integration && \
 echo "### Acceptance tests" && \
 behave && \
-pep8
+pep8 && \
+coverage combine && \
+coverage report
