@@ -10,26 +10,16 @@ class AgileKeychainDataSourceTest:
 
     def it_creates_agile_keychain_folder_structure_on_initialisation(self):
         self._initialise_data_source()
-
-        assert self.exists_and_is_dir(self._temporary_path)
-
-        data_default_dir = os.path.join(self._temporary_path, "data", "default")
-        assert self.exists_and_is_dir(data_default_dir)
-
-        keys_file = os.path.join(data_default_dir, '1password.keys')
-        assert self.exists_and_is_file(keys_file)
-
-        contents_file = os.path.join(data_default_dir, 'contents.js')
-        assert self.exists_and_is_file(contents_file)
-
-        encryption_keys_file = os.path.join(data_default_dir, 'encryptionKeys.js')
-        assert self.exists_and_is_file(encryption_keys_file)
+        self._check_keychain_dir()
+        self._check_data_default_dir()
+        self._check_keys_file()
+        self._check_contents_file()
+        self._check_encryption_keys_file()
 
     def it_stores_password_on_initialisation(self):
         self._initialise_data_source()
 
-        data_default_dir = os.path.join(self._temporary_path, "data", "default")
-        encryption_keys_file = open(os.path.join(data_default_dir, 'encryptionKeys.js'), "r")
+        encryption_keys_file = open(os.path.join(self._get_data_default_dir(), 'encryptionKeys.js'), "r")
 
         assert self._password in encryption_keys_file.read()
         encryption_keys_file.close()
@@ -42,19 +32,10 @@ class AgileKeychainDataSourceTest:
         self._initialise_data_source()
         self._data_source.set_password("newpassword")
 
-        data_default_dir = os.path.join(self._temporary_path, "data", "default")
-        encryption_keys_file = open(os.path.join(data_default_dir, 'encryptionKeys.js'), "r")
+        encryption_keys_file = open(os.path.join(self._get_data_default_dir(), 'encryptionKeys.js'), "r")
 
         assert "newpassword" in encryption_keys_file.read()
         encryption_keys_file.close()
-
-    def _initialise_data_source(self):
-        self._data_source = DataSource(self._temporary_path)
-        self._data_source.initialise(self._password)
-        self.teardown = self._path_clean
-
-    def _path_clean(self):
-        shutil.rmtree(self._temporary_path)
 
     def it_is_created_initialised_with_path_to_existing_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
@@ -73,8 +54,37 @@ class AgileKeychainDataSourceTest:
         os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
                                '79cd94b00ab34d209d62e487e77965a5.1password'))
 
-    def exists_and_is_file(self, path):
+    def _initialise_data_source(self):
+        self._data_source = DataSource(self._temporary_path)
+        self._data_source.initialise(self._password)
+        self.teardown = self._path_clean
+
+    def _path_clean(self):
+        shutil.rmtree(self._temporary_path)
+
+    def _get_data_default_dir(self):
+        return os.path.join(self._temporary_path, "data", "default")
+
+    def _check_keychain_dir(self):
+        assert self._exists_and_is_dir(self._temporary_path)
+
+    def _check_data_default_dir(self):
+        assert self._exists_and_is_dir(self._get_data_default_dir())
+
+    def _check_keys_file(self):
+        keys_file = os.path.join(self._get_data_default_dir(), '1password.keys')
+        assert self._exists_and_is_file(keys_file)
+
+    def _check_contents_file(self):
+        contents_file = os.path.join(self._get_data_default_dir(), 'contents.js')
+        assert self._exists_and_is_file(contents_file)
+
+    def _check_encryption_keys_file(self):
+        encryption_keys_file = os.path.join(self._get_data_default_dir(), 'encryptionKeys.js')
+        assert self._exists_and_is_file(encryption_keys_file)
+
+    def _exists_and_is_file(self, path):
         return os.path.exists(path) and os.path.isfile(path)
 
-    def exists_and_is_dir(self, path):
+    def _exists_and_is_dir(self, path):
         return os.path.exists(path) and os.path.isdir(path)
