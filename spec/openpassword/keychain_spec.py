@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from nose.tools import *
+from nose.tools import eq_, raises
 
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
