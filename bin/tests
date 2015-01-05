@@ -15,5 +15,8 @@ behave && \
 
 pep8 && \
 
-coverage combine && \
-coverage report
+coverage combine
+
+if test "$TRAVIS" = "true"; then
+    ocular
+fi

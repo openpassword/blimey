@@ -3,3 +3,4 @@ nose
 pep8
 behave
 coverage
+scrutinizer-ocular
