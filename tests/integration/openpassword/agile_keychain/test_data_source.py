@@ -1,5 +1,5 @@
 import os
-from nose.tools import *
+from nose.tools import eq_
 import shutil
 from openpassword.agile_keychain import DataSource
 

@@ -13,8 +13,8 @@ class DataSource(abstract.DataSource):
     def initialise(self, password):
         os.makedirs(self._default_folder)
 
-        for f in AGILE_KEYCHAIN_BASE_FILES:
-            open(os.path.join(self._default_folder, f), "w+").close()
+        for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
+            open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
 
         self.set_password(password)
 
