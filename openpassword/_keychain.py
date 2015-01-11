@@ -54,4 +54,4 @@ class Keychain(object):
         return item in self._items.values()
 
     def __iter__(self):
-        return iter(self._items)
+        return iter(self._items.values())

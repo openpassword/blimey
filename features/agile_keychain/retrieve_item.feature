@@ -1,1 +1,0 @@
-Feature: Retrieve item from the keychain

@@ -1,1 +1,0 @@
-Feature: Retrieve the list of items from a keychain
