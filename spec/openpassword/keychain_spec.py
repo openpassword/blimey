@@ -98,6 +98,20 @@ class KeychainSpec:
         keychain.append(new_item)
         eq_(new_item in keychain, True)
 
+    def it_iterates_over_items(self):
+        keychain = self._get_simple_keychain()
+        items = [
+            {'id': '123'},
+            {'id': '456'},
+            {'id': '789'}
+        ]
+
+        for item in items:
+            keychain.append(item)
+
+        for item in keychain:
+            assert item in items
+
     @raises(MissingIdAttributeException)
     def it_throws_an_missingidattributeexception_when_id_attribute_is_missing_from_item(self):
         keychain = self._get_simple_keychain()

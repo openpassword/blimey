@@ -54,4 +54,16 @@ class Keychain(object):
         return item in self._items.values()
 
     def __iter__(self):
-        return iter(self._items)
+        return ItemIterator(self._items)
+
+
+class ItemIterator(object):
+    def __init__(self, items):
+        self._items = items
+        self._iterator = iter(self._items)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self._items[self._iterator.__next__()]
