@@ -1,6 +1,12 @@
 import os
 import json
+import plistlib
+from base64 import b64encode
+from pbkdf2 import PBKDF2
 from openpassword import abstract
+from Crypto.Cipher import AES
+from Crypto.Hash import MD5
+from string import Template
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 
@@ -15,6 +21,8 @@ class DataSource(abstract.DataSource):
 
         for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
+
+        self._initialise_key_files(password)
 
         self.set_password(password)
 
@@ -53,3 +61,75 @@ class DataSource(abstract.DataSource):
 
     def _is_valid_folder(self, folder):
         return os.path.exists(folder) and os.path.isdir(folder)
+
+    def _initialise_key_files(self, password):
+        salt = os.urandom(8)
+        master_key = os.urandom(1024)
+
+        pbkdf = PBKDF2(password, salt, 25000)
+        key = pbkdf.read(16)
+        iv = pbkdf.read(16)
+
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        encrypted_master_key = cipher.encrypt(master_key)
+
+        validation_salt = os.urandom(8)
+        validation_key_iv = self._derive_openssl_key(master_key, validation_salt)
+
+        cipher = AES.new(validation_key_iv[0:16], AES.MODE_CBC, validation_key_iv[16:])
+        encrypted_validation_key = cipher.encrypt(master_key)
+
+        data = b64encode(b'Salted__' + salt + encrypted_master_key) + b'\x00'
+        validation = b64encode(b'Salted__' + validation_salt + encrypted_validation_key) + b'\x00'
+
+        keys = {
+            'SL5': '123',
+            'list': [
+                {
+                    'identifier': '123',
+                    'iterations': 25000,
+                    'data': data.decode('ascii'),
+                    'validation': validation.decode('ascii'),
+                    'level': 'SL5'
+                }
+            ]
+        }
+
+        plist_template = Template("""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>$level</key>
+    <string>$identifier</string>
+    <key>list</key>
+    <array>
+        <dict>
+            <key>data</key>
+            <string>$data</string>
+            <key>identifier</key>
+            <string>$identifier</string>
+            <key>iterations</key>
+            <integer>$iterations</integer>
+            <key>level</key>
+            <string>$level</string>
+            <key>validation</key>
+            <string>$validation</string>
+        </dict>
+    </array>
+</dict>
+</plist>
+""")
+
+        file_handle = open(os.path.join(self._default_folder, "1password.keys"), "w")
+        file_handle.write(plist_template.substitute(keys['list'][0]))
+        file_handle.close()
+
+    def _derive_openssl_key(self, key, salt):
+        key = key[0:-16]
+        openssl_key = bytes()
+        prev = bytes()
+        while len(openssl_key) < 32:
+            prev = MD5.new(prev + key + salt).digest()
+            openssl_key += prev
+
+        return openssl_key
