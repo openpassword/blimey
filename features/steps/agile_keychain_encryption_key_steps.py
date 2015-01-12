@@ -1,5 +1,6 @@
 from behave import given, when, then, step
 import os
+import sys
 import openpassword
 import plistlib
 from pbkdf2 import PBKDF2
@@ -41,7 +42,11 @@ def step_impl(context):
 def read_key_object_from_keys_plist_file(path):
     data = open(path, 'rb').read()
     data = remove_null_bytes(data)
-    keys = plistlib.loads(data)
+
+    if sys.version_info < (3, 4, 0):
+        keys = plistlib.readPlistFromBytes(data)
+    else:
+        keys = plistlib.loads(data)
 
     key = extract_default_key(keys)
     key['data'] = b64decode(key['data'])
