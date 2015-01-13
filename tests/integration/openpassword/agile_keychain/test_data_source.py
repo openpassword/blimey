@@ -65,14 +65,10 @@ class AgileKeychainDataSourceTest:
 
         data_default_dir = os.path.join(self._temporary_path, "data", "default")
         keys_file = os.path.join(data_default_dir, '1password.keys')
-        key_object = self._read_key_object_from_keys_plist_file(keys_file)
+        keys = self._read_keys_from_keys_plist_file(keys_file)
 
-        encryption_key = self._decrypt_encryption_key(key_object, self._password)
-        validation_key = self._decrypt_validation_key(key_object, encryption_key)
-
-        assert encryption_key
-        assert validation_key
-        assert validation_key == encryption_key
+        self._verify_keys_for_security_level(keys, 'SL5', self._password)
+        self._verify_keys_for_security_level(keys, 'SL3', self._password)
 
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)
@@ -109,7 +105,7 @@ class AgileKeychainDataSourceTest:
     def _exists_and_is_dir(self, path):
         return os.path.exists(path) and os.path.isdir(path)
 
-    def _read_key_object_from_keys_plist_file(self, path):
+    def _read_keys_from_keys_plist_file(self, path):
         data = open(path, 'rb').read()
         data = self._remove_null_bytes(data)
 
@@ -118,11 +114,16 @@ class AgileKeychainDataSourceTest:
         else:
             keys = plistlib.loads(data)
 
-        key = self._extract_default_key(keys)
-        key['data'] = b64decode(key['data'])
-        key['validation'] = b64decode(key['validation'])
+        return keys
 
-        return key
+    def _verify_keys_for_security_level(self, keys, security_level, password):
+        key_object = self._extract_key(keys, security_level)
+        encryption_key = self._decrypt_encryption_key(key_object, password)
+        validation_key = self._decrypt_validation_key(key_object, encryption_key)
+
+        assert encryption_key
+        assert validation_key
+        assert validation_key == encryption_key
 
     def _remove_null_bytes(self, data):
         result = b''
@@ -138,9 +139,11 @@ class AgileKeychainDataSourceTest:
 
         return result
 
-    def _extract_default_key(self, keys):
+    def _extract_key(self, keys, security_level):
         for key in keys['list']:
-            if key['level'] == 'SL5':
+            if key['level'] == security_level:
+                key['data'] = b64decode(key['data'])
+                key['validation'] = b64decode(key['validation'])
                 return key
 
     def _decrypt_encryption_key(self, key_object, password):

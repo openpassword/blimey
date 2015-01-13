@@ -83,10 +83,18 @@ class DataSource(abstract.DataSource):
         validation = b64encode(b'Salted__' + validation_salt + encrypted_validation_key) + b'\x00'
 
         keys = {
-            'SL5': '123',
+            'SL3': '123',
+            'SL5': '456',
             'list': [
                 {
                     'identifier': '123',
+                    'iterations': 25000,
+                    'data': data.decode('ascii'),
+                    'validation': validation.decode('ascii'),
+                    'level': 'SL3'
+                },
+                {
+                    'identifier': '456',
                     'iterations': 25000,
                     'data': data.decode('ascii'),
                     'validation': validation.decode('ascii'),
@@ -99,29 +107,54 @@ class DataSource(abstract.DataSource):
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>$level</key>
-    <string>$identifier</string>
+    <key>SL3</key>
+    <string>$identifier3</string>
+    <key>SL5</key>
+    <string>$identifier5</string>
     <key>list</key>
     <array>
         <dict>
             <key>data</key>
-            <string>$data</string>
+            <string>$data3</string>
             <key>identifier</key>
-            <string>$identifier</string>
+            <string>$identifier3</string>
             <key>iterations</key>
-            <integer>$iterations</integer>
+            <integer>$iterations3</integer>
             <key>level</key>
-            <string>$level</string>
+            <string>SL3</string>
             <key>validation</key>
-            <string>$validation</string>
+            <string>$validation3</string>
+        </dict>
+        <dict>
+            <key>data</key>
+            <string>$data5</string>
+            <key>identifier</key>
+            <string>$identifier5</string>
+            <key>iterations</key>
+            <integer>$iterations5</integer>
+            <key>level</key>
+            <string>SL5</string>
+            <key>validation</key>
+            <string>$validation5</string>
         </dict>
     </array>
 </dict>
 </plist>
 """)
 
+        subs = {
+            'identifier3': keys['list'][0]['identifier'],
+            'data3': keys['list'][0]['data'],
+            'iterations3': keys['list'][0]['iterations'],
+            'validation3': keys['list'][0]['validation'],
+            'identifier5': keys['list'][1]['identifier'],
+            'data5': keys['list'][1]['data'],
+            'iterations5': keys['list'][1]['iterations'],
+            'validation5': keys['list'][1]['validation']
+        }
+
         file_handle = open(os.path.join(self._default_folder, "1password.keys"), "w")
-        file_handle.write(plist_template.substitute(keys['list'][0]))
+        file_handle.write(plist_template.substitute(subs))
         file_handle.close()
 
     def _derive_openssl_key(self, key, salt):
