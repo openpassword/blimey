@@ -9,6 +9,9 @@ from Crypto.Cipher import AES
 from Crypto.Hash import MD5
 from base64 import b64decode
 
+if sys.version_info < (3, 4, 0):
+    plistlib.loads = plistlib.readPlistFromBytes
+
 
 class AgileKeychainDataSourceTest:
     _temporary_path = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
@@ -25,8 +28,7 @@ class AgileKeychainDataSourceTest:
     def it_creates_encryption_and_validation_keys_on_initialisation(self):
         self._initialise_data_source()
 
-        keys_file = os.path.join(self._get_data_default_dir(), '1password.keys')
-        keys = self._read_keys_from_keys_plist(keys_file)
+        keys = self._read_keys_from_keys_plist()
 
         # As backwards compatibility hack 1Password 3 ensures the keychain contains
         # keys for both security levels SL3 and SL5, and that they are both
@@ -107,31 +109,18 @@ class AgileKeychainDataSourceTest:
     def _exists_and_is_dir(self, path):
         return os.path.exists(path) and os.path.isdir(path)
 
-    def _read_keys_from_keys_plist(self, path):
-        data = open(path, 'rb').read()
-        data = self._remove_null_bytes(data)
+    def _read_keys_from_keys_plist(self):
+        with open(os.path.join(self._get_data_default_dir(), '1password.keys'), 'rb') as f:
+            data = f.read()
+            data = self._remove_null_bytes(data)
 
-        if sys.version_info < (3, 4, 0):
-            keys = plistlib.readPlistFromBytes(data)
-        else:
-            keys = plistlib.loads(data)
+        keys = plistlib.loads(data)
 
         for key in keys['list']:
             key['data'] = b64decode(key['data'])
             key['validation'] = b64decode(key['validation'])
 
         return keys
-
-    def _read_encryption_keys_json(self, path):
-        encryption_keys_fp = open(path, 'r')
-        encryption_keys = json.load(encryption_keys_fp)
-        encryption_keys_fp.close()
-
-        for key in encryption_keys['list']:
-            key['data'] = b64decode(key['data'])
-            key['validation'] = b64decode(key['validation'])
-
-        return encryption_keys
 
     def _remove_null_bytes(self, data):
         result = b''
@@ -161,8 +150,6 @@ class AgileKeychainDataSourceTest:
 
         for key in keys['list']:
             if key['identifier'] == identifier:
-                # key['data'] = b64decode(key['data'])
-                # key['validation'] = b64decode(key['validation'])
                 return key
 
     def _decrypt_encryption_key(self, key, password):
