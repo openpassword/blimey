@@ -6,3 +6,4 @@ coverage
 scrutinizer-ocular
 pbkdf2
 pycrypto
+jinja2
