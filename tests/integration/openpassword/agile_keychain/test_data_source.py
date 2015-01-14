@@ -110,8 +110,8 @@ class AgileKeychainDataSourceTest:
         return os.path.exists(path) and os.path.isdir(path)
 
     def _read_keys_from_keys_plist(self):
-        with open(os.path.join(self._get_data_default_dir(), '1password.keys'), 'rb') as f:
-            data = f.read()
+        with open(os.path.join(self._get_data_default_dir(), '1password.keys'), 'rb') as file:
+            data = file.read()
             data = self._remove_null_bytes(data)
 
         keys = plistlib.loads(data)
@@ -162,8 +162,8 @@ class AgileKeychainDataSourceTest:
 
     def _decrypt(self, data, key_iv):
         key = key_iv[0:16]
-        iv = key_iv[16:]
-        cipher = AES.new(key, AES.MODE_CBC, iv)
+        init_vector = key_iv[16:]
+        cipher = AES.new(key, AES.MODE_CBC, init_vector)
 
         return cipher.decrypt(data)
 

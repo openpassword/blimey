@@ -1,6 +1,5 @@
 import os
 import json
-import plistlib
 from base64 import b64encode
 from pbkdf2 import PBKDF2
 from openpassword import abstract
@@ -97,11 +96,11 @@ class DataSource(abstract.DataSource):
     def _write_keys(self, keys):
         template_path = os.path.join(os.path.dirname(__file__), '1password.keys.template')
 
-        with open(template_path, 'r') as f:
-            plist_template = Template(f.read())
+        with open(template_path, 'r') as file:
+            plist_template = Template(file.read())
 
-        with open(os.path.join(self._default_folder, "1password.keys"), "w") as f:
-            f.write(plist_template.render(keys))
+        with open(os.path.join(self._default_folder, "1password.keys"), "w") as file:
+            file.write(plist_template.render(keys))
 
 
 class Crypto:
@@ -128,8 +127,8 @@ class Crypto:
         return (master, validation)
 
     @staticmethod
-    def encrypt(key, iv, data):
-        cipher = AES.new(key, AES.MODE_CBC, iv)
+    def encrypt(key, init_vector, data):
+        cipher = AES.new(key, AES.MODE_CBC, init_vector)
         return cipher.encrypt(data)
 
     @staticmethod
