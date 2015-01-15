@@ -16,3 +16,11 @@ class IncorrectPasswordException(Exception):
 
 class KeychainLockedException(Exception):
     pass
+
+
+class KeyValidationException(Exception):
+    pass
+
+
+class KeyAlreadyExistsForLevelException(Exception):
+    pass

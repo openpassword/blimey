@@ -39,10 +39,10 @@ class KeychainSpec:
         keychain = self._get_non_initialised_keychain()
         keychain.unlock("somepassword")
 
-    @patch.object(DataSource, "verify_password")
+    @patch("openpassword.abstract.DataSource")
     @raises(IncorrectPasswordException)
     def it_raises_IncorrectPasswordException_when_unlocking_with_incorrect_password(self, data_source):
-        data_source.verify_password.return_value = False
+        data_source.authenticate.side_effect = IncorrectPasswordException
 
         keychain = Keychain(data_source)
         keychain.unlock("wrongpassword")
@@ -126,7 +126,7 @@ class KeychainSpec:
     @patch("openpassword.abstract.DataSource")
     def it_changes_password(self, data_source_class):
         data_source = data_source_class.return_value
-        data_source.verify_password.return_value = True
+        data_source.authenticate.return_value = None
         data_source.set_password.return_value = None
 
         keychain = Keychain(data_source)
