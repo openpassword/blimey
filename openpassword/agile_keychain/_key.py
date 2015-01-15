@@ -1,7 +1,7 @@
+import os
 from pbkdf2 import PBKDF2
 from Crypto.Cipher import AES
 from Crypto.Hash import MD5
-import os
 from base64 import b64encode, b64decode
 
 from openpassword.exceptions import KeyValidationException
@@ -53,10 +53,6 @@ class Key:
             openssl_key += prev
 
         return openssl_key
-
-    def _decrypt_encryption_key(self, key, password):
-        password_key = self._derive_key_from_password(key, password)
-        return Crypto.decrypt(password_key[0:16], password_key[16:], key['data'][16:])
 
 
 class Crypto:

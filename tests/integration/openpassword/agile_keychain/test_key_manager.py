@@ -1,20 +1,10 @@
 import os
-import sys
-from nose.tools import eq_
 import shutil
 from openpassword.agile_keychain._key_manager import KeyManager
-import plistlib
-from pbkdf2 import PBKDF2
-from Crypto.Cipher import AES
-from Crypto.Hash import MD5
-from base64 import b64decode
 from nose.tools import raises
 
 from openpassword.exceptions import KeyAlreadyExistsForLevelException
 from openpassword.agile_keychain._key import Key
-
-if sys.version_info < (3, 4, 0):
-    plistlib.loads = plistlib.readPlistFromBytes
 
 
 class KeyManagerTest:
@@ -63,7 +53,7 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(KeyAlreadyExistsForLevelException)
-    def it_throws_a_keyalreadyexistsforlevelexception_when_saving_second_key_with_same_security_level(self):
+    def it_throws_keyalreadyexistsforlevelexception_when_keys_share_security_level(self):
         self._init_temporary_path()
 
         key_manager = KeyManager(self._temporary_path)

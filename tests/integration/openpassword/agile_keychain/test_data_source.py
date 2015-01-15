@@ -1,17 +1,9 @@
 import os
-import sys
-from nose.tools import eq_
 import shutil
-from openpassword.agile_keychain import DataSource
-import plistlib
-from pbkdf2 import PBKDF2
-from Crypto.Cipher import AES
-from Crypto.Hash import MD5
-from base64 import b64decode
-from openpassword.exceptions import IncorrectPasswordException
+from nose.tools import raises
 
-if sys.version_info < (3, 4, 0):
-    plistlib.loads = plistlib.readPlistFromBytes
+from openpassword.agile_keychain import DataSource
+from openpassword.exceptions import IncorrectPasswordException
 
 
 class AgileKeychainDataSourceTest:
@@ -30,14 +22,10 @@ class AgileKeychainDataSourceTest:
         self._initialise_data_source()
         self._data_source.authenticate(self._password)
 
+    @raises(IncorrectPasswordException)
     def it_fails_authentication_with_incorrect_password_exception(self):
         self._initialise_data_source()
-
-        try:
-            self._data_source.authenticate('wrongpassord')
-            assert False
-        except IncorrectPasswordException:
-            assert True
+        self._data_source.authenticate('wrongpassord')
 
     def it_sets_password(self):
         self._initialise_data_source()
@@ -50,11 +38,11 @@ class AgileKeychainDataSourceTest:
 
     def it_is_created_initialised_with_path_to_existing_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
-        eq_(data_source.is_keychain_initialised(), True)
+        assert data_source.is_keychain_initialised()
 
     def it_is_created_non_initialised_with_path_to_non_existing_keychain(self):
         data_source = DataSource("nonexistingfolder")
-        eq_(data_source.is_keychain_initialised(), False)
+        assert data_source.is_keychain_initialised() is False
 
     def it_adds_new_items_to_the_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
@@ -99,30 +87,3 @@ class AgileKeychainDataSourceTest:
 
     def _exists_and_is_dir(self, path):
         return os.path.exists(path) and os.path.isdir(path)
-
-    def _read_keys_from_keys_plist(self):
-        with open(os.path.join(self._get_data_default_dir(), '1password.keys'), 'rb') as file:
-            data = file.read()
-            data = self._remove_null_bytes(data)
-
-        keys = plistlib.loads(data)
-
-        for key in keys['list']:
-            key['data'] = b64decode(key['data'])
-            key['validation'] = b64decode(key['validation'])
-
-        return keys
-
-    def _remove_null_bytes(self, data):
-        result = b''
-        last = 0
-
-        index = data.find(b'\x00')
-        while index != -1:
-            result = result + data[last:index]
-            last = index + 1
-            index = data.find(b'\x00', last)
-
-        result = result + data[last:]
-
-        return result

@@ -1,12 +1,19 @@
 import os
+import sys
 import plistlib
 from jinja2 import Template
-from base64 import b64encode, b64decode
+from base64 import b64encode
 
 from openpassword.agile_keychain._key import Key
 from openpassword.exceptions import KeyAlreadyExistsForLevelException
 
 DEFAULT_ITERATIONS = 25000
+
+# plistlib loading method name changed in Python 3.4.0, but the signature
+# remained the same, so simply refer to the old method by new name in older
+# Python versions
+if sys.version_info < (3, 4, 0):
+    plistlib.loads = plistlib.readPlistFromBytes
 
 
 class KeyManager:

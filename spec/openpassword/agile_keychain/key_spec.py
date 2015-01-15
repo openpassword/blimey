@@ -1,5 +1,4 @@
-from unittest.mock import patch
-from nose.tools import eq_, raises
+from nose.tools import raises
 
 from openpassword.agile_keychain._key import Key
 from openpassword.exceptions import KeyValidationException
