@@ -35,13 +35,13 @@ class KeychainSpec:
         eq_(keychain.is_locked(), True)
 
     @raises(NonInitialisedKeychainException)
-    def it_raises_NonInitialisedKeychainException_when_unlocking_uninitialized_keychain(self):
+    def it_throws_noninitialisedkeychainexception_when_unlocking_uninitialized_keychain(self):
         keychain = self._get_non_initialised_keychain()
         keychain.unlock("somepassword")
 
     @patch("openpassword.abstract.DataSource")
     @raises(IncorrectPasswordException)
-    def it_raises_IncorrectPasswordException_when_unlocking_with_incorrect_password(self, data_source):
+    def it_throws_incorrectpasswordexception_when_unlocking_with_incorrect_password(self, data_source):
         data_source.authenticate.side_effect = IncorrectPasswordException
 
         keychain = Keychain(data_source)
@@ -82,7 +82,7 @@ class KeychainSpec:
         eq_(keychain.is_initialised(), False)
 
     @raises(KeychainAlreadyInitialisedException)
-    def it_throws_keychainalreadyinitialisedexception_if_initialising_an_already_initialised_keychain(self):
+    def it_throws_keychainalreadyinitialisedexception_if_initialising_existing_keychain(self):
         keychain = self._get_simple_keychain()
         keychain.initialise("somepassword")
 

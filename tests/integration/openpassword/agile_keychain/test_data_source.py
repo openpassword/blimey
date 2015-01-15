@@ -9,6 +9,7 @@ from openpassword.exceptions import IncorrectPasswordException
 class AgileKeychainDataSourceTest:
     _temporary_path = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
     _password = "somepassword"
+    _data_source = None
 
     def it_creates_agile_keychain_folder_structure_on_initialisation(self):
         self._initialise_data_source()
