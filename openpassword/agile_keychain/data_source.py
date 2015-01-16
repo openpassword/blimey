@@ -8,8 +8,8 @@ from openpassword.agile_keychain._key_manager import KeyManager
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
 
-class DataSource(abstract.DataSource):
 
+class DataSource(abstract.DataSource):
     BUILD_NUMBER_FILE = 'buildnum'
     BUILD_NUMBER = '32009'
 
