@@ -28,15 +28,6 @@ class AgileKeychainDataSourceTest:
         self._initialise_data_source()
         self._data_source.authenticate('wrongpassord')
 
-    def it_sets_password(self):
-        self._initialise_data_source()
-        self._data_source.set_password("newpassword")
-
-        encryption_keys_file = open(os.path.join(self._get_data_default_dir(), 'encryptionKeys.js'), "r")
-
-        assert "newpassword" in encryption_keys_file.read()
-        encryption_keys_file.close()
-
     def it_is_created_initialised_with_path_to_existing_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
         assert data_source.is_keychain_initialised()

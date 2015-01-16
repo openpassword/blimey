@@ -8,15 +8,15 @@ class KeySpec:
     @raises(KeyValidationException)
     def it_throws_a_keyvalidationexception_if_validation_fails(self):
         key = self.get_key()
-        key.validate('wrong')
+        key.decrypt_with('wrong')
 
     def it_silently_validates_with_correct_password(self):
         key = self.get_key()
-        key.validate('masterpassword123')
+        key.decrypt_with('masterpassword123')
 
     def it_creates_key(self):
         key = Key.create('password', 'SL4', 1000)
-        key.validate('password')
+        key.decrypt_with('password')
 
         assert key.security_level == 'SL4'
         assert key.iterations == 1000

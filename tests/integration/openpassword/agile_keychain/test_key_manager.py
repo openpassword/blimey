@@ -16,12 +16,12 @@ class KeyManagerTest:
         key_manager = KeyManager(self._fixture_path)
         level3_key, level5_key = key_manager.get_keys()
 
-        level3_key.validate('masterpassword123')
+        level3_key.decrypt_with('masterpassword123')
         assert level3_key.identifier == 'BE4CC37CD7C044E79B5CC1CC19A82A13'
         assert level3_key.security_level == 'SL3'
         assert level3_key.iterations == 25000
 
-        level5_key.validate('masterpassword123')
+        level5_key.decrypt_with('masterpassword123')
         assert level5_key.identifier == '98EB2E946008403280A3A8D9261018A4'
         assert level5_key.security_level == 'SL5'
         assert level5_key.iterations == 25000

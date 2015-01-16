@@ -15,7 +15,7 @@ class Key:
         self.data = b64decode(key_object['data'])
         self.validation = b64decode(key_object['validation'])
 
-    def validate(self, password):
+    def decrypt_with(self, password):
         password_key_iv = self._derive_key_from_password(password)
         master_key = Crypto.decrypt(password_key_iv[0:16], password_key_iv[16:], self.data[16:])
 

@@ -14,6 +14,7 @@ class DataSource(abstract.DataSource):
         self._base_path = path
         self._default_folder = os.path.join(self._base_path, "data", "default")
         self._key_manager = key_manager(self._base_path)
+        self._keys = []
 
     def initialise(self, password):
         os.makedirs(self._default_folder)
@@ -38,14 +39,18 @@ class DataSource(abstract.DataSource):
 
         for key in keys:
             try:
-                key.validate(password)
+                key.decrypt_with(password)
             except KeyValidationException:
                 raise IncorrectPasswordException
 
+            self._keys.append(key)
+
     def set_password(self, password):
-        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w")
-        file_handle.write(password)
-        file_handle.close()
+        keys = self._key_manager.get_keys()
+
+        for key in self._keys:
+            key.encrypt_with(password)
+            self._key_manager.save_key(key)
 
     def _validate_agile_keychain_base_files(self):
         is_initialised = True
