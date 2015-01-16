@@ -13,11 +13,18 @@ class DataSource(abstract.DataSource):
     def __init__(self, path, key_manager=KeyManager):
         self._base_path = path
         self._default_folder = os.path.join(self._base_path, "data", "default")
+        self._config_folder = os.path.join(self._base_path, "config")
         self._key_manager = key_manager(self._base_path)
         self._keys = []
 
     def initialise(self, password):
         os.makedirs(self._default_folder)
+        os.makedirs(self._config_folder)
+
+        buildnum_file = os.path.join(self._config_folder, 'buildnum')
+        buildnum_file = open(buildnum_file, "w+")
+        buildnum_file.write('32009')
+        buildnum_file.close()
 
         for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
