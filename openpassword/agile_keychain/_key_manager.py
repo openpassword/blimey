@@ -5,7 +5,7 @@ from jinja2 import Template
 from base64 import b64encode
 
 from openpassword.agile_keychain._key import Key
-from openpassword.exceptions import KeyAlreadyExistsForLevelException
+from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
 
 DEFAULT_ITERATIONS = 25000
 
@@ -60,24 +60,29 @@ class KeyManager:
         }
 
     def _read_keys_from_keys_plist(self):
-        if os.path.exists(os.path.join(self._base_path, 'data', 'default', '1password.keys')):
-            with open(os.path.join(self._base_path, 'data', 'default', '1password.keys'), 'rb') as file:
-                data = file.read()
-                data = self._remove_null_bytes(data)
-        else:
+        plist_contents = self._load_keys_plist()
+
+        if len(plist_contents) == 0:
             return []
 
+        keys = self._parse_plist(plist_contents)
+
+        return [Key(key) for key in keys['list']]
+
+    def _load_keys_plist(self):
+        if os.path.exists(os.path.join(self._base_path, 'data', 'default', '1password.keys')) is False:
+            return None
+
+        with open(os.path.join(self._base_path, 'data', 'default', '1password.keys'), 'rb') as file:
+            data = file.read()
+
+        return self._remove_null_bytes(data)
+
+    def _parse_plist(self, plist_contents):
         try:
-            keys = plistlib.loads(data)
+            return plistlib.loads(plist_contents)
         except plistlib.InvalidFileException:
-            return []
-
-        key_list = []
-
-        for key in keys['list']:
-            key_list.append(Key(key))
-
-        return key_list
+            raise InvalidKeyFileException
 
     def _remove_null_bytes(self, data):
         result = b''

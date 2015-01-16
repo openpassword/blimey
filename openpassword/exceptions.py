@@ -24,3 +24,7 @@ class KeyValidationException(Exception):
 
 class KeyAlreadyExistsForLevelException(Exception):
     pass
+
+
+class InvalidKeyFileException(Exception):
+    pass
