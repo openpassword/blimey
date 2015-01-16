@@ -53,7 +53,7 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(KeyAlreadyExistsForLevelException)
-    def it_throws_keyalreadyexistsforlevelexception_when_different_keys_share_security_level(self):
+    def it_throws_keyalreadyexistsforlevelexception_if_different_keys_are_on_same_level(self):
         self._init_temporary_path()
 
         key_manager = KeyManager(self._temporary_path)

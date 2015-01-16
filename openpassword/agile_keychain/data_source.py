@@ -46,8 +46,6 @@ class DataSource(abstract.DataSource):
             self._keys.append(key)
 
     def set_password(self, password):
-        keys = self._key_manager.get_keys()
-
         for key in self._keys:
             key.encrypt_with(password)
             self._key_manager.save_key(key)
