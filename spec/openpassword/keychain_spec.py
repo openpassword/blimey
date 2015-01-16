@@ -133,6 +133,8 @@ class KeychainSpec:
         keychain.unlock("password")
         keychain.set_password("foobar")
 
+        data_source.set_password.assert_called_with("foobar")
+
     def _get_non_initialised_keychain(self):
         keychain = self._get_simple_keychain()
         keychain.initialised = False

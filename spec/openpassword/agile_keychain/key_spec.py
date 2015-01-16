@@ -14,6 +14,12 @@ class KeySpec:
         key = self.get_key()
         key.decrypt_with('masterpassword123')
 
+    def it_re_encrypts_with_new_password(self):
+        key = self.get_key()
+        key.decrypt_with('masterpassword123')
+        key.encrypt_with('new_and_better_password')
+        key.decrypt_with('new_and_better_password')
+
     def it_creates_key(self):
         key = Key.create('password', 'SL4', 1000)
         key.decrypt_with('password')

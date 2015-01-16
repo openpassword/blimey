@@ -14,6 +14,7 @@ class Key:
         self.iterations = key_object['iterations']
         self.data = b64decode(key_object['data'])
         self.validation = b64decode(key_object['validation'])
+        self.decrypted_key = None
 
     def decrypt_with(self, password):
         password_key_iv = self._derive_key_from_password(password)
@@ -24,6 +25,26 @@ class Key:
 
         if master_key != validation_key:
             raise KeyValidationException()
+
+        self.decrypted_key = master_key
+
+    def encrypt_with(self, password, iterations=None):
+        if iterations is not None:
+            self.iterations = iterations
+
+        master_salt = os.urandom(8)
+        master_key = self.decrypted_key
+
+        pbkdf = PBKDF2(password, master_salt, self.iterations)
+        master_key_iv = pbkdf.read(32)
+        encrypted_master_key = Crypto.encrypt(master_key_iv[0:16], master_key_iv[16:], master_key)
+
+        validation_salt = os.urandom(8)
+        validation_key_iv = Crypto.derive_key(master_key, validation_salt)
+        encrypted_validation_key = Crypto.encrypt(validation_key_iv[0:16], validation_key_iv[16:], master_key)
+
+        self.data = b'Salted__' + master_salt + encrypted_master_key
+        self.validation = b'Salted__' + validation_salt + encrypted_validation_key
 
     @staticmethod
     def create(password, security_level, iterations):

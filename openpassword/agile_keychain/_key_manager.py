@@ -31,11 +31,13 @@ class KeyManager:
 
         keys = []
         for old_key in existing_keys:
+            if old_key.identifier == new_key.identifier:
+                continue
+
             if old_key.security_level == new_key.security_level:
                 raise KeyAlreadyExistsForLevelException()
 
-            if old_key.identifier != new_key.identifier:
-                keys.append(old_key)
+            keys.append(old_key)
 
         keys.append(new_key)
         keys = [self._serialize_key(key) for key in keys]

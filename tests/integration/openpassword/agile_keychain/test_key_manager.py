@@ -53,7 +53,7 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(KeyAlreadyExistsForLevelException)
-    def it_throws_keyalreadyexistsforlevelexception_when_keys_share_security_level(self):
+    def it_throws_keyalreadyexistsforlevelexception_when_different_keys_share_security_level(self):
         self._init_temporary_path()
 
         key_manager = KeyManager(self._temporary_path)
@@ -64,11 +64,24 @@ class KeyManagerTest:
         key2 = Key.create(self._password, 'SL3', 10)
         key_manager.save_key(key2)
 
+    def it_replaces_existing_key_with_same_identifier_and_security_level(self):
+        self._init_temporary_path()
+
+        key_manager = KeyManager(self._temporary_path)
+
+        key1 = Key.create(self._password, 'SL3', 10)
+        key_manager.save_key(key1)
+
+        key2 = Key.create(self._password, 'SL3', 10)
+        key2.identifier = key1.identifier
+        key_manager.save_key(key2)
+
+        keys = key_manager.get_keys()
+        assert len(keys) == 1
+
     def _init_temporary_path(self):
         os.makedirs(os.path.join(self._temporary_path, 'data', 'default'))
         self.teardown = self._path_clean
 
     def _path_clean(self):
-        print('removing')
-        print(self._temporary_path)
         shutil.rmtree(self._temporary_path)
