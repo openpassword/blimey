@@ -1,20 +1,28 @@
 import os
 import json
+
 from openpassword import abstract
+from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
+from openpassword.agile_keychain._key_manager import KeyManager
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
+DEFAULT_ITERATIONS = 25000
 
 
 class DataSource(abstract.DataSource):
-    def __init__(self, path):
-        self.base_path = path
-        self._default_folder = os.path.join(self.base_path, "data", "default")
+    def __init__(self, path, key_manager=KeyManager):
+        self._base_path = path
+        self._default_folder = os.path.join(self._base_path, "data", "default")
+        self._key_manager = key_manager(self._base_path)
+        self._keys = []
 
     def initialise(self, password):
         os.makedirs(self._default_folder)
 
         for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
+
+        self._initialise_key_files(password)
 
         self.set_password(password)
 
@@ -26,20 +34,21 @@ class DataSource(abstract.DataSource):
         json.dump(item, file_handle)
         file_handle.close()
 
-    def verify_password(self, password):
-        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "r")
-        password_found = False
+    def authenticate(self, password):
+        keys = self._key_manager.get_keys()
 
-        if password in file_handle.read():
-            password_found = True
+        for key in keys:
+            try:
+                key.decrypt_with_password(password)
+            except KeyValidationException:
+                raise IncorrectPasswordException
 
-        file_handle.close()
-        return password_found
+            self._keys.append(key)
 
     def set_password(self, password):
-        file_handle = open(os.path.join(self._default_folder, "encryptionKeys.js"), "w")
-        file_handle.write(password)
-        file_handle.close()
+        for key in self._keys:
+            key.encrypt_with_password(password)
+            self._key_manager.save_key(key)
 
     def _validate_agile_keychain_base_files(self):
         is_initialised = True
@@ -53,3 +62,10 @@ class DataSource(abstract.DataSource):
 
     def _is_valid_folder(self, folder):
         return os.path.exists(folder) and os.path.isdir(folder)
+
+    def _initialise_key_files(self, password, iterations=DEFAULT_ITERATIONS):
+        level3_key = self._key_manager.create_key(password, security_level='SL3', iterations=iterations)
+        level5_key = self._key_manager.create_key(password, security_level='SL5', iterations=iterations)
+
+        self._key_manager.save_key(level3_key)
+        self._key_manager.save_key(level5_key)

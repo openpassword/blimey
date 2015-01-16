@@ -1,12 +1,15 @@
 import os
-from nose.tools import eq_
 import shutil
+from nose.tools import raises
+
 from openpassword.agile_keychain import DataSource
+from openpassword.exceptions import IncorrectPasswordException
 
 
 class AgileKeychainDataSourceTest:
     _temporary_path = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
     _password = "somepassword"
+    _data_source = None
 
     def it_creates_agile_keychain_folder_structure_on_initialisation(self):
         self._initialise_data_source()
@@ -16,34 +19,22 @@ class AgileKeychainDataSourceTest:
         self._check_contents_file()
         self._check_encryption_keys_file()
 
-    def it_stores_password_on_initialisation(self):
+    def it_authenticates_with_a_password(self):
         self._initialise_data_source()
+        self._data_source.authenticate(self._password)
 
-        encryption_keys_file = open(os.path.join(self._get_data_default_dir(), 'encryptionKeys.js'), "r")
-
-        assert self._password in encryption_keys_file.read()
-        encryption_keys_file.close()
-
-    def it_verifies_password(self):
+    @raises(IncorrectPasswordException)
+    def it_fails_authentication_with_incorrect_password_exception(self):
         self._initialise_data_source()
-        assert self._data_source.verify_password(self._password)
-
-    def it_sets_password(self):
-        self._initialise_data_source()
-        self._data_source.set_password("newpassword")
-
-        encryption_keys_file = open(os.path.join(self._get_data_default_dir(), 'encryptionKeys.js'), "r")
-
-        assert "newpassword" in encryption_keys_file.read()
-        encryption_keys_file.close()
+        self._data_source.authenticate('wrongpassord')
 
     def it_is_created_initialised_with_path_to_existing_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
-        eq_(data_source.is_keychain_initialised(), True)
+        assert data_source.is_keychain_initialised()
 
     def it_is_created_non_initialised_with_path_to_non_existing_keychain(self):
         data_source = DataSource("nonexistingfolder")
-        eq_(data_source.is_keychain_initialised(), False)
+        assert data_source.is_keychain_initialised() is False
 
     def it_adds_new_items_to_the_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))

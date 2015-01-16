@@ -35,14 +35,14 @@ class KeychainSpec:
         eq_(keychain.is_locked(), True)
 
     @raises(NonInitialisedKeychainException)
-    def it_raises_NonInitialisedKeychainException_when_unlocking_uninitialized_keychain(self):
+    def it_throws_noninitialisedkeychainexception_when_unlocking_uninitialized_keychain(self):
         keychain = self._get_non_initialised_keychain()
         keychain.unlock("somepassword")
 
-    @patch.object(DataSource, "verify_password")
+    @patch("openpassword.abstract.DataSource")
     @raises(IncorrectPasswordException)
-    def it_raises_IncorrectPasswordException_when_unlocking_with_incorrect_password(self, data_source):
-        data_source.verify_password.return_value = False
+    def it_throws_incorrectpasswordexception_when_unlocking_with_incorrect_password(self, data_source):
+        data_source.authenticate.side_effect = IncorrectPasswordException
 
         keychain = Keychain(data_source)
         keychain.unlock("wrongpassword")
@@ -82,7 +82,7 @@ class KeychainSpec:
         eq_(keychain.is_initialised(), False)
 
     @raises(KeychainAlreadyInitialisedException)
-    def it_throws_keychainalreadyinitialisedexception_if_initialising_an_already_initialised_keychain(self):
+    def it_throws_keychainalreadyinitialisedexception_if_initialising_existing_keychain(self):
         keychain = self._get_simple_keychain()
         keychain.initialise("somepassword")
 
@@ -126,12 +126,14 @@ class KeychainSpec:
     @patch("openpassword.abstract.DataSource")
     def it_changes_password(self, data_source_class):
         data_source = data_source_class.return_value
-        data_source.verify_password.return_value = True
+        data_source.authenticate.return_value = None
         data_source.set_password.return_value = None
 
         keychain = Keychain(data_source)
         keychain.unlock("password")
         keychain.set_password("foobar")
+
+        data_source.set_password.assert_called_with("foobar")
 
     def _get_non_initialised_keychain(self):
         keychain = self._get_simple_keychain()

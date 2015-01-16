@@ -13,8 +13,7 @@ class Keychain(object):
         if not self.initialised:
             raise NonInitialisedKeychainException
 
-        if self._data_source.verify_password(password) is False:
-            raise IncorrectPasswordException
+        self._data_source.authenticate(password)
 
         self.locked = False
 
