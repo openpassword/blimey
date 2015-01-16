@@ -5,13 +5,14 @@ from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
 from openpassword.agile_keychain._key_manager import KeyManager
 
-
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
 
-
 class DataSource(abstract.DataSource):
-    BUILDNUM = '32009'
+
+    BUILD_NUMBER_FILE = 'buildnum'
+    BUILD_NUMBER = '32009'
+
     def __init__(self, path, key_manager=KeyManager):
         self._base_path = path
         self._default_folder = os.path.join(self._base_path, "data", "default")
@@ -20,9 +21,9 @@ class DataSource(abstract.DataSource):
         self._keys = []
 
     def create_buildnum_file(self):
-        buildnum_file = os.path.join(self._config_folder, 'buildnum')
+        buildnum_file = os.path.join(self._config_folder, self.BUILD_NUMBER_FILE)
         buildnum_file = open(buildnum_file, "w+")
-        buildnum_file.write(self.BUILDNUM)
+        buildnum_file.write(self.BUILD_NUMBER)
         buildnum_file.close()
 
     def initialise(self, password):
