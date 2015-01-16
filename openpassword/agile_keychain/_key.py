@@ -16,7 +16,7 @@ class Key:
         self.validation = b64decode(key_object['validation'])
         self.decrypted_key = None
 
-    def decrypt_with(self, password):
+    def decrypt_with_password(self, password):
         password_key_iv = self._derive_key_from_password(password)
         master_key = Crypto.decrypt(password_key_iv[0:16], password_key_iv[16:], self.data[16:])
 
@@ -28,7 +28,7 @@ class Key:
 
         self.decrypted_key = master_key
 
-    def encrypt_with(self, password, iterations=None):
+    def encrypt_with_password(self, password, iterations=None):
         if iterations is not None:
             self.iterations = iterations
 

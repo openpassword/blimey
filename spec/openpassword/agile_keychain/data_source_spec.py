@@ -20,8 +20,8 @@ class DataSourceSpec:
         data_source = DataSource('some_path', key_manager=key_manager)
         data_source.authenticate('password')
 
-        key3.decrypt_with.assert_called_with('password')
-        key5.decrypt_with.assert_called_with('password')
+        key3.decrypt_with_password.assert_called_with('password')
+        key5.decrypt_with_password.assert_called_with('password')
 
     @patch("openpassword.agile_keychain._key.Key")
     @patch("openpassword.agile_keychain._key.Key")
@@ -29,7 +29,7 @@ class DataSourceSpec:
     @raises(IncorrectPasswordException)
     def it_fails_authentication_if_a_key_can_not_be_validated(self, key_manager, key3, key5):
         key_manager.return_value.get_keys.return_value = [key3, key5]
-        key3.decrypt_with.side_effect = KeyValidationException
+        key3.decrypt_with_password.side_effect = KeyValidationException
 
         data_source = DataSource('some_path', key_manager=key_manager)
         data_source.authenticate('password')
@@ -45,10 +45,10 @@ class DataSourceSpec:
         data_source.authenticate('old_password')
         data_source.set_password('new_password')
 
-        key3.decrypt_with.assert_called_with('old_password')
-        key5.decrypt_with.assert_called_with('old_password')
+        key3.decrypt_with_password.assert_called_with('old_password')
+        key5.decrypt_with_password.assert_called_with('old_password')
 
-        key3.encrypt_with.assert_called_with('new_password')
-        key5.encrypt_with.assert_called_with('new_password')
+        key3.encrypt_with_password.assert_called_with('new_password')
+        key5.encrypt_with_password.assert_called_with('new_password')
 
         key_manager.save_key.assert_has_calls([call(key3), call(key5)])

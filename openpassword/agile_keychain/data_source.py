@@ -39,7 +39,7 @@ class DataSource(abstract.DataSource):
 
         for key in keys:
             try:
-                key.decrypt_with(password)
+                key.decrypt_with_password(password)
             except KeyValidationException:
                 raise IncorrectPasswordException
 
@@ -47,7 +47,7 @@ class DataSource(abstract.DataSource):
 
     def set_password(self, password):
         for key in self._keys:
-            key.encrypt_with(password)
+            key.encrypt_with_password(password)
             self._key_manager.save_key(key)
 
     def _validate_agile_keychain_base_files(self):

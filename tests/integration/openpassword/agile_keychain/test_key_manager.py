@@ -16,8 +16,8 @@ class KeyManagerTest:
         key_manager = KeyManager(self._fixture_path)
         level3_key, level5_key = key_manager.get_keys()
 
-        level3_key.decrypt_with('masterpassword123')
-        level5_key.decrypt_with('masterpassword123')
+        level3_key.decrypt_with_password('masterpassword123')
+        level5_key.decrypt_with_password('masterpassword123')
 
         # Asserting that the key manager correctly loads and populates keys from the 1Password 3
         # generated fixture keychain. The identifiers are arbitrary, but security levels 3 and 5
