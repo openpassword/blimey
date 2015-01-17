@@ -47,6 +47,17 @@ class AgileKeychainDataSourceTest:
         os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
                                '79cd94b00ab34d209d62e487e77965a5.1password'))
 
+    def it_reads_iteration_count_from_initialisation_configuration(self):
+        iterations = 123
+
+        data_source = DataSource(self._temporary_path)
+        data_source.initialise(self._password, {'iterations': iterations})
+
+        for key in data_source._key_manager.get_keys():
+            assert key.iterations == iterations
+
+        self.teardown = self._path_clean
+
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)
         self._data_source.initialise(self._password)

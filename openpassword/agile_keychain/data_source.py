@@ -26,7 +26,7 @@ class DataSource(abstract.DataSource):
         buildnum_file.write(self.BUILD_NUMBER)
         buildnum_file.close()
 
-    def initialise(self, password):
+    def initialise(self, password, configuration={}):
         os.makedirs(self._default_folder)
         os.makedirs(self._config_folder)
 
@@ -35,7 +35,10 @@ class DataSource(abstract.DataSource):
         for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
 
-        self._initialise_key_files(password)
+        if 'iterations' in configuration:
+            self._initialise_key_files(password, configuration['iterations'])
+        else:
+            self._initialise_key_files(password)
 
         self.set_password(password)
 

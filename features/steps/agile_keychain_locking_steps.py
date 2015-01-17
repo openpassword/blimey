@@ -63,5 +63,5 @@ def step_impl(context):
 
 def _add_new_keychain_to_context(context):
     context.keychain = openpassword.AgileKeychain(TEMP_KEYCHAIN_PATH)
-    context.keychain.initialise(CORRECT_PASSWORD)
+    context.keychain.initialise(CORRECT_PASSWORD, {'iterations': 10})
     context.remove_path = TEMP_KEYCHAIN_PATH
