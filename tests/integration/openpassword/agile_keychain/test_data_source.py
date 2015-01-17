@@ -3,6 +3,7 @@ import shutil
 from nose.tools import raises
 
 from openpassword.agile_keychain import DataSource
+from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
 from openpassword.exceptions import IncorrectPasswordException
 
 
@@ -38,14 +39,14 @@ class AgileKeychainDataSourceTest:
         data_source = DataSource("nonexistingfolder")
         assert data_source.is_keychain_initialised() is False
 
-    def it_adds_new_items_to_the_keychain(self):
-        data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
-        data_source.add_item({'id': '79cd94b00ab34d209d62e487e77965a5'})
+    # def it_adds_new_items_to_the_keychain(self):
+    #     data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
+    #     data_source.add_item({'id': '79cd94b00ab34d209d62e487e77965a5'})
 
-        assert os.path.exists(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
-                                           '79cd94b00ab34d209d62e487e77965a5.1password')) is True
-        os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
-                               '79cd94b00ab34d209d62e487e77965a5.1password'))
+    #     assert os.path.exists(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
+    #                                        '79cd94b00ab34d209d62e487e77965a5.1password')) is True
+    #     os.remove(os.path.join('tests', 'fixtures', 'test.agilekeychain', 'data', 'default',
+    #                            '79cd94b00ab34d209d62e487e77965a5.1password'))
 
     def it_reads_iteration_count_from_initialisation_configuration(self):
         iterations = 123
@@ -65,17 +66,32 @@ class AgileKeychainDataSourceTest:
 
         item = data_source.get_item_by_id('5F7210FD2F3F460692B7083C60854A02')
 
-        assert item['path'] == '/some/path'
-        assert item['username'] == 'someuser'
-        assert item['password'] == 'password123'
-        assert item['server'] == 'ftp://someserver.com'
+        assert item.secrets['path'] == '/some/path'
+        assert item.secrets['username'] == 'someuser'
+        assert item.secrets['password'] == 'password123'
+        assert item.secrets['server'] == 'ftp://someserver.com'
 
         item = data_source.get_item_by_id('2E21D652E0754BD59F6B94B0323D0142')
 
-        assert item['product_version'] == '1.2.3'
-        assert item['reg_email'] == 'some.user@emailprovider.tld'
-        assert item['reg_code'] == 'abc-license-123'
-        assert item['reg_name'] == 'Some User'
+        assert item.secrets['product_version'] == '1.2.3'
+        assert item.secrets['reg_email'] == 'some.user@emailprovider.tld'
+        assert item.secrets['reg_code'] == 'abc-license-123'
+        assert item.secrets['reg_name'] == 'Some User'
+
+    def it_adds_an_item_to_the_keychain(self):
+        self._initialise_data_source()
+        self._data_source.authenticate(self._password)
+
+        item = AgileKeychainItem()
+        item.secrets['username'] = 'mulder'
+        item.secrets['password'] = 'trustno1'
+
+        self._data_source.add_item(item)
+
+        retrieved_item = self._data_source.get_item_by_id(item.id)
+
+        assert item.secrets['username'] == retrieved_item.secrets['username']
+        assert item.secrets['password'] == retrieved_item.secrets['password']
 
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)

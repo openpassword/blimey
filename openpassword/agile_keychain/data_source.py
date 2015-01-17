@@ -8,6 +8,7 @@ from math import fmod
 from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
 from openpassword.agile_keychain._key_manager import KeyManager
+from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
@@ -46,11 +47,6 @@ class DataSource(abstract.DataSource):
     def is_keychain_initialised(self):
         return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
 
-    def add_item(self, item):
-        file_handle = open(os.path.join(self._default_folder, "{0}.1password".format(item['id'])), "w")
-        json.dump(item, file_handle)
-        file_handle.close()
-
     def authenticate(self, password):
         keys = self._key_manager.get_keys()
 
@@ -67,6 +63,26 @@ class DataSource(abstract.DataSource):
             key.encrypt_with_password(password)
             self._key_manager.save_key(key)
 
+    def add_item(self, item):
+        key = self._get_default_key()
+        init_vector = os.urandom(8)
+        derived_key = Crypto.derive_key(key.decrypted_key, init_vector)
+
+        data = json.dumps(item.secrets)
+        data = byte_pad(data.encode('utf8'), 16)
+        data = Crypto.encrypt(derived_key[0:16], derived_key[16:], data)
+
+        encrypted_data = b'Salted__' + init_vector + data
+
+        data = {
+            'uuid': item.id,
+            'encrypted': b64encode(byte_pad(encrypted_data)).decode('ascii'),
+            'openContents': {}
+        }
+
+        with open(os.path.join(self._default_folder, "{0}.1password".format(item.id)), "w") as file:
+            json.dump(data, file)
+
     def get_item_by_id(self, item_id):
         item_path = os.path.join(self._base_path, "data", "default", item_id + ".1password")
         with open(item_path, 'r') as file:
@@ -77,9 +93,13 @@ class DataSource(abstract.DataSource):
         encrypted = b64decode(data['encrypted'])
         init_vector = encrypted[8:16]
         derived_key = Crypto.derive_key(key.decrypted_key, init_vector)
-        data = Crypto.decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
-        data = strip_byte_padding(data)
-        item = json.loads(data.decode('ascii'))
+        decrypted = Crypto.decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
+        decrypted = strip_byte_padding(decrypted)
+        decrypted_data = json.loads(decrypted.decode('ascii'))
+
+        item = AgileKeychainItem()
+        item.id = data['uuid']
+        item.secrets = decrypted_data
 
         return item
 

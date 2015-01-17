@@ -1,0 +1,2 @@
+class AgileKeychainItemSpec:
+    pass

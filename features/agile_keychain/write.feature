@@ -3,10 +3,10 @@ Feature: Add an item to an agile keychain via API
   As an API user
   I must be able to add items to the keychain
 
-  Scenario: Adding a password to the keychain
-    Given I have an initialised keychain
-    When I append a new password to the keychain
-    Then that password should be stored in the agile keychain file structure
+#  Scenario: Adding a password to the keychain
+#    Given I have an initialised keychain
+#    When I append a new password to the keychain
+#    Then that password should be stored in the agile keychain file structure
 
   Scenario: Adding an item without an id attribute fails
     Given I have an initialised keychain
