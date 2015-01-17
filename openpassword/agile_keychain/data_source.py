@@ -72,16 +72,28 @@ class DataSource(abstract.DataSource):
         with open(item_path, 'r') as file:
             data = json.load(file)
 
+        key = self._get_key_for_item(data)
+
         encrypted = b64decode(data['encrypted'])
         init_vector = encrypted[8:16]
-
-        derived_key = Crypto.derive_key(self._keys[1].decrypted_key, init_vector)
+        derived_key = Crypto.derive_key(key.decrypted_key, init_vector)
         data = Crypto.decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
         data = strip_byte_padding(data)
-
         item = json.loads(data.decode('ascii'))
 
         return item
+
+    def _get_key_for_item(self, item):
+        if 'securityLevel' in item['openContents']:
+            return self._get_key_by_security_level(item['openContents']['securityLevel'])
+
+        return self._get_default_key()
+
+    def _get_key_by_security_level(self, security_level):
+        return [key for key in self._keys if key.security_level == security_level][0]
+
+    def _get_default_key(self):
+        return self._get_key_by_security_level('SL5')
 
     def _read_iterations_from_config(self, config):
         if type(config) is not dict:

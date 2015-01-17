@@ -70,6 +70,13 @@ class AgileKeychainDataSourceTest:
         assert item['password'] == 'password123'
         assert item['server'] == 'ftp://someserver.com'
 
+        item = data_source.get_item_by_id('2E21D652E0754BD59F6B94B0323D0142')
+
+        assert item['product_version'] == '1.2.3'
+        assert item['reg_email'] == 'some.user@emailprovider.tld'
+        assert item['reg_code'] == 'abc-license-123'
+        assert item['reg_name'] == 'Some User'
+
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)
         self._data_source.initialise(self._password, {'iterations': 10})
