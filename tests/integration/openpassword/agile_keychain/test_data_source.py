@@ -60,7 +60,7 @@ class AgileKeychainDataSourceTest:
 
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)
-        self._data_source.initialise(self._password)
+        self._data_source.initialise(self._password, {'iterations': 10})
         self.teardown = self._path_clean
 
     def _path_clean(self):

@@ -26,7 +26,7 @@ class DataSource(abstract.DataSource):
         buildnum_file.write(self.BUILD_NUMBER)
         buildnum_file.close()
 
-    def initialise(self, password, configuration={}):
+    def initialise(self, password, config={}):
         os.makedirs(self._default_folder)
         os.makedirs(self._config_folder)
 
@@ -35,10 +35,7 @@ class DataSource(abstract.DataSource):
         for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
 
-        if 'iterations' in configuration:
-            self._initialise_key_files(password, configuration['iterations'])
-        else:
-            self._initialise_key_files(password)
+        self._initialise_key_files(password, self._get_iterations(config))
 
         self.set_password(password)
 
@@ -66,6 +63,12 @@ class DataSource(abstract.DataSource):
             key.encrypt_with_password(password)
             self._key_manager.save_key(key)
 
+    def _get_iterations(self, config):
+        if 'iterations' in config:
+            return config['iterations']
+
+        return DEFAULT_ITERATIONS
+
     def _validate_agile_keychain_base_files(self):
         is_initialised = True
         for base_file in AGILE_KEYCHAIN_BASE_FILES:
@@ -79,7 +82,7 @@ class DataSource(abstract.DataSource):
     def _is_valid_folder(self, folder):
         return os.path.exists(folder) and os.path.isdir(folder)
 
-    def _initialise_key_files(self, password, iterations=DEFAULT_ITERATIONS):
+    def _initialise_key_files(self, password, iterations):
         level3_key = self._key_manager.create_key(password, security_level='SL3', iterations=iterations)
         level5_key = self._key_manager.create_key(password, security_level='SL5', iterations=iterations)
 
