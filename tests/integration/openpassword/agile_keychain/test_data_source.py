@@ -58,6 +58,18 @@ class AgileKeychainDataSourceTest:
 
         self.teardown = self._path_clean
 
+    def it_retrieves_an_item_by_id(self):
+        test_path = os.path.join('tests', 'fixtures', 'test.agilekeychain')
+        data_source = DataSource(test_path)
+        data_source.authenticate('masterpassword123')
+
+        item = data_source.get_item_by_id('5F7210FD2F3F460692B7083C60854A02')
+
+        assert item['path'] == '/some/path'
+        assert item['username'] == 'someuser'
+        assert item['password'] == 'password123'
+        assert item['server'] == 'ftp://someserver.com'
+
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)
         self._data_source.initialise(self._password, {'iterations': 10})

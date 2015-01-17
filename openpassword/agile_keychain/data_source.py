@@ -1,6 +1,10 @@
 import os
 import json
 
+from base64 import b64decode, b64encode
+from openpassword.agile_keychain._key import Crypto
+from math import fmod
+
 from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
 from openpassword.agile_keychain._key_manager import KeyManager
@@ -63,6 +67,22 @@ class DataSource(abstract.DataSource):
             key.encrypt_with_password(password)
             self._key_manager.save_key(key)
 
+    def get_item_by_id(self, item_id):
+        item_path = os.path.join(self._base_path, "data", "default", item_id + ".1password")
+        with open(item_path, 'r') as file:
+            data = json.load(file)
+
+        encrypted = b64decode(data['encrypted'])
+        init_vector = encrypted[8:16]
+
+        derived_key = Crypto.derive_key(self._keys[1].decrypted_key, init_vector)
+        data = Crypto.decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
+        data = strip_byte_padding(data)
+
+        item = json.loads(data.decode('ascii'))
+
+        return item
+
     def _read_iterations_from_config(self, config):
         if type(config) is not dict:
             return DEFAULT_ITERATIONS
@@ -91,3 +111,40 @@ class DataSource(abstract.DataSource):
 
         self._key_manager.save_key(level3_key)
         self._key_manager.save_key(level5_key)
+
+
+def byte_pad(input_bytes, length=8):
+    if length > 256:
+        raise ValueError("Maximum padding length is 256")
+
+    # Modulo input bytes length with padding length to see how many bytes to pad with
+    bytes_to_pad = length - int(fmod(len(input_bytes), length))
+
+    if bytes_to_pad == length:
+        bytes_to_pad = 0
+
+    # Pad input bytes with a sequence of bytes containing the number of padded bytes
+    input_bytes += bytes([bytes_to_pad] * bytes_to_pad)
+
+    return input_bytes
+
+
+def strip_byte_padding(input_bytes, length=8):
+    if fmod(len(input_bytes), length) != 0:
+        raise ValueError("Input byte length is not divisible by %s " % length)
+
+    # Get the last {length} bytes of the input bytes, reversed
+    if len(input_bytes) == length:
+        byte_block = bytes(input_bytes[::-1])
+    else:
+        byte_block = bytes(input_bytes[:length:-1])
+
+    # If input bytes is padded, the padding is equal to byte value of the number
+    # of bytes padded. So we can read the padding value from the last byte..
+    padding_byte = byte_block[0:1]
+
+    for i in range(1, ord(padding_byte.decode())):
+        if byte_block[i:i+1] != padding_byte:
+            return input_bytes
+
+    return input_bytes[0:-ord(padding_byte.decode())]
