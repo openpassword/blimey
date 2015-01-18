@@ -1,6 +1,5 @@
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    MissingIdAttributeException, IncorrectPasswordException, KeychainLockedException, \
-    UnauthenticatedDataSourceException
+    IncorrectPasswordException, KeychainLockedException, UnauthenticatedDataSourceException
 
 
 class Keychain(object):
@@ -34,9 +33,6 @@ class Keychain(object):
         return self.initialised
 
     def append(self, item):
-        # if item.id is None:
-        #     raise MissingIdAttributeException
-
         try:
             self._data_source.add_item(item)
         except UnauthenticatedDataSourceException:

@@ -5,8 +5,7 @@ from openpassword import AgileKeychainItem
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    MissingIdAttributeException, IncorrectPasswordException, KeychainLockedException, \
-    UnauthenticatedDataSourceException
+    IncorrectPasswordException, KeychainLockedException, UnauthenticatedDataSourceException
 
 
 class KeychainSpec:
@@ -155,12 +154,6 @@ class KeychainSpec:
 
         for item in keychain:
             assert item in items
-
-    # @raises(MissingIdAttributeException)
-    # def it_throws_an_missingidattributeexception_when_id_attribute_is_missing_from_item(self):
-    #     keychain = self._get_simple_keychain()
-    #     new_item = {}
-    #     keychain.append(new_item)
 
     @raises(KeychainLockedException)
     def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self):

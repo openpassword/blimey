@@ -1,6 +1,5 @@
 import os
 from openpassword import AgileKeychainItem
-from openpassword.exceptions import MissingIdAttributeException
 
 TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 
