@@ -13,7 +13,6 @@ class KeychainSpec:
     def it_is_locked_if_the_data_source_has_not_been_authenticated(self, data_source):
         data_source.is_authenticated.return_value = False
         keychain = Keychain(data_source)
-        keychain.initialise("somepassword")
 
         assert keychain.is_locked() is True
 
@@ -21,35 +20,46 @@ class KeychainSpec:
     def it_is_unlocked_if_the_data_source_has_been_authenticated(self, data_source):
         data_source.is_authenticated.return_value = True
         keychain = Keychain(data_source)
-        keychain.initialise("somepassword")
 
         assert keychain.is_locked() is False
 
     @patch('openpassword.agile_keychain.data_source')
     def it_locks_itself_by_deauthenticating_the_data_source(self, data_source):
         keychain = Keychain(data_source)
-        keychain.initialise("somepassword")
-        keychain.lock()
 
-        assert data_source.deauthenticate.called is True
+        data_source.deauthenticate.assert_called()
 
-    def it_unlocks_the_keychain_with_the_right_password(self):
-        keychain = self._get_simple_keychain()
+    @patch('openpassword.agile_keychain.data_source')
+    def it_unlocks_the_keychain_with_the_right_password(self, data_source):
+        keychain = Keychain(data_source)
         keychain.unlock('rightpassword')
-        eq_(keychain.is_locked(), False)
 
-    def it_is_iterable_as_list_of_items_when_unlocked(self):
-        keychain = self._get_simple_keychain()
-        keychain.unlock("righpassowrd")
+        data_source.authenticate.assert_called_with('rightpassword')
+
+    @patch('openpassword.agile_keychain.data_source')
+    def it_is_iterable_as_list_of_items_when_unlocked(self, data_source):
+        data_source.is_authenticated.return_value = True
+        keychain = Keychain(data_source)
 
         try:
             iter(keychain)
         except TypeError:
             raise AssertionError("Keychain is not iterable")
 
+    @patch('openpassword.agile_keychain.data_source')
+    @raises(KeychainLockedException)
+    def it_is_not_iterable_as_list_of_items_when_locked(self, data_source):
+        data_source.is_authenticated.return_value = False
+        keychain = Keychain(data_source)
+
+        iter(keychain)
+
+    @patch("openpassword.abstract.DataSource")
     @raises(NonInitialisedKeychainException)
-    def it_throws_noninitialisedkeychainexception_when_unlocking_uninitialized_keychain(self):
-        keychain = self._get_non_initialised_keychain()
+    def it_throws_noninitialisedkeychainexception_when_unlocking_uninitialized_keychain(self, data_source):
+        data_source.is_keychain_initialised.return_value = False
+        keychain = Keychain(data_source)
+
         keychain.unlock("somepassword")
 
     @patch("openpassword.abstract.DataSource")
@@ -60,10 +70,12 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         keychain.unlock("wrongpassword")
 
-    def it_is_initialisable_using_a_password(self):
-        keychain = self._get_non_initialised_keychain()
+    @patch('openpassword.agile_keychain.data_source')
+    def it_is_initialisable_using_a_password(self, data_source):
+        keychain = Keychain(data_source)
         keychain.initialise("somepassword")
-        eq_(keychain.is_initialised(), True)
+
+        data_source.initialise.assert_called()
 
     @patch('openpassword.agile_keychain.data_source')
     def it_passes_initialisation_configuraton_to_data_source(self, data_source):
@@ -74,9 +86,12 @@ class KeychainSpec:
 
         data_source.initialise.assert_called_with(password, config)
 
-    def it_keeps_uninitialised_if_we_dont_initialise_it(self):
-        keychain = self._get_non_initialised_keychain()
-        eq_(keychain.is_initialised(), False)
+    @patch('openpassword.agile_keychain.data_source')
+    def it_remains_uninitialised_if_not_initialised(self, data_source):
+        data_source.is_keychain_initialised.return_value = False
+        keychain = Keychain(data_source)
+
+        assert keychain.is_initialised() is False
 
     @patch('openpassword.agile_keychain.data_source')
     def it_delegates_initialisation_to_the_data_source(self, data_source):
@@ -93,6 +108,14 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         keychain.append({"id": "someitem_id"})
 
+    @patch("openpassword.abstract.DataSource")
+    @raises(KeychainLockedException)
+    def it_throws_keychainlockedexception_if_gettings_items_from_a_locked_keychain(self, data_source):
+        data_source.is_authenticated.return_value = False
+
+        keychain = Keychain(data_source)
+        keychain['ABC']
+
     @patch('openpassword.agile_keychain.data_source')
     def it_delegates_item_creation_to_the_data_source(self, data_source):
         item = AgileKeychainItem()
@@ -101,9 +124,12 @@ class KeychainSpec:
 
         data_source.add_item.assert_called_with(item)
 
-    def it_is_created_initialised_for_an_initialised_data_source(self):
-        keychain = self._get_simple_keychain()
-        eq_(keychain.is_initialised(), True)
+    @patch('openpassword.agile_keychain.data_source')
+    def it_is_created_initialised_for_an_initialised_data_source(self, data_source):
+        data_source.is_keychain_initialised.return_value = True
+        keychain = Keychain(data_source)
+
+        assert keychain.is_initialised() is True
 
     @patch('openpassword.agile_keychain.data_source')
     def it_is_created_non_initialised_for_a_non_initialised_data_source(self, data_source):
@@ -112,9 +138,11 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         eq_(keychain.is_initialised(), False)
 
+    @patch('openpassword.agile_keychain.data_source')
     @raises(KeychainAlreadyInitialisedException)
-    def it_throws_keychainalreadyinitialisedexception_if_initialising_existing_keychain(self):
-        keychain = self._get_simple_keychain()
+    def it_throws_keychainalreadyinitialisedexception_if_initialising_existing_keychain(self, data_source):
+        data_source.is_keychain_initialised.return_value = True
+        keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
     @patch('openpassword.agile_keychain.data_source')
@@ -130,39 +158,15 @@ class KeychainSpec:
         assert keychain[item.id] == item
 
     @patch('openpassword.agile_keychain.data_source')
-    def it_allows_for_items_to_be_appended(self, data_source):
-        item = AgileKeychainItem()
-
-        data_source.is_keychain_initialised.return_value = True
-        data_source.is_authenticated.return_value = True
-        data_source.get_all_items.return_value = [item]
-
+    @raises(KeychainLockedException)
+    def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self, data_source):
+        data_source.is_authenticated.return_value = False
         keychain = Keychain(data_source)
 
-        assert item in keychain
-
-    def it_iterates_over_items(self):
-        keychain = self._get_simple_keychain()
-        items = [
-            {'id': '123'},
-            {'id': '456'},
-            {'id': '789'}
-        ]
-
-        for item in items:
-            keychain.append(item)
-
-        for item in keychain:
-            assert item in items
-
-    @raises(KeychainLockedException)
-    def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self):
-        keychain = self._get_simple_keychain()
         keychain.set_password("foobar")
 
     @patch("openpassword.abstract.DataSource")
-    def it_changes_password(self, data_source_class):
-        data_source = data_source_class.return_value
+    def it_changes_password(self, data_source):
         data_source.authenticate.return_value = None
         data_source.set_password.return_value = None
 
@@ -171,14 +175,3 @@ class KeychainSpec:
         keychain.set_password("foobar")
 
         data_source.set_password.assert_called_with("foobar")
-
-    def _get_non_initialised_keychain(self):
-        keychain = self._get_simple_keychain()
-        keychain.initialised = False
-        return keychain
-
-    @patch.object(DataSource, 'is_keychain_initialised')
-    def _get_simple_keychain(self, data_source):
-        data_source.is_keychain_initialised.return_value = True
-
-        return Keychain(data_source)
