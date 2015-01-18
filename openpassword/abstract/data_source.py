@@ -18,3 +18,7 @@ class DataSource(metaclass=ABCMeta):
     @abstractmethod
     def authenticate(self, password):
         return NotImplemented
+
+    @abstractmethod
+    def is_authenticated(self):
+        return NotImplemented

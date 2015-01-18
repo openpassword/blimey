@@ -28,3 +28,7 @@ class KeyAlreadyExistsForLevelException(Exception):
 
 class InvalidKeyFileException(Exception):
     pass
+
+
+class UnauthenticatedDataSourceException(Exception):
+    pass

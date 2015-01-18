@@ -4,7 +4,8 @@ from nose.tools import eq_, raises
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    MissingIdAttributeException, IncorrectPasswordException, KeychainLockedException
+    MissingIdAttributeException, IncorrectPasswordException, KeychainLockedException, \
+    UnauthenticatedDataSourceException
 
 
 class KeychainSpec:
@@ -23,6 +24,14 @@ class KeychainSpec:
         keychain.initialise("somepassword")
 
         assert keychain.is_locked() == False
+
+    @patch('openpassword.agile_keychain.data_source')
+    def it_locks_itself_by_deauthenticating_the_data_source(self, data_source):
+        keychain = Keychain(data_source)
+        keychain.initialise("somepassword")
+        keychain.lock()
+
+        assert data_source.deauthenticate.called is True
 
     def it_unlocks_the_keychain_with_the_right_password(self):
         keychain = self._get_simple_keychain()
@@ -75,6 +84,14 @@ class KeychainSpec:
         keychain.initialise("somepassword")
 
         assert data_source.initialise.called is True
+
+    @patch("openpassword.abstract.DataSource")
+    @raises(KeychainLockedException)
+    def it_throws_keychainlockedexception_if_adding_items_to_a_locked_keychain(self, data_source):
+        data_source.add_item.side_effect = UnauthenticatedDataSourceException
+
+        keychain = Keychain(data_source)
+        keychain.append({"id": "someitem_id"})
 
     @patch('openpassword.agile_keychain.data_source')
     def it_delegates_item_creation_to_the_data_source(self, data_source):

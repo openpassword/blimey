@@ -4,7 +4,7 @@ from nose.tools import raises
 
 from openpassword.agile_keychain import DataSource
 from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
-from openpassword.exceptions import IncorrectPasswordException
+from openpassword.exceptions import IncorrectPasswordException, UnauthenticatedDataSourceException
 
 
 class AgileKeychainDataSourceTest:
@@ -87,6 +87,11 @@ class AgileKeychainDataSourceTest:
         assert item.secrets['reg_email'] == 'some.user@emailprovider.tld'
         assert item.secrets['reg_code'] == 'abc-license-123'
         assert item.secrets['reg_name'] == 'Some User'
+
+    @raises(UnauthenticatedDataSourceException)
+    def it_throws_unauthenticateddatasourceexception_if_adding_items_without_authenticating_first(self):
+        self._initialise_data_source()
+        self._data_source.add_item(AgileKeychainItem())
 
     def it_adds_an_item_to_the_keychain(self):
         self._initialise_data_source()

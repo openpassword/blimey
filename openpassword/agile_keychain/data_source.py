@@ -7,7 +7,8 @@ from openpassword.agile_keychain._key import Crypto
 from math import fmod
 
 from openpassword import abstract
-from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
+from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
+    UnauthenticatedDataSourceException
 from openpassword.agile_keychain._key_manager import KeyManager
 from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
 
@@ -64,6 +65,9 @@ class DataSource(abstract.DataSource):
         gc.collect()
 
     def is_authenticated(self):
+        if len(self._keys) == 0:
+            return False
+
         for key in self._keys:
             if key.decrypted_key == None:
                 return False
@@ -76,6 +80,9 @@ class DataSource(abstract.DataSource):
             self._key_manager.save_key(key)
 
     def add_item(self, item):
+        if self.is_authenticated() is False:
+            raise UnauthenticatedDataSourceException()
+
         key = self._get_default_key()
         init_vector = os.urandom(8)
         derived_key = Crypto.derive_key(key.decrypted_key, init_vector)
