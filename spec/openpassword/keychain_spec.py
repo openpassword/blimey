@@ -154,7 +154,7 @@ class KeychainSpec:
 
         keychain = Keychain(data_source)
 
-        assert keychain[item.id] == item
+        assert keychain[item.get_id()] == item
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)

@@ -22,7 +22,7 @@ def step_impl(context):
         context.retrieved_items = []
 
     item = context.keychain[context.added_items[0]]
-    context.retrieved_items.append(item.id)
+    context.retrieved_items.append(item.get_id())
 
 
 @then('I should get the added item')
@@ -36,7 +36,7 @@ def step_impl(context):
         context.retrieved_items = []
 
     for item in context.keychain:
-        context.retrieved_items.append(item.id)
+        context.retrieved_items.append(item.get_id())
 
 
 @then('I should encounter all the added items')
@@ -49,5 +49,5 @@ def _add_item(context, item):
     if hasattr(context, 'added_items') is False:
         context.added_items = []
 
-    context.added_items.append(item.id)
+    context.added_items.append(item.get_id())
     context.keychain.append(item)

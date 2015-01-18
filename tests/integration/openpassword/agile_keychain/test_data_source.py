@@ -97,7 +97,7 @@ class AgileKeychainDataSourceTest:
         ]
 
         for item in data_source.get_all_items():
-            assert item.id in expected_item_ids
+            assert item.get_id() in expected_item_ids
 
     @raises(UnauthenticatedDataSourceException)
     def it_throws_if_adding_items_without_authenticating_first(self):
@@ -114,7 +114,7 @@ class AgileKeychainDataSourceTest:
 
         self._data_source.add_item(item)
 
-        retrieved_item = self._data_source.get_item_by_id(item.id)
+        retrieved_item = self._data_source.get_item_by_id(item.get_id())
 
         assert item.secrets['username'] == retrieved_item.secrets['username']
         assert item.secrets['password'] == retrieved_item.secrets['password']

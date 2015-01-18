@@ -88,7 +88,7 @@ class DataSource(abstract.DataSource):
         encrypted_data = b'Salted__' + init_vector + data
 
         data = {
-            'uuid': item.id,
+            'uuid': item.get_id(),
             'encrypted': b64encode(byte_pad(encrypted_data)).decode('ascii'),
             'openContents': {},
             'locationKey': '',
@@ -97,7 +97,7 @@ class DataSource(abstract.DataSource):
             'typeName': 'securenotes.SecureNote'
         }
 
-        with open(os.path.join(self._default_folder, "{0}.1password".format(item.id)), "w") as file:
+        with open(os.path.join(self._default_folder, "{0}.1password".format(item.get_id())), "w") as file:
             json.dump(data, file)
 
     def get_item_by_id(self, item_id):
