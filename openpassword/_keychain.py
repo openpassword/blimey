@@ -21,7 +21,7 @@ class Keychain(object):
         self._data_source.initialise(password, config)
 
     def is_initialised(self):
-        return self._data_source.is_keychain_initialised()
+        return self._data_source.is_initialised()
 
     def append(self, item):
         try:

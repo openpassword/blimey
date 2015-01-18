@@ -28,26 +28,20 @@ class DataSource(abstract.DataSource):
         self._key_manager = key_manager(self._base_path)
         self._keys = []
 
-    def create_buildnum_file(self):
-        buildnum_file = os.path.join(self._config_folder, self.BUILD_NUMBER_FILE)
-        buildnum_file = open(buildnum_file, "w+")
-        buildnum_file.write(self.BUILD_NUMBER)
-        buildnum_file.close()
 
     def initialise(self, password, config=None):
         os.makedirs(self._default_folder)
         os.makedirs(self._config_folder)
 
-        self.create_buildnum_file()
-
         for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
             open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
 
         self._initialise_key_files(password, self._read_iterations_from_config(config))
+        self._create_buildnum_file()
 
         self.set_password(password)
 
-    def is_keychain_initialised(self):
+    def is_initialised(self):
         return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
 
     def authenticate(self, password):
@@ -133,6 +127,12 @@ class DataSource(abstract.DataSource):
             items.append(self.get_item_by_id(item_id))
 
         return items
+
+    def _create_buildnum_file(self):
+        buildnum_file = os.path.join(self._config_folder, self.BUILD_NUMBER_FILE)
+        buildnum_file = open(buildnum_file, "w+")
+        buildnum_file.write(self.BUILD_NUMBER)
+        buildnum_file.close()
 
     def _get_key_for_item(self, item):
         if 'securityLevel' in item['openContents']:

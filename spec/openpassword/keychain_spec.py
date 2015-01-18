@@ -57,7 +57,7 @@ class KeychainSpec:
     @patch("openpassword.abstract.DataSource")
     @raises(NonInitialisedKeychainException)
     def it_throws_if_unlocking_uninitialized_keychain(self, data_source):
-        data_source.is_keychain_initialised.return_value = False
+        data_source.is_initialised.return_value = False
         keychain = Keychain(data_source)
 
         keychain.unlock("somepassword")
@@ -88,7 +88,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     def it_remains_uninitialised_if_not_initialised(self, data_source):
-        data_source.is_keychain_initialised.return_value = False
+        data_source.is_initialised.return_value = False
         keychain = Keychain(data_source)
 
         assert keychain.is_initialised() is False
@@ -126,14 +126,14 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     def it_is_created_initialised_for_an_initialised_data_source(self, data_source):
-        data_source.is_keychain_initialised.return_value = True
+        data_source.is_initialised.return_value = True
         keychain = Keychain(data_source)
 
         assert keychain.is_initialised() is True
 
     @patch("openpassword.abstract.DataSource")
     def it_is_created_non_initialised_for_a_non_initialised_data_source(self, data_source):
-        data_source.is_keychain_initialised.return_value = False
+        data_source.is_initialised.return_value = False
 
         keychain = Keychain(data_source)
 
@@ -142,7 +142,7 @@ class KeychainSpec:
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainAlreadyInitialisedException)
     def it_throws_if_initialising_existing_keychain(self, data_source):
-        data_source.is_keychain_initialised.return_value = True
+        data_source.is_initialised.return_value = True
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
@@ -150,7 +150,7 @@ class KeychainSpec:
     def it_gets_items_by_id_from_data_source(self, data_source):
         item = AgileKeychainItem()
 
-        data_source.is_keychain_initialised.return_value = True
+        data_source.is_initialised.return_value = True
         data_source.is_authenticated.return_value = True
         data_source.get_item_by_id.return_value = item
 

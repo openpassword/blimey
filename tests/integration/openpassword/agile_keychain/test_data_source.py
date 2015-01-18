@@ -43,11 +43,11 @@ class AgileKeychainDataSourceTest:
 
     def it_is_created_initialised_with_path_to_existing_keychain(self):
         data_source = DataSource(os.path.join('tests', 'fixtures', 'test.agilekeychain'))
-        assert data_source.is_keychain_initialised()
+        assert data_source.is_initialised()
 
     def it_is_created_non_initialised_with_path_to_non_existing_keychain(self):
         data_source = DataSource("nonexistingfolder")
-        assert data_source.is_keychain_initialised() is False
+        assert data_source.is_initialised() is False
 
     def it_reads_iteration_count_from_initialisation_configuration(self):
         iterations = 123
