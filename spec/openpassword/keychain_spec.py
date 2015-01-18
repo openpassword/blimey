@@ -56,7 +56,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     @raises(NonInitialisedKeychainException)
-    def it_throws_noninitialisedkeychainexception_when_unlocking_uninitialized_keychain(self, data_source):
+    def it_throws_if_unlocking_uninitialized_keychain(self, data_source):
         data_source.is_keychain_initialised.return_value = False
         keychain = Keychain(data_source)
 
@@ -64,7 +64,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     @raises(IncorrectPasswordException)
-    def it_throws_incorrectpasswordexception_when_unlocking_with_incorrect_password(self, data_source):
+    def it_throws_if_unlocking_with_incorrect_password(self, data_source):
         data_source.authenticate.side_effect = IncorrectPasswordException
 
         keychain = Keychain(data_source)
@@ -102,7 +102,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)
-    def it_throws_keychainlockedexception_if_adding_items_to_a_locked_keychain(self, data_source):
+    def it_throws_if_adding_items_to_a_locked_keychain(self, data_source):
         data_source.add_item.side_effect = UnauthenticatedDataSourceException
 
         keychain = Keychain(data_source)
@@ -110,7 +110,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)
-    def it_throws_keychainlockedexception_if_gettings_items_from_a_locked_keychain(self, data_source):
+    def it_throws_if_gettings_items_from_a_locked_keychain(self, data_source):
         data_source.is_authenticated.return_value = False
 
         keychain = Keychain(data_source)
@@ -141,7 +141,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainAlreadyInitialisedException)
-    def it_throws_keychainalreadyinitialisedexception_if_initialising_existing_keychain(self, data_source):
+    def it_throws_if_initialising_existing_keychain(self, data_source):
         data_source.is_keychain_initialised.return_value = True
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
@@ -160,7 +160,7 @@ class KeychainSpec:
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)
-    def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self, data_source):
+    def it_throws_if_setting_password_on_a_locked_keychain(self, data_source):
         data_source.is_authenticated.return_value = False
         keychain = Keychain(data_source)
 

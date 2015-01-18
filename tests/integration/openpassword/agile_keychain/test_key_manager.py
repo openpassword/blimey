@@ -53,7 +53,7 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(KeyAlreadyExistsForLevelException)
-    def it_throws_keyalreadyexistsforlevelexception_if_different_keys_are_on_same_level(self):
+    def it_throws_if_different_keys_are_on_same_level(self):
         self._init_key_file_with('')
 
         key_manager = KeyManager(self._temporary_path)
@@ -80,7 +80,7 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(InvalidKeyFileException)
-    def it_raises_invalidkeyfileexception_if_key_file_can_not_be_parsed(self):
+    def it_throws_if_key_file_can_not_be_parsed(self):
         self._init_key_file_with('<foobar>!')
         key_manager = KeyManager(self._temporary_path)
         key_manager.get_keys()

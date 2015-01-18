@@ -100,7 +100,7 @@ class AgileKeychainDataSourceTest:
             assert item.id in expected_item_ids
 
     @raises(UnauthenticatedDataSourceException)
-    def it_throws_unauthenticateddatasourceexception_if_adding_items_without_authenticating_first(self):
+    def it_throws_if_adding_items_without_authenticating_first(self):
         self._initialise_data_source()
         self._data_source.add_item(AgileKeychainItem())
 

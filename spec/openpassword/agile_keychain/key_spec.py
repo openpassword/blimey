@@ -6,7 +6,7 @@ from openpassword.exceptions import KeyValidationException
 
 class KeySpec:
     @raises(KeyValidationException)
-    def it_throws_a_keyvalidationexception_if_validation_fails(self):
+    def it_throws_if_validation_fails(self):
         key = self.get_key()
         key.decrypt_with_password('wrong')
 
