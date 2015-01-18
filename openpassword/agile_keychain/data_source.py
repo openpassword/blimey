@@ -1,6 +1,7 @@
 import os
 import json
 import gc
+import glob
 
 from base64 import b64decode, b64encode
 from openpassword.agile_keychain._key import Crypto
@@ -69,7 +70,7 @@ class DataSource(abstract.DataSource):
             return False
 
         for key in self._keys:
-            if key.decrypted_key == None:
+            if key.decrypted_key is None:
                 return False
 
         return True
@@ -121,6 +122,17 @@ class DataSource(abstract.DataSource):
         item.secrets = decrypted_data
 
         return item
+
+    def get_all_items(self):
+        item_paths = glob.glob(os.path.join(self._base_path, "data", "default", "*.1password"))
+
+        items = []
+        for item_path in item_paths:
+            basename = os.path.basename(item_path)
+            item_id, _ = os.path.splitext(basename)
+            items.append(self.get_item_by_id(item_id))
+
+        return items
 
     def _get_key_for_item(self, item):
         if 'securityLevel' in item['openContents']:
@@ -180,7 +192,7 @@ def byte_pad(input_bytes, length=8):
     return input_bytes
 
 
-def strip_byte_padding(input_bytes, length=8):
+def strip_byte_padding(input_bytes, length=16):
     if fmod(len(input_bytes), length) != 0:
         raise ValueError("Input byte length is not divisible by %s " % length)
 

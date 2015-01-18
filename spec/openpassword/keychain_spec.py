@@ -1,6 +1,7 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, call
 from nose.tools import eq_, raises
 
+from openpassword import AgileKeychainItem
 from openpassword._keychain import Keychain
 from openpassword.abstract import DataSource
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
@@ -15,7 +16,7 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
-        assert keychain.is_locked() == True
+        assert keychain.is_locked() is True
 
     @patch('openpassword.agile_keychain.data_source')
     def it_is_unlocked_if_the_data_source_has_been_authenticated(self, data_source):
@@ -23,7 +24,7 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
-        assert keychain.is_locked() == False
+        assert keychain.is_locked() is False
 
     @patch('openpassword.agile_keychain.data_source')
     def it_locks_itself_by_deauthenticating_the_data_source(self, data_source):
@@ -95,10 +96,11 @@ class KeychainSpec:
 
     @patch('openpassword.agile_keychain.data_source')
     def it_delegates_item_creation_to_the_data_source(self, data_source):
+        item = AgileKeychainItem()
         keychain = Keychain(data_source)
-        keychain.append({"id": "someitem_id"})
+        keychain.append(item)
 
-        assert data_source.add_item.called is True
+        data_source.add_item.assert_called_with(item)
 
     def it_is_created_initialised_for_an_initialised_data_source(self):
         keychain = self._get_simple_keychain()
@@ -116,17 +118,29 @@ class KeychainSpec:
         keychain = self._get_simple_keychain()
         keychain.initialise("somepassword")
 
-    def it_adds_the_item_to_the_keychain_with_the_item_id_as_key(self):
-        keychain = self._get_simple_keychain()
-        item = {'id': 'new_item_id'}
-        keychain.append(item)
-        eq_(keychain['new_item_id'], item)
+    @patch('openpassword.agile_keychain.data_source')
+    def it_gets_items_by_id_from_data_source(self, data_source):
+        item = AgileKeychainItem()
 
-    def it_allows_for_items_to_be_appended(self):
-        keychain = self._get_simple_keychain()
-        new_item = {"id": "new_item"}
-        keychain.append(new_item)
-        eq_(new_item in keychain, True)
+        data_source.is_keychain_initialised.return_value = True
+        data_source.is_authenticated.return_value = True
+        data_source.get_item_by_id.return_value = item
+
+        keychain = Keychain(data_source)
+
+        assert keychain[item.id] == item
+
+    @patch('openpassword.agile_keychain.data_source')
+    def it_allows_for_items_to_be_appended(self, data_source):
+        item = AgileKeychainItem()
+
+        data_source.is_keychain_initialised.return_value = True
+        data_source.is_authenticated.return_value = True
+        data_source.get_all_items.return_value = [item]
+
+        keychain = Keychain(data_source)
+
+        assert item in keychain
 
     def it_iterates_over_items(self):
         keychain = self._get_simple_keychain()
@@ -142,11 +156,11 @@ class KeychainSpec:
         for item in keychain:
             assert item in items
 
-    @raises(MissingIdAttributeException)
-    def it_throws_an_missingidattributeexception_when_id_attribute_is_missing_from_item(self):
-        keychain = self._get_simple_keychain()
-        new_item = {}
-        keychain.append(new_item)
+    # @raises(MissingIdAttributeException)
+    # def it_throws_an_missingidattributeexception_when_id_attribute_is_missing_from_item(self):
+    #     keychain = self._get_simple_keychain()
+    #     new_item = {}
+    #     keychain.append(new_item)
 
     @raises(KeychainLockedException)
     def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self):

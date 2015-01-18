@@ -1,4 +1,5 @@
 import os
+from openpassword import AgileKeychainItem
 from openpassword.exceptions import MissingIdAttributeException
 
 TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
@@ -6,14 +7,16 @@ TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 
 @given('an item with ID "{item_id}" has been added to the keychain')
 def step_impl(context, item_id):
-    _add_item(context, {'id': item_id})
+    item = AgileKeychainItem()
+    item.id = item_id
+    _add_item(context, item)
 
 
 @given('a number of items is added to the keychain')
 def step_impl(context):
-    _add_item(context, {'id': '123'})
-    _add_item(context, {'id': '456'})
-    _add_item(context, {'id': '789'})
+    _add_item(context, AgileKeychainItem())
+    _add_item(context, AgileKeychainItem())
+    _add_item(context, AgileKeychainItem())
 
 
 @when('I get an item by ID "{item_id}"')
