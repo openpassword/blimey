@@ -28,7 +28,6 @@ class DataSource(abstract.DataSource):
         self._key_manager = key_manager(self._base_path)
         self._keys = []
 
-
     def initialise(self, password, config=None):
         os.makedirs(self._default_folder)
         os.makedirs(self._config_folder)
