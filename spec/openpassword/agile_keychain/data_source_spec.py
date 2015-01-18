@@ -23,6 +23,8 @@ class DataSourceSpec:
         key3.decrypt_with_password.assert_called_with('password')
         key5.decrypt_with_password.assert_called_with('password')
 
+        assert data_source.is_authenticated() == True
+
     @patch("openpassword.agile_keychain._key.Key")
     @patch("openpassword.agile_keychain._key.Key")
     @patch("openpassword.agile_keychain._key_manager.KeyManager")
@@ -33,6 +35,8 @@ class DataSourceSpec:
 
         data_source = DataSource('some_path', key_manager=key_manager)
         data_source.authenticate('password')
+
+        assert data_source.is_authenticated() == False
 
     @patch("openpassword.agile_keychain._key.Key")
     @patch("openpassword.agile_keychain._key.Key")

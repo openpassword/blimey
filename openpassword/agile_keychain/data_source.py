@@ -1,5 +1,6 @@
 import os
 import json
+import gc
 
 from base64 import b64decode, b64encode
 from openpassword.agile_keychain._key import Crypto
@@ -57,6 +58,17 @@ class DataSource(abstract.DataSource):
                 raise IncorrectPasswordException
 
             self._keys.append(key)
+
+    def deauthenticate(self):
+        self._keys = []
+        gc.collect()
+
+    def is_authenticated(self):
+        for key in self._keys:
+            if key.decrypted_key == None:
+                return False
+
+        return True
 
     def set_password(self, password):
         for key in self._keys:

@@ -26,6 +26,16 @@ class AgileKeychainDataSourceTest:
         self._initialise_data_source()
         self._data_source.authenticate(self._password)
 
+    # We need a way to ensure garbage collection was also triggered
+    def it_clears_keys_from_memory_when_deauthenticated(self):
+        self._initialise_data_source()
+
+        self._data_source.authenticate(self._password)
+        assert len(self._data_source._keys) == 2
+
+        self._data_source.deauthenticate()
+        assert len(self._data_source._keys) == 0
+
     @raises(IncorrectPasswordException)
     def it_fails_authentication_with_incorrect_password_exception(self):
         self._initialise_data_source()
