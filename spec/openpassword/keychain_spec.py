@@ -1,9 +1,8 @@
 from unittest.mock import patch
 from nose.tools import raises
 
-from openpassword import AgileKeychainItem
 from openpassword._keychain import Keychain
-from openpassword.abstract import DataSource
+from openpassword.abstract import DataSource, Item
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
     IncorrectPasswordException, KeychainLockedException, UnauthenticatedDataSourceException
 
@@ -116,9 +115,9 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         keychain['ABC']
 
+    @patch("openpassword.abstract.Item")
     @patch("openpassword.abstract.DataSource")
-    def it_delegates_item_creation_to_the_data_source(self, data_source):
-        item = AgileKeychainItem()
+    def it_delegates_item_creation_to_the_data_source(self, data_source, item):
         keychain = Keychain(data_source)
         keychain.append(item)
 
@@ -146,10 +145,9 @@ class KeychainSpec:
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
+    @patch("openpassword.abstract.Item")
     @patch("openpassword.abstract.DataSource")
-    def it_gets_items_by_id_from_data_source(self, data_source):
-        item = AgileKeychainItem()
-
+    def it_gets_items_by_id_from_data_source(self, data_source, item):
         data_source.is_initialised.return_value = True
         data_source.is_authenticated.return_value = True
         data_source.get_item_by_id.return_value = item
