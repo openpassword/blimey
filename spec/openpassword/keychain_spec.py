@@ -1,5 +1,5 @@
-from unittest.mock import patch, MagicMock, call
-from nose.tools import eq_, raises
+from unittest.mock import patch
+from nose.tools import raises
 
 from openpassword import AgileKeychainItem
 from openpassword._keychain import Keychain
@@ -136,7 +136,8 @@ class KeychainSpec:
         data_source.is_keychain_initialised.return_value = False
 
         keychain = Keychain(data_source)
-        eq_(keychain.is_initialised(), False)
+
+        assert keychain.is_initialised() is False
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainAlreadyInitialisedException)
