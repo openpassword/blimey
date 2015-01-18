@@ -90,7 +90,11 @@ class DataSource(abstract.DataSource):
         data = {
             'uuid': item.id,
             'encrypted': b64encode(byte_pad(encrypted_data)).decode('ascii'),
-            'openContents': {}
+            'openContents': {},
+            'locationKey': '',
+            'title': 'Created by AgileKeychain',
+            'location': '',
+            'typeName': 'securenotes.SecureNote'
         }
 
         with open(os.path.join(self._default_folder, "{0}.1password".format(item.id)), "w") as file:
