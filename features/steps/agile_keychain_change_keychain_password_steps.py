@@ -10,7 +10,7 @@ TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 @given('I have a keychain initialised with "{password}"')
 def step_impl(context, password):
     context.keychain = openpassword.AgileKeychain(TEMP_KEYCHAIN_PATH)
-    context.keychain.initialise(password)
+    context.keychain.initialise(password, {'iterations': 10})
     context.remove_path = TEMP_KEYCHAIN_PATH
 
 

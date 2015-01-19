@@ -16,7 +16,7 @@ def step_impl(context):
 @given('I have an initialised keychain')
 def step_impl(context):
     context.keychain = openpassword.AgileKeychain(TEMP_KEYCHAIN_PATH)
-    context.keychain.initialise(CORRECT_PASSWORD)
+    context.keychain.initialise(CORRECT_PASSWORD, {'iterations': 10})
     context.remove_path = TEMP_KEYCHAIN_PATH
 
 
@@ -31,7 +31,7 @@ def step_impl(context):
 
 @when('I initialise it using "{password}"')
 def step_impl(context, password):
-    context.keychain.initialise(password)
+    context.keychain.initialise(password, {'iterations': 10})
     context.remove_path = TEMP_KEYCHAIN_PATH
 
 
@@ -44,7 +44,7 @@ def step_impl(context):
 def step_impl(context):
     context.initialisation_failed = False
     try:
-        context.keychain.initialise("somepassword")
+        context.keychain.initialise("somepassword", {'iterations': 10})
     except KeychainAlreadyInitialisedException:
         context.initialisation_failed = True
 

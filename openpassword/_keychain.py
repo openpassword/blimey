@@ -23,11 +23,11 @@ class Keychain(object):
     def is_locked(self):
         return self.locked
 
-    def initialise(self, password):
+    def initialise(self, password, config=None):
         if self.initialised is True:
             raise KeychainAlreadyInitialisedException
 
-        self._data_source.initialise(password)
+        self._data_source.initialise(password, config)
         self.initialised = True
 
     def is_initialised(self):

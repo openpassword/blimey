@@ -52,6 +52,15 @@ class KeychainSpec:
         keychain.initialise("somepassword")
         eq_(keychain.is_initialised(), True)
 
+    @patch('openpassword.agile_keychain.data_source')
+    def it_passes_initialisation_configuraton_to_data_source(self, data_source):
+        password = "somepassword"
+        config = {"iterations": 10}
+        keychain = Keychain(data_source)
+        keychain.initialise(password, config)
+
+        data_source.initialise.assert_called_with(password, config)
+
     def it_keeps_uninitialised_if_we_dont_initialise_it(self):
         keychain = self._get_non_initialised_keychain()
         eq_(keychain.is_initialised(), False)

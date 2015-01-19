@@ -21,11 +21,11 @@ class KeySpec:
         key.decrypt_with_password('new_and_better_password')
 
     def it_creates_key(self):
-        key = Key.create('password', 'SL4', 1000)
+        key = Key.create('password', 'SL4', 10)
         key.decrypt_with_password('password')
 
         assert key.security_level == 'SL4'
-        assert key.iterations == 1000
+        assert key.iterations == 10
 
     def get_key(self):
         return Key({

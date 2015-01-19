@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 class DataSource(metaclass=ABCMeta):
 
     @abstractmethod
-    def initialise(self, path):
+    def initialise(self, path, config=None):
         return NotImplemented
 
     @abstractmethod
