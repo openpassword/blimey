@@ -1,34 +1,35 @@
 from nose.tools import raises
 
-from openpassword.agile_keychain._key import Key
+from openpassword.agile_keychain._crypto import decrypt_key, encrypt_key, create_key
+from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
 from openpassword.exceptions import KeyValidationException
 
 
-class KeySpec:
+class CryptoSpec:
     @raises(KeyValidationException)
-    def it_throws_if_validation_fails(self):
+    def it_throws_if_decryption_fails(self):
         key = self.get_key()
-        key.decrypt_with_password('wrong')
+        decrypt_key(key, 'wrongpassword')
 
     def it_silently_validates_with_correct_password(self):
         key = self.get_key()
-        key.decrypt_with_password('masterpassword123')
+        decrypt_key(key, 'masterpassword123')
 
     def it_re_encrypts_with_new_password(self):
         key = self.get_key()
-        key.decrypt_with_password('masterpassword123')
-        key.encrypt_with_password('new_and_better_password')
-        key.decrypt_with_password('new_and_better_password')
+        decrypted_key = decrypt_key(key, 'masterpassword123')
+        encrypted_key = encrypt_key(decrypted_key, 'new_and_better_password')
+        decrypt_key(encrypted_key, 'new_and_better_password')
 
     def it_creates_key(self):
-        key = Key.create('password', 'SL4', 10)
-        key.decrypt_with_password('password')
+        encrypted_key = create_key('password', 'SL4', 10)
+        decrypt_key(encrypted_key, 'password')
 
-        assert key.security_level == 'SL4'
-        assert key.iterations == 10
+        assert encrypted_key.level == 'SL4'
+        assert encrypted_key.iterations == 10
 
     def get_key(self):
-        return Key({
+        return EncryptedKey({
             'identifier': '123',
             'iterations': 25000,
             'level': 'SL5',

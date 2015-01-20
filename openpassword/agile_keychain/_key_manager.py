@@ -4,7 +4,8 @@ import plistlib
 from jinja2 import Template
 from base64 import b64encode
 
-from openpassword.agile_keychain._key import Key
+from openpassword.agile_keychain._crypto import create_key
+from openpassword.agile_keychain._key import EncryptedKey
 from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
 
 DEFAULT_ITERATIONS = 25000
@@ -23,8 +24,8 @@ class KeyManager:
     def get_keys(self):
         return self._read_keys_from_keys_plist()
 
-    def create_key(self, password, security_level='SL5', iterations=DEFAULT_ITERATIONS):
-        return Key.create(password, security_level, iterations)
+    def create_key(self, password, level='SL5', iterations=DEFAULT_ITERATIONS):
+        return create_key(password, level, iterations)
 
     def save_key(self, new_key):
         existing_keys = self._read_keys_from_keys_plist()
@@ -34,7 +35,7 @@ class KeyManager:
             if old_key.identifier == new_key.identifier:
                 continue
 
-            if old_key.security_level == new_key.security_level:
+            if old_key.level == new_key.level:
                 raise KeyAlreadyExistsForLevelException()
 
             keys.append(old_key)
@@ -56,7 +57,7 @@ class KeyManager:
             'iterations': key.iterations,
             'data': (b64encode(key.data) + b'\x00').decode('ascii'),
             'validation': (b64encode(key.validation) + b'\x00').decode('ascii'),
-            'level': key.security_level
+            'level': key.level
         }
 
     def _read_keys_from_keys_plist(self):
@@ -67,7 +68,7 @@ class KeyManager:
 
         keys = self._parse_plist(plist_contents)
 
-        return [Key(key) for key in keys['list']]
+        return [EncryptedKey(key) for key in keys['list']]
 
     def _load_keys_plist(self):
         if os.path.exists(os.path.join(self._base_path, 'data', 'default', '1password.keys')) is False:

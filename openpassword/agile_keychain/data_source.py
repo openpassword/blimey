@@ -4,14 +4,16 @@ import gc
 import glob
 
 from base64 import b64decode, b64encode
-from openpassword.agile_keychain._key import Crypto
 from math import fmod
 
 from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
     UnauthenticatedDataSourceException
 from openpassword.agile_keychain._key_manager import KeyManager
+from openpassword.agile_keychain._item_manager import ItemManager
 from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
+from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, _derive_openssl_key, \
+    _aes_encrypt, _aes_decrypt
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
@@ -21,11 +23,12 @@ class DataSource(abstract.DataSource):
     BUILD_NUMBER_FILE = 'buildnum'
     BUILD_NUMBER = '32009'
 
-    def __init__(self, path, key_manager=KeyManager):
+    def __init__(self, path, key_manager=KeyManager, item_manager=ItemManager):
         self._base_path = path
         self._default_folder = os.path.join(self._base_path, "data", "default")
         self._config_folder = os.path.join(self._base_path, "config")
         self._key_manager = key_manager(self._base_path)
+        self._item_manager = item_manager(self._base_path)
         self._keys = []
 
     def initialise(self, password, config=None):
@@ -48,11 +51,11 @@ class DataSource(abstract.DataSource):
 
         for key in keys:
             try:
-                key.decrypt_with_password(password)
+                decrypted_key = decrypt_key(key, password)
             except KeyValidationException:
                 raise IncorrectPasswordException
 
-            self._keys.append(key)
+            self._keys.append(decrypted_key)
 
     def deauthenticate(self):
         self._keys = []
@@ -63,15 +66,15 @@ class DataSource(abstract.DataSource):
             return False
 
         for key in self._keys:
-            if key.decrypted_key is None:
+            if key.key is None:
                 return False
 
         return True
 
     def set_password(self, password):
         for key in self._keys:
-            key.encrypt_with_password(password)
-            self._key_manager.save_key(key)
+            encrypted_key = encrypt_key(key, password)
+            self._key_manager.save_key(encrypted_key)
 
     def add_item(self, item):
         if self.is_authenticated() is False:
@@ -79,11 +82,11 @@ class DataSource(abstract.DataSource):
 
         key = self._get_default_key()
         init_vector = os.urandom(8)
-        derived_key = Crypto.derive_key(key.decrypted_key, init_vector)
+        derived_key = _derive_openssl_key(key.key, init_vector)
 
         data = json.dumps(item.secrets)
         data = byte_pad(data.encode('utf8'), 16)
-        data = Crypto.encrypt(derived_key[0:16], derived_key[16:], data)
+        data = _aes_encrypt(derived_key[0:16], derived_key[16:], data)
 
         encrypted_data = b'Salted__' + init_vector + data
 
@@ -109,13 +112,13 @@ class DataSource(abstract.DataSource):
 
         encrypted = b64decode(data['encrypted'])
         init_vector = encrypted[8:16]
-        derived_key = Crypto.derive_key(key.decrypted_key, init_vector)
-        decrypted = Crypto.decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
+        derived_key = _derive_openssl_key(key.key, init_vector)
+        decrypted = _aes_decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
         decrypted = strip_byte_padding(decrypted)
         decrypted_data = json.loads(decrypted.decode('ascii'))
 
-        item = AgileKeychainItem()
-        item.id = data['uuid']
+        item = AgileKeychainItem(data)
+        # item.id = data['uuid']
         item.secrets = decrypted_data
 
         return item
@@ -144,7 +147,7 @@ class DataSource(abstract.DataSource):
         return self._get_default_key()
 
     def _get_key_by_security_level(self, security_level):
-        return [key for key in self._keys if key.security_level == security_level][0]
+        return [key for key in self._keys if key.level == security_level][0]
 
     def _get_default_key(self):
         return self._get_key_by_security_level('SL5')
@@ -172,8 +175,8 @@ class DataSource(abstract.DataSource):
         return os.path.exists(folder) and os.path.isdir(folder)
 
     def _initialise_key_files(self, password, iterations):
-        level3_key = self._key_manager.create_key(password, security_level='SL3', iterations=iterations)
-        level5_key = self._key_manager.create_key(password, security_level='SL5', iterations=iterations)
+        level3_key = self._key_manager.create_key(password, level='SL3', iterations=iterations)
+        level5_key = self._key_manager.create_key(password, level='SL5', iterations=iterations)
 
         self._key_manager.save_key(level3_key)
         self._key_manager.save_key(level5_key)
