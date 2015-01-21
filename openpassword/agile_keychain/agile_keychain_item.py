@@ -1,11 +1,25 @@
-from openpassword.agile_keychain._key import Crypto
+from collections import defaultdict
+
 from openpassword import abstract
 
 
-class AgileKeychainItem(abstract.Item):
-    def __init__(self):
-        self.id = Crypto.generate_id()
-        self.secrets = {}
+class EncryptedItem(defaultdict):
+    def __init__(self, data):
+        self.update(data)
 
-    def get_id(self):
-        return self.id
+    def __missing__(self, key):
+        return None
+
+
+class DecryptedItem(defaultdict):
+    def __init__(self, data):
+        self.update(data)
+
+    def __missing__(self, key):
+        return None
+
+    @staticmethod
+    def create():
+        return DecryptedItem({
+            'uuid': '123123'
+        })

@@ -1,2 +1,1 @@
 from openpassword.agile_keychain.agile_keychain import AgileKeychain
-from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem

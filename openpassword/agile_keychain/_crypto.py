@@ -3,9 +3,12 @@ from pbkdf2 import PBKDF2
 from Crypto.Cipher import AES
 from Crypto.Hash import MD5
 from base64 import b64encode, b64decode
+from math import fmod
+import json
 
 from openpassword.exceptions import KeyValidationException
 from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
+from openpassword.agile_keychain.agile_keychain_item import EncryptedItem, DecryptedItem
 
 
 def generate_id():
@@ -79,6 +82,36 @@ def create_key(password, level, iterations):
     })
 
 
+def decrypt_item(item, decrypted_key):
+    encrypted = b64decode(item['encrypted'])
+    init_vector = encrypted[8:16]
+    derived_key = _derive_openssl_key(decrypted_key.key, init_vector)
+    decrypted = _aes_decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
+    decrypted = _strip_byte_padding(decrypted)
+    decrypted_data = json.loads(decrypted.decode('ascii'))
+
+    decrypted_item = DecryptedItem(item)
+    decrypted_item['encrypted'] = decrypted_data
+
+    return decrypted_item
+
+
+def encrypt_item(item, decrypted_key):
+    init_vector = os.urandom(8)
+    derived_key = _derive_openssl_key(decrypted_key.key, init_vector)
+
+    data = json.dumps(item['encrypted'])
+    data = _byte_pad(data.encode('utf8'), 16)
+    data = _aes_encrypt(derived_key[0:16], derived_key[16:], data)
+
+    encrypted_data = b64encode(b'Salted__' + init_vector + data).decode('ascii')
+
+    encrypted_item = EncryptedItem(item)
+    encrypted_item['encrypted'] = encrypted_data
+
+    return encrypted_item
+
+
 def _derive_key_from_password(key, password):
     return PBKDF2(password, key.data[8:16], key.iterations).read(32)
 
@@ -104,3 +137,40 @@ def _aes_encrypt(key, init_vector, data):
 
 def _aes_decrypt(key, init_vector, data):
     return AES.new(key, AES.MODE_CBC, init_vector).decrypt(data)
+
+
+def _byte_pad(input_bytes, length=8):
+    if length > 256:
+        raise ValueError("Maximum padding length is 256")
+
+    # Modulo input bytes length with padding length to see how many bytes to pad with
+    bytes_to_pad = length - int(fmod(len(input_bytes), length))
+
+    if bytes_to_pad == length:
+        bytes_to_pad = 0
+
+    # Pad input bytes with a sequence of bytes containing the number of padded bytes
+    input_bytes += bytes([bytes_to_pad] * bytes_to_pad)
+
+    return input_bytes
+
+
+def _strip_byte_padding(input_bytes, length=16):
+    if fmod(len(input_bytes), length) != 0:
+        raise ValueError("Input byte length is not divisible by %s " % length)
+
+    # Get the last {length} bytes of the input bytes, reversed
+    if len(input_bytes) == length:
+        byte_block = bytes(input_bytes[::-1])
+    else:
+        byte_block = bytes(input_bytes[:length:-1])
+
+    # If input bytes is padded, the padding is equal to byte value of the number
+    # of bytes padded. So we can read the padding value from the last byte..
+    padding_byte = byte_block[0:1]
+
+    for i in range(1, ord(padding_byte.decode())):
+        if byte_block[i:i+1] != padding_byte:
+            return input_bytes
+
+    return input_bytes[0:-ord(padding_byte.decode())]

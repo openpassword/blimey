@@ -1,7 +1,8 @@
 from nose.tools import raises
 
-from openpassword.agile_keychain._crypto import decrypt_key, encrypt_key, create_key
+from openpassword.agile_keychain._crypto import decrypt_key, encrypt_key, create_key, decrypt_item, encrypt_item
 from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
+from openpassword.agile_keychain.agile_keychain_item import EncryptedItem, DecryptedItem
 from openpassword.exceptions import KeyValidationException
 
 
@@ -15,7 +16,7 @@ class CryptoSpec:
         key = self.get_key()
         decrypt_key(key, 'masterpassword123')
 
-    def it_re_encrypts_with_new_password(self):
+    def it_reencrypts_with_new_password(self):
         key = self.get_key()
         decrypted_key = decrypt_key(key, 'masterpassword123')
         encrypted_key = encrypt_key(decrypted_key, 'new_and_better_password')
@@ -28,41 +29,86 @@ class CryptoSpec:
         assert encrypted_key.level == 'SL4'
         assert encrypted_key.iterations == 10
 
+    def it_decrypts_item(self):
+        encrypted_key = self.get_key()
+        decrypted_key = decrypt_key(encrypted_key, 'masterpassword123')
+        encrypted_item = self.get_item()
+        decrypted_item = decrypt_item(encrypted_item, decrypted_key)
+
+        assert decrypted_item['encrypted']['fields'][0]['value'] == 'someuser'
+        assert decrypted_item['encrypted']['fields'][1]['value'] == 'password123'
+
+    def it_encrypts_item(self):
+        encrypted_key = self.get_key()
+        decrypted_key = decrypt_key(encrypted_key, 'masterpassword123')
+        decrypted_item = self.get_item()
+        decrypted_item['encrypted'] = {'fields': [{'value': 'foo'}, {'value': 'bar'}]}
+
+        encrypted_item = encrypt_item(decrypted_item, decrypted_key)
+
+        redecrypted_item = decrypt_item(encrypted_item, decrypted_key)
+
+        assert redecrypted_item['encrypted']['fields'][0]['value'] == 'foo'
+        assert redecrypted_item['encrypted']['fields'][1]['value'] == 'bar'
+
     def get_key(self):
         return EncryptedKey({
-            'identifier': '123',
+            'identifier': '98EB2E946008403280A3A8D9261018A4',
             'iterations': 25000,
             'level': 'SL5',
             'data':
-                'U2FsdGVkX1+PGVUYaEAHsE6aWEtF1982rnS0hM/+XhjucFsRSoigpJKCg+KGyxybo5/7U84G+PH4LrB9CCj9m+k9HsRO2/mcRU'
-                'fPIV0hyLwEyNbmwp29RCmiuqHC4JtfC85VDW+etCIKveyE4ry9N8kHWTFNLbFjymqblcuhw2i1ltocttC09OKyyG03n14xuQsM'
-                '1Tj02/I3NYE7yFoml+6eau8knCxpeucNVPu29Ddhy9PkmD0VMyWfqf1Xhsia0DjJvfAbYVCT+M8uYQ8Ouasfee6HwNHPIq4uE+'
-                '01rCkhjfIQ2330lBJtWxeQjIkMkvgYDa6zA5Or1glA1pUoollkPiLFdZyVmUXhwp59cZahkVZwjPGnhSkrtMcwha3ncKHUU1B3'
-                'vcRyqYYzjbbhgFST4+Y9Cizp1YBTk/G20nIObmuC7Cbt3IMrFaaZ6s7Ml6Fukiy/WFpN/qwMw1L4RnFzwiRxDg7Pxg8+xXWt6N'
-                'iAonzmr367nKKgSY3RtbPsY4ik20223jYGnTC7PjOOsEGxCfhdFh825atoOcQhtTOEM80v2JiG7EZvWa2vCZvtrR/KiAZxeNxp'
-                'awP46wrHsyzbrlONCsv2tOp2d7+kemP6dkTWauBLpgTmunz9aVak+wi+tZ4W3DRefgvQ9tZdsLN7hPhuKNF6xhszPuBK9LMlFz'
-                'Z1NxSum38GMZLqF0lb45jbmhxiJD05vrpJq/Z4LjoBb6/oe0PKmnOPFtwbyCcItfmUCePueRUa2X+/Q7lmyrPQPpx5Q3f0RtQ6'
-                'LM0S9l28UOWoGEzReDW45MCAX+67MVXjVBL3N08aUjDHn5RjqFGw3vDKMf1wmvN8DGDfWGGXq5tD7PslMrHn0HDAwrNLpu040m'
-                '6InC9DXkk+4vcvPa3T4noz3/tr9/7PXEtQX86FjsiMffqKKm2b4nAAtiJzUfslvbvgcVo6WEffuEDyTd2jveTC6FAu1i4Lk2VE'
-                'Vn8Lftv6pc/m6RslOQWjUMm2hs4SQu1h/NFP0M2vYOHiGJY+E7gKyDC6BFozbMcffxHwu0/+S2gHwVs/bc374oNboo40O6WpaC'
-                'Qs31FVDmnGtVJ1/ytlR7fylb7DEt/TqR4C0HLnD+dtFriX5KRl0TKFBGG8STlIC6KhTg2ewEVjfiObwqK55OjQtbY0PAmGh0v3'
-                'ct3o4ZyKqI4RY1uvTqf0GXJBonD6ng3XkFu+gBTN1Rs67N39QPYoaOXEq1AlVwmLW3uQvmjLusJo/9FnMzpY+tp/7jPO16vMf1'
-                'WYOonWhYBWc8TV77e3OJYzIhgk3QUUltL7pt4iL+L6mAaeMPW0dzZ1Y1mUdDyQDNEtAir9cS7nKpuli1GyV+jQNY/W43/1G4UA'
-                'MyCPQ8nVmGnKJx7fQK106f+fMixdE5b51uE6',
+                'U2FsdGVkX19CNF/5SazpsyC2/axBCsrpy1MBjTuulGu+hQgbMAT3COZgxGOfLUKG7VypKI/LpD3I5VxUP2NiIBqqLolwkTpQW79NJ'
+                'OUYlqv+3argoTwz4JL9j4wyay4BJbclVkZMY8xn+UXf8TlSffLMj3aWbXqfv10stbPI8S9DzAQ/0rYFCHP83E82NueF6t7RXk9PZc'
+                'sprqFcQpxdU0lxTWT5fJZscwdYy/M88bVgnTHfIwI1V9RxxAKj0lDkUBppCrkGhN7pWP4mvCR1+iI9xTAxASH5WQxNp7v+9T5btNK'
+                '0hpe3532fuVbhEJ6XVVTbRMEJRYAGNXp4TOc0q8yaW//eSPCs/S/eYw6Dnai4MA0IZqpdydj7viaPrQR/z18Dv3jKq0K+E0fh8wn/'
+                'EHrrIvhQofdyaX6slqIVx7jI9Mi7BGNz6qKeIZXdQekXiY9F1vxTsaMXtzRCO79id3rI/UmuBtTVmQ7kV/RVErWfxU98oDFTbMqqS'
+                '4J59PMqfhamlBFlv5nfsC/oKPZrROdxG69RT7upWSLiN02PS3eIjgfEWfdDNInppwWv9ig/QZ3eeiVVSAcWqr6+zlXpXLTKV0T9pB'
+                'We4Rq2cCTs32XQvz+3BphlKtSeUm50aL/ftiml1hv39Ks44JIwsZzFtXF3LhZVqwUFJsk+fdT3qDtxcEjuOuQ/TauPSUdD6duD0Yj'
+                'MBKroRefGAxyrFCZ1gWHRLdLxRTu0JQUmhxN+T8AHoDJSY4KvNjaCFsxFLPbGLqT3zds7RjrAdchC/swhwG9iOsOU8qpaI7Ew1YVQ'
+                '8d0Ms+SdSz/JCzuoIiaKigsIXvH6/BOwoTdM46qZIe+KgqbsOJc7YOMsuZosEacYwvD1LQ5waklXP8h/0LnbVnw0sCLc/h3JX78sW'
+                'NWBJjnvT29oCDrALzlNbFrsjtubn27IZWhVeIqnN7cxLlbDgunK2FZsNJr1r5ACxwGMiC/klT3uZWQyyNkLCZkReQ8N9utskSFrhs'
+                '9pv+lFDvWcfUbQfPt8GeP/C8fSdxHAA3DLtzlVcajaNHXF2zdofetZfSOS9y9pvbt6IuFrcNmMqlZQu3f7Tvvga3rSmqK8v08UiV8'
+                '/KTxIqJ9oVS+/tFPe+aYGL9dJG9I2f7Yo9H8OvgNLDqK1tfULTppAdWpq863XxVz/MV6AP+bIRXuy9jviKjRrT2h2KVPM1fx3Fy0e'
+                'fYro3FzLQlu86iVtQqn64zPGWP1Sfph2/IeRiCsFh+wKc6k/5X0TZEbsWpk0RRFN855SUYSUXgNwPqCHnS91zTm4f28CJ/mXqtdu9'
+                'Y1wzwB/wTSilp4huyg5GkXyk+ZNuH7wqsOkdr8+Qg2Ckylh8hX18KVmP6DZ2EW+mykjzKkMXuLC6t4U89VtsUm4S8uX3rY5',
             'validation':
-                'U2FsdGVkX1/TZ7cvOi0EcC7yJeSoYJKUzythkAOyQQnGOSat0IDmEYJ3lOLJLx6iPFxKVxT+2zpG3iQ8OLc3Fj0raer8wbdMa3'
-                'wux5VElNssjXNC1W3lfkB9QgPG2QCwpWo1PQnYSMDpJSswuGW670/IgrawV5vzXE1CiZtR82AyI0WNkfdZhMY9TrGmx5z+cYcy'
-                'JHsRTFmFuNijfO/myebm+udVSJIgss4Fb0Y6Vq5uGCCqCneEFNy0IV0hIS1m6BlENAZi4zkcm5Aw6DEtdLgGRBb0kg+mU9bLtI'
-                'zzAVvPi698oRQBF2zRLMcCkng1avn6E0PYhK4ioiRINMNbIOkmwe6R9r1f/CcTd8ZdymE8crwR9APqxrvim7YjTuA3XrsNT0rf'
-                'pkLwVKmxFYXpLPBNJzsOznJKtsgmRwxsl+xkuOVtjD5ousF0484MTAfaVQUh1Ttoz/1Q0D2uuFCOmQu93Nyc17ItaJ8WVbzlIO'
-                'Cy6cQHAs5FVB+DLVUBCUeVgwD4fE/NZzXlltsTZJJTNm77byAFErtIC1iYRGKNLQucljMhyO9v8OwIU+0V/gAxLIozdSTWVNu0'
-                '03BflhScnXFis+/MzUATeatFbaiF5TRn6LZSQRRakyho734ZYAP/4JNC4HUWlEzJCayZvDbX6X85/fintEWX0cI9Mt5q+g2nqt'
-                'PQzhhD0jyIiYe2sTFwbh5iWPb6/Sx7NjZLGICAoTCemIVlEx381DEL1Ey9VozznoZWPzfPCtKvmysKKSMFevQFM4Kp/3Clh6L2'
-                'mZBQMvKt73fcHzmJVR9k+IDxSutWGgPJJV2yRy2My5czni3XhTi4WsxNbSBYBSPnqI+qQLj/hovNvd2H958YR4L2viUIatOGDx'
-                'FFuoIYefPYzzX5FQBEIh0jT2QkRP5NULKwePzzqD4/sW1Fke99xTAIHnfeJGhNpPNnrM3A8JmoxLPOvCUokb8rOn7RhtGlh9KJ'
-                'v2RGDjGZHd66IUtUI4E3HKtxgqO9ZeSo0HWy61R90vuZdybqW8D+XWH4K8WfXTunqjdmrCrAPY0DYuMm8URD89/RoyhF+uzMEV'
-                'XOvX807lknUqW2HOgCMqrMj72jyAxLy5+h+81U7Y/2iWHmMffrZvWV33OPN9zViHPGvyZW40K/S9XRF8OZkG6P96u+kO2ipmpy'
-                'NcIRDjuYMJFtl3Vr39DXE3nv54/aLNpqhNyKJv1ZBgxXVowcWCjU3TSyijKHRYmpbBeplNE7OKVb8tdxH4RN5S7J5hCaRx3Pyv'
-                'WLW4RVPHncL8MfsthrERDiRfZ2t+M3/RP6JC/fawqX0bkABa2cVx+WtZ5MFtDQfXxax00V7eLqVCbAmH/YjEVZmWF6PWH13Vy0'
-                'Q5q2GFJfIxRwED8dZXuB1CXj+AILmN2Af+vK'
+                'U2FsdGVkX19YMZ3cXoetbbnP+uMx6orlxhjYLIKtQxZnwqaN9A/NaF26+8gJPc/Ow7MubfnwX0ja0kgkRtrLVVonteZRYjoWhNi6k'
+                'sg1YOWGUhO61PoUxHqJ7ZMPkn9XQw2dfNjfvi/CSVRcO4wUEBHzGGn+josnmknS2O8qQrUOysSYgsk3nSFByaFYEp4oKDTJePVeWU'
+                'giy9ytGynWPzaeye8SxXymwo7le9ufNSFjGiUqwaKmLoyzCBRQXe5PPbSHl9wqZ7AePCMA5gt8DRKXcC8MKrWHQqGZPmwfJlkP/0P'
+                'WPrpam90JnnKOH8pWwoIR+zeDZSZxpENhuaLgxLoq9MVBs5t/nO1kMZFepTMu2JBOo4nguFFEJ+Br/H5m0ith88q80/Xeq2c3tUIm'
+                'KlE6GzFVCR2aFhiZnT/ZTbS8jt1ac/ygfXofuP1b2lNWK7WjwFz8GHtVMVT3NuSG6TN+LbpQwzVu9ofQ/ijXn9fe40OM4CDOm1fZr'
+                'LK+NzdmmFKrD2wzcMultBp2bDJ0dL6xueNeVHDUjgLq1zjL1bHoi3aBqBrJuzyHBZ9VU4d5DT5ct78bT+df29kgbD3PA4wBsVEhCV'
+                'bR+m/r21IVHv44BxCMV/eCIdLcsNSY4Nv7R/E9ppYlKx056hrfjOhkrlEIOOWqjzXFlJ1XVLjwv8JIb8QaovXNZ9B/6l1yCjtzeR5'
+                'WXRtEG0d4aC61TKfHCGiasMZXbgzEg/UIk2cwecl8dhPqrPdysvlxLKKldX6kD7v8tISe/JwkfjiLZoiHUzN+P857KrNldWVBnL84'
+                'cJAHQCs95fxK/d8G9VUr9SBcbuuz/qKdp9qM+ooi3yZZOrXSKxJIclXWGwwZmo9T9DDlRBi7D0kzjNvmxjoWk/8LD78tF6YcqSxuo'
+                'gQut+JSGisXut460iX8GPzhjSKtsieA7fMynWlrFnUdEkPtgkSwJidxkWF7RjhP48iyLFDWET4aGtIJN0VbNf6c74i4EIvQIeOmVI'
+                'uPaSUhmHePm4jZiC/j0zxQ/kP9Q20aM+VJV2x3D/ege3l+OrpeE/Tom0OLNzdVNtLALW9lHD3hqFbYl+hSwNT8/KbRherIYhJJo+5'
+                'fK5A4EuHf6KCuKliePIAGVLbk/mCkKSnBuRh9O6zfmnnzOlsrtnuLoFXJQgp12gJFzIIOV0jNiwnQB4slxhbzySzv7kaZZWbzWqRV'
+                'EbRxxZJsxhsTOpN3nOuhRCO2iE7hiRQwO5zw2MJ5uoA2PUtsLoo0R5C3kNEwTgL5IZnEa08ca7ogP9SSj58umqen3TLj48VcYJeXL'
+                '7n6av2eDLDeQQLQkZoYN+D5U14IpYE2+mUKoaocQffAYeRx7eDgccPE8fVfpvfg98xD+9UXSS8OS7WZeeZHOxoIOQVj/3xb'
+        })
+
+    def get_item(self):
+        return EncryptedItem({
+            'uuid': '9E7673CCBB5B4AC9A7A8838835CB7E83',
+            'updatedAt': 1383517778,
+            'locationKey': 'somewebsite.com',
+            'folderUuid': '4A3D784D115F4279BDFCE46D0A162D57',
+            'openContents': {
+                'usernameHash': 'dde97596b7b3f628f89f1a95287f81eacece16b59c12684173f76ec45d6ab7b8',
+                'tags': [
+                    'tag1'
+                ],
+                'contentsHash': 'a15eef10'
+            },
+            'keyID': '98EB2E946008403280A3A8D9261018A4',
+            'title': 'Some Website',
+            'location': 'http://www.somewebsite.com',
+            'encrypted':
+                'U2FsdGVkX1/kMpBidzoNbFIdxvR/iS4Jk1YcYQL7F1ZXOEeslC7C4B6ZJkBNpBRF9J8b5a3WJBnAIpDOE8MYCeM4qUnZ1HOzzrEqc'
+                'zPSWxESkHSqeuBHfu6Zv4gpsHqoim6hxCMp8AI6u7IrKWLS+g39Di3N73df/CG9U39YNwG6oVgf1bAESkrLyVTEz17/9o1J6EmGem'
+                'IFWma6w3PkxTXl/YEcUYhOWJBUIZ0n6iYq+95IQBRjQ1QtObo3bdcURzdF5wg2HpCtF8FurqWSPYWzqH/TGxG4SKbIkiSPB40='
+                '\u0000',
+            'createdAt': 1383517434,
+            'typeName': 'webforms.WebForm'
         })

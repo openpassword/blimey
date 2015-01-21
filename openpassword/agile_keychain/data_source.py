@@ -1,19 +1,13 @@
 import os
-import json
 import gc
 import glob
-
-from base64 import b64decode, b64encode
-from math import fmod
 
 from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
     UnauthenticatedDataSourceException
 from openpassword.agile_keychain._key_manager import KeyManager
 from openpassword.agile_keychain._item_manager import ItemManager
-from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
-from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, _derive_openssl_key, \
-    _aes_encrypt, _aes_decrypt
+from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, decrypt_item, encrypt_item
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
@@ -76,52 +70,20 @@ class DataSource(abstract.DataSource):
             encrypted_key = encrypt_key(key, password)
             self._key_manager.save_key(encrypted_key)
 
-    def add_item(self, item):
+    def add_item(self, decrypted_item):
         if self.is_authenticated() is False:
             raise UnauthenticatedDataSourceException()
 
-        key = self._get_default_key()
-        init_vector = os.urandom(8)
-        derived_key = _derive_openssl_key(key.key, init_vector)
-
-        data = json.dumps(item.secrets)
-        data = byte_pad(data.encode('utf8'), 16)
-        data = _aes_encrypt(derived_key[0:16], derived_key[16:], data)
-
-        encrypted_data = b'Salted__' + init_vector + data
-
-        data = {
-            'uuid': item.get_id(),
-            'encrypted': b64encode(byte_pad(encrypted_data)).decode('ascii'),
-            'openContents': {},
-            'locationKey': '',
-            'title': 'Created by AgileKeychain',
-            'location': '',
-            'typeName': 'securenotes.SecureNote'
-        }
-
-        with open(os.path.join(self._default_folder, "{0}.1password".format(item.get_id())), "w") as file:
-            json.dump(data, file)
+        encrypted_item = encrypt_item(decrypted_item, self._get_default_key())
+        self._item_manager.save_item(encrypted_item)
 
     def get_item_by_id(self, item_id):
-        item_path = os.path.join(self._base_path, "data", "default", item_id + ".1password")
-        with open(item_path, 'r') as file:
-            data = json.load(file)
+        if self.is_authenticated() is False:
+            raise UnauthenticatedDataSourceException()
 
-        key = self._get_key_for_item(data)
+        encrypted_item = self._item_manager.get_by_id(item_id)
 
-        encrypted = b64decode(data['encrypted'])
-        init_vector = encrypted[8:16]
-        derived_key = _derive_openssl_key(key.key, init_vector)
-        decrypted = _aes_decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
-        decrypted = strip_byte_padding(decrypted)
-        decrypted_data = json.loads(decrypted.decode('ascii'))
-
-        item = AgileKeychainItem(data)
-        # item.id = data['uuid']
-        item.secrets = decrypted_data
-
-        return item
+        return decrypt_item(encrypted_item, self._get_key_for_item(encrypted_item))
 
     def get_all_items(self):
         item_paths = glob.glob(os.path.join(self._base_path, "data", "default", "*.1password"))
@@ -141,10 +103,13 @@ class DataSource(abstract.DataSource):
         buildnum_file.close()
 
     def _get_key_for_item(self, item):
-        if 'securityLevel' in item['openContents']:
-            return self._get_key_by_security_level(item['openContents']['securityLevel'])
+        if item['openContents'] is None:
+            return self._get_default_key()
 
-        return self._get_default_key()
+        if 'securityLevel' not in item['openContents']:
+            return self._get_default_key()
+
+        return self._get_key_by_security_level(item['openContents']['securityLevel'])
 
     def _get_key_by_security_level(self, security_level):
         return [key for key in self._keys if key.level == security_level][0]
@@ -180,40 +145,3 @@ class DataSource(abstract.DataSource):
 
         self._key_manager.save_key(level3_key)
         self._key_manager.save_key(level5_key)
-
-
-def byte_pad(input_bytes, length=8):
-    if length > 256:
-        raise ValueError("Maximum padding length is 256")
-
-    # Modulo input bytes length with padding length to see how many bytes to pad with
-    bytes_to_pad = length - int(fmod(len(input_bytes), length))
-
-    if bytes_to_pad == length:
-        bytes_to_pad = 0
-
-    # Pad input bytes with a sequence of bytes containing the number of padded bytes
-    input_bytes += bytes([bytes_to_pad] * bytes_to_pad)
-
-    return input_bytes
-
-
-def strip_byte_padding(input_bytes, length=16):
-    if fmod(len(input_bytes), length) != 0:
-        raise ValueError("Input byte length is not divisible by %s " % length)
-
-    # Get the last {length} bytes of the input bytes, reversed
-    if len(input_bytes) == length:
-        byte_block = bytes(input_bytes[::-1])
-    else:
-        byte_block = bytes(input_bytes[:length:-1])
-
-    # If input bytes is padded, the padding is equal to byte value of the number
-    # of bytes padded. So we can read the padding value from the last byte..
-    padding_byte = byte_block[0:1]
-
-    for i in range(1, ord(padding_byte.decode())):
-        if byte_block[i:i+1] != padding_byte:
-            return input_bytes
-
-    return input_bytes[0:-ord(padding_byte.decode())]

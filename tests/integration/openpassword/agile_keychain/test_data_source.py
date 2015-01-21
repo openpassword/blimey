@@ -3,7 +3,7 @@ import shutil
 from nose.tools import raises
 
 from openpassword.agile_keychain import DataSource
-from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
+from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
 from openpassword.exceptions import IncorrectPasswordException, UnauthenticatedDataSourceException
 
 
@@ -67,17 +67,17 @@ class AgileKeychainDataSourceTest:
 
         item = data_source.get_item_by_id('5F7210FD2F3F460692B7083C60854A02')
 
-        assert item.secrets['path'] == '/some/path'
-        assert item.secrets['username'] == 'someuser'
-        assert item.secrets['password'] == 'password123'
-        assert item.secrets['server'] == 'ftp://someserver.com'
+        assert item['encrypted']['path'] == '/some/path'
+        assert item['encrypted']['username'] == 'someuser'
+        assert item['encrypted']['password'] == 'password123'
+        assert item['encrypted']['server'] == 'ftp://someserver.com'
 
         item = data_source.get_item_by_id('2E21D652E0754BD59F6B94B0323D0142')
 
-        assert item.secrets['product_version'] == '1.2.3'
-        assert item.secrets['reg_email'] == 'some.user@emailprovider.tld'
-        assert item.secrets['reg_code'] == 'abc-license-123'
-        assert item.secrets['reg_name'] == 'Some User'
+        assert item['encrypted']['product_version'] == '1.2.3'
+        assert item['encrypted']['reg_email'] == 'some.user@emailprovider.tld'
+        assert item['encrypted']['reg_code'] == 'abc-license-123'
+        assert item['encrypted']['reg_name'] == 'Some User'
 
     def it_retrieves_all_items(self):
         test_path = os.path.join('tests', 'fixtures', 'test.agilekeychain')
@@ -97,27 +97,29 @@ class AgileKeychainDataSourceTest:
         ]
 
         for item in data_source.get_all_items():
-            assert item.get_id() in expected_item_ids
+            assert item['uuid'] in expected_item_ids
 
     @raises(UnauthenticatedDataSourceException)
     def it_throws_if_adding_items_without_authenticating_first(self):
         self._initialise_data_source()
-        self._data_source.add_item(AgileKeychainItem())
+        self._data_source.add_item(DecryptedItem.create())
 
     def it_adds_an_item_to_the_keychain(self):
         self._initialise_data_source()
         self._data_source.authenticate(self._password)
 
-        item = AgileKeychainItem()
-        item.secrets['username'] = 'mulder'
-        item.secrets['password'] = 'trustno1'
+        item = DecryptedItem.create()
+        item['encrypted'] = {
+            'username': 'mulder',
+            'password': 'trustno1'
+        }
 
         self._data_source.add_item(item)
 
-        retrieved_item = self._data_source.get_item_by_id(item.get_id())
+        retrieved_item = self._data_source.get_item_by_id(item['uuid'])
 
-        assert item.secrets['username'] == retrieved_item.secrets['username']
-        assert item.secrets['password'] == retrieved_item.secrets['password']
+        assert item['encrypted']['username'] == retrieved_item['encrypted']['username']
+        assert item['encrypted']['password'] == retrieved_item['encrypted']['password']
 
     def _initialise_data_source(self):
         self._data_source = DataSource(self._temporary_path)
