@@ -24,8 +24,12 @@ class Keychain(object):
         return self._data_source.is_initialised()
 
     def set_password(self, password):
-        self._assert_not_locked()
+        self._assert_unlocked()
         self._data_source.set_password(password)
+
+    def create_item(self):
+        self._assert_unlocked()
+        return self._data_source.create_item()
 
     def save_item(self, item):
         try:
@@ -33,7 +37,7 @@ class Keychain(object):
         except UnauthenticatedDataSourceException:
             raise KeychainLockedException
 
-    def _assert_not_locked(self):
+    def _assert_unlocked(self):
         if self.is_locked() is True:
             raise KeychainLockedException
 
@@ -46,9 +50,9 @@ class Keychain(object):
             raise NonInitialisedKeychainException
 
     def __getitem__(self, item_id):
-        self._assert_not_locked()
+        self._assert_unlocked()
         return self._data_source.get_item_by_id(item_id)
 
     def __iter__(self):
-        self._assert_not_locked()
+        self._assert_unlocked()
         return iter(self._data_source.get_all_items())

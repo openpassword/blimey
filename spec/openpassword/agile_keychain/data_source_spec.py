@@ -3,6 +3,7 @@ from nose.tools import raises
 
 from openpassword.agile_keychain import DataSource
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
+from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
 
 
 class DataSourceSpec:
@@ -43,6 +44,15 @@ class DataSourceSpec:
         data_source.authenticate('password')
 
         assert data_source.is_authenticated() is False
+
+    @patch("openpassword.agile_keychain.data_source.generate_id")
+    def it_creates_items(self, generate_id):
+        generate_id.return_value = 'random'
+        data_source = DataSource('some_path')
+        item = data_source.create_item()
+
+        assert type(item) is DecryptedItem
+        assert item['uuid'] == 'random'
 
     # @patch("openpassword.agile_keychain._key.EncryptedKey")
     # @patch("openpassword.agile_keychain._key.EncryptedKey")

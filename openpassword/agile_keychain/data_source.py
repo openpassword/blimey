@@ -7,7 +7,9 @@ from openpassword.exceptions import KeyValidationException, IncorrectPasswordExc
     UnauthenticatedDataSourceException
 from openpassword.agile_keychain._key_manager import KeyManager
 from openpassword.agile_keychain._item_manager import ItemManager
-from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, decrypt_item, encrypt_item
+from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, decrypt_item, encrypt_item, \
+    generate_id
+from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
@@ -69,6 +71,9 @@ class DataSource(abstract.DataSource):
         for key in self._keys:
             encrypted_key = encrypt_key(key, password)
             self._key_manager.save_key(encrypted_key)
+
+    def create_item(self):
+        return DecryptedItem({'uuid': generate_id()})
 
     def save_item(self, decrypted_item):
         if self.is_authenticated() is False:

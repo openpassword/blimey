@@ -1,19 +1,18 @@
 import os
-from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
 
 TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 
 
 @given('a new item has been added to the keychain')
 def step_impl(context):
-    _add_item(context, DecryptedItem.create())
+    _add_item(context, context.keychain.create_item())
 
 
 @given('a number of items is added to the keychain')
 def step_impl(context):
-    _add_item(context, DecryptedItem.create())
-    _add_item(context, DecryptedItem.create())
-    _add_item(context, DecryptedItem.create())
+    _add_item(context, context.keychain.create_item())
+    _add_item(context, context.keychain.create_item())
+    _add_item(context, context.keychain.create_item())
 
 
 @when('I get an item by the same id')
