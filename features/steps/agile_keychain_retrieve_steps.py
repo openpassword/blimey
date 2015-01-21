@@ -50,4 +50,4 @@ def _add_item(context, item):
         context.added_items = []
 
     context.added_items.append(item['uuid'])
-    context.keychain.append(item)
+    context.keychain.save_item(item)

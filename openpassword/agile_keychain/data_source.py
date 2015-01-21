@@ -70,7 +70,7 @@ class DataSource(abstract.DataSource):
             encrypted_key = encrypt_key(key, password)
             self._key_manager.save_key(encrypted_key)
 
-    def add_item(self, decrypted_item):
+    def save_item(self, decrypted_item):
         if self.is_authenticated() is False:
             raise UnauthenticatedDataSourceException()
 

@@ -23,15 +23,15 @@ class Keychain(object):
     def is_initialised(self):
         return self._data_source.is_initialised()
 
-    def append(self, item):
-        try:
-            self._data_source.add_item(item)
-        except UnauthenticatedDataSourceException:
-            raise KeychainLockedException
-
     def set_password(self, password):
         self._assert_not_locked()
         self._data_source.set_password(password)
+
+    def save_item(self, item):
+        try:
+            self._data_source.save_item(item)
+        except UnauthenticatedDataSourceException:
+            raise KeychainLockedException
 
     def _assert_not_locked(self):
         if self.is_locked() is True:

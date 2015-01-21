@@ -102,7 +102,7 @@ class AgileKeychainDataSourceTest:
     @raises(UnauthenticatedDataSourceException)
     def it_throws_if_adding_items_without_authenticating_first(self):
         self._initialise_data_source()
-        self._data_source.add_item(DecryptedItem.create())
+        self._data_source.save_item(DecryptedItem.create())
 
     def it_adds_an_item_to_the_keychain(self):
         self._initialise_data_source()
@@ -114,7 +114,7 @@ class AgileKeychainDataSourceTest:
             'password': 'trustno1'
         }
 
-        self._data_source.add_item(item)
+        self._data_source.save_item(item)
 
         retrieved_item = self._data_source.get_item_by_id(item['uuid'])
 

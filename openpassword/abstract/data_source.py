@@ -27,7 +27,7 @@ class DataSource(metaclass=ABCMeta):
         return NotImplemented
 
     @abstractmethod
-    def add_item(self, item):
+    def save_item(self, item):
         return NotImplemented
 
     @abstractmethod

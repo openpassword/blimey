@@ -102,10 +102,10 @@ class KeychainSpec:
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)
     def it_throws_if_adding_items_to_a_locked_keychain(self, data_source):
-        data_source.add_item.side_effect = UnauthenticatedDataSourceException
+        data_source.save_item.side_effect = UnauthenticatedDataSourceException
 
         keychain = Keychain(data_source)
-        keychain.append({"id": "someitem_id"})
+        keychain.save_item({"id": "someitem_id"})
 
     @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)
@@ -119,9 +119,9 @@ class KeychainSpec:
     @patch("openpassword.abstract.DataSource")
     def it_delegates_item_creation_to_the_data_source(self, data_source, item):
         keychain = Keychain(data_source)
-        keychain.append(item)
+        keychain.save_item(item)
 
-        data_source.add_item.assert_called_with(item)
+        data_source.save_item.assert_called_with(item)
 
     @patch("openpassword.abstract.DataSource")
     def it_is_created_initialised_for_an_initialised_data_source(self, data_source):
