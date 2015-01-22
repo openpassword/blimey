@@ -77,7 +77,7 @@ class DataSourceSpec:
     @patch("openpassword.agile_keychain.data_source.gc")
     def it_unsets_keys_and_triggers_garbage_collection_on_deauthentication(self, gc):
         data_source = DataSource('some_path')
-        data_source._keys = [1,2,3]
+        data_source._keys = [1, 2, 3]
         data_source.deauthenticate()
 
         gc.collect.assert_called_with()
