@@ -147,6 +147,15 @@ class KeychainSpec:
         keychain = Keychain(data_source)
 
         assert keychain.create_item() == item
+        data_source.create_item.assert_called_with(None)
+
+    @patch("openpassword.abstract.Item")
+    @patch("openpassword.abstract.DataSource")
+    def it_passes_initialisation_data_to_create_item(self, data_source, item):
+        keychain = Keychain(data_source)
+        keychain.create_item('some data')
+
+        data_source.create_item.assert_called_with('some data')
 
     # Saving items
 

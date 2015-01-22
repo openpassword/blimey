@@ -27,9 +27,9 @@ class Keychain(object):
         self._assert_unlocked()
         self._data_source.set_password(password)
 
-    def create_item(self):
+    def create_item(self, data=None):
         self._assert_unlocked()
-        return self._data_source.create_item()
+        return self._data_source.create_item(data)
 
     def save_item(self, item):
         try:

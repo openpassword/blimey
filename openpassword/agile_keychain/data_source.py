@@ -70,8 +70,12 @@ class DataSource(abstract.DataSource):
             encrypted_key = encrypt_key(key, password)
             self._key_manager.save_key(encrypted_key)
 
-    def create_item(self):
-        return DecryptedItem({'uuid': generate_id()})
+    def create_item(self, data=None):
+        if type(data) is not dict:
+            data = {}
+
+        data['uuid'] = generate_id()
+        return DecryptedItem(data)
 
     def save_item(self, decrypted_item):
         if self.is_authenticated() is False:

@@ -2,7 +2,8 @@ from unittest.mock import patch, Mock, MagicMock, call
 from nose.tools import raises
 
 from openpassword.agile_keychain import DataSource
-from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
+from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
+    UnauthenticatedDataSourceException
 from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
 from openpassword.agile_keychain._file_system_manager import FileSystemManager
 from openpassword.agile_keychain._key_manager import KeyManager
@@ -93,8 +94,20 @@ class DataSourceSpec:
         assert type(item) is DecryptedItem
         assert item['uuid'] == 'random'
 
-    def it_saves_items(self):
-        pass
+    @patch("openpassword.agile_keychain.data_source.generate_id")
+    def it_creates_items_item_initialised_with_data(self, generate_id):
+        generate_id.return_value = 'random'
+        data_source = DataSource('some_path')
+        item = data_source.create_item({'title': 'Thing'})
+
+        assert type(item) is DecryptedItem
+        assert item['uuid'] == 'random'
+        assert item['title'] == 'Thing'
+
+    @raises(UnauthenticatedDataSourceException)
+    def it_throws_if_saving_an_item_with_deauthenticated_data_source(self):
+        data_source = DataSource('some_path')
+        data_source.save_item(Mock())
 
     @patch.object(KeyManager, 'get_keys')
     @patch.object(KeyManager, 'save_key')
