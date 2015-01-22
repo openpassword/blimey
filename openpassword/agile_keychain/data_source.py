@@ -5,6 +5,7 @@ import glob
 from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
     UnauthenticatedDataSourceException
+from openpassword.agile_keychain._file_system_manager import FileSystemManager
 from openpassword.agile_keychain._key_manager import KeyManager
 from openpassword.agile_keychain._item_manager import ItemManager
 from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, decrypt_item, encrypt_item, \
@@ -19,32 +20,29 @@ class DataSource(abstract.DataSource):
     BUILD_NUMBER_FILE = 'buildnum'
     BUILD_NUMBER = '32009'
 
-    def __init__(self, path, key_manager=KeyManager, item_manager=ItemManager):
+    def __init__(self, path):
         self._base_path = path
-        self._default_folder = os.path.join(self._base_path, "data", "default")
-        self._config_folder = os.path.join(self._base_path, "config")
-        self._key_manager = key_manager(self._base_path)
-        self._item_manager = item_manager(self._base_path)
+        # self._default_folder = os.path.join(self._base_path, "data", "default")
+        # self._config_folder = os.path.join(self._base_path, "config")
+        self._file_system_manager = FileSystemManager(path)
+        self._key_manager = KeyManager(path)
+        self._item_manager = ItemManager(path)
         self._keys = []
 
     def initialise(self, password, config=None):
-        os.makedirs(self._default_folder)
-        os.makedirs(self._config_folder)
+        self._file_system_manager.initialise()
 
-        for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
-            open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
-
-        self._initialise_key_files(password, self._read_iterations_from_config(config))
-        self._create_buildnum_file()
-
-        self.set_password(password)
+        iterations = self._read_iterations_from_config(config)
+        self._key_manager.save_key(create_key(password, 'SL3', iterations))
+        self._key_manager.save_key(create_key(password, 'SL5', iterations))
 
     def is_initialised(self):
-        return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
+        return self._file_system_manager.is_initialised()
+        # return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
 
     def authenticate(self, password):
         keys = self._key_manager.get_keys()
-
+        print(keys)
         for key in keys:
             try:
                 decrypted_key = decrypt_key(key, password)
@@ -52,10 +50,6 @@ class DataSource(abstract.DataSource):
                 raise IncorrectPasswordException
 
             self._keys.append(decrypted_key)
-
-    def deauthenticate(self):
-        self._keys = []
-        gc.collect()
 
     def is_authenticated(self):
         if len(self._keys) == 0:
@@ -66,6 +60,10 @@ class DataSource(abstract.DataSource):
                 return False
 
         return True
+
+    def deauthenticate(self):
+        self._keys = []
+        gc.collect()
 
     def set_password(self, password):
         for key in self._keys:
@@ -79,7 +77,7 @@ class DataSource(abstract.DataSource):
         if self.is_authenticated() is False:
             raise UnauthenticatedDataSourceException()
 
-        encrypted_item = encrypt_item(decrypted_item, self._get_default_key())
+        encrypted_item = encrypt_item(decrypted_item, self._get_key_for_item(decrypted_item))
         self._item_manager.save_item(encrypted_item)
 
     def get_item_by_id(self, item_id):
@@ -143,10 +141,3 @@ class DataSource(abstract.DataSource):
 
     def _is_valid_folder(self, folder):
         return os.path.exists(folder) and os.path.isdir(folder)
-
-    def _initialise_key_files(self, password, iterations):
-        level3_key = self._key_manager.create_key(password, level='SL3', iterations=iterations)
-        level5_key = self._key_manager.create_key(password, level='SL5', iterations=iterations)
-
-        self._key_manager.save_key(level3_key)
-        self._key_manager.save_key(level5_key)
