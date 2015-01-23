@@ -1,6 +1,7 @@
 import os
 import json
 import glob
+import time
 
 from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem
 
@@ -29,5 +30,7 @@ class ItemManager:
         return items
 
     def save_item(self, item):
+        item['updatedAt'] = int(time.time())
+
         with open(os.path.join(self._base_path, "data", "default", "{0}.1password".format(item['uuid'])), "w") as file:
             json.dump(item, file)

@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 from nose.tools import raises
 
 from openpassword.agile_keychain._manager._item_manager import ItemManager
@@ -49,6 +50,18 @@ class ItemManagerTest:
         retrieved_item = item_manager.get_by_id(item['uuid'])
 
         assert item['uuid'] == retrieved_item['uuid']
+
+    def it_sets_update_time_on_save(self):
+        self._init_default_data_dir()
+        item_manager = ItemManager(self._temporary_path)
+
+        item = AgileKeychainItem({'uuid': '123abc'})
+        item_manager.save_item(item)
+
+        retrieved_item = item_manager.get_by_id(item['uuid'])
+
+        assert item['updatedAt'] > 0
+        assert item['updatedAt'] <= time.time()
 
     def _init_default_data_dir(self):
         os.makedirs(os.path.join(self._temporary_path, 'data', 'default'))
