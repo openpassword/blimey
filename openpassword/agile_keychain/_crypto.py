@@ -88,7 +88,7 @@ def decrypt_item(item, decrypted_key):
     derived_key = _derive_openssl_key(decrypted_key.key, init_vector)
     decrypted = _aes_decrypt(derived_key[0:16], derived_key[16:], encrypted[16:])
     decrypted = _strip_byte_padding(decrypted)
-    decrypted_data = json.loads(decrypted.decode('ascii'))
+    decrypted_data = json.loads(decrypted.decode('utf8'))
 
     decrypted_item = DecryptedItem(item)
     decrypted_item['encrypted'] = decrypted_data
