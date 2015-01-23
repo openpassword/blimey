@@ -1,11 +1,9 @@
 import os
 import shutil
-from openpassword.agile_keychain._item_manager import ItemManager
-from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
 from nose.tools import raises
 
-# from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
-# from openpassword.agile_keychain._key import Key
+from openpassword.agile_keychain._item_manager import ItemManager
+from openpassword.agile_keychain.data_source import DecryptedItem
 
 
 class ItemManagerTest:
@@ -45,7 +43,7 @@ class ItemManagerTest:
         self._init_default_data_dir()
         item_manager = ItemManager(self._temporary_path)
 
-        item = DecryptedItem.create()
+        item = DecryptedItem({'uuid': '123abc'})
         item_manager.save_item(item)
 
         retrieved_item = item_manager.get_by_id(item['uuid'])

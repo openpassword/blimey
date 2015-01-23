@@ -17,9 +17,3 @@ class DecryptedItem(defaultdict):
 
     def __missing__(self, key):
         return None
-
-    @staticmethod
-    def create():
-        return DecryptedItem({
-            'uuid': '123123'
-        })
