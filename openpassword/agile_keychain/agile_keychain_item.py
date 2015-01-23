@@ -3,7 +3,7 @@ from collections import defaultdict
 from openpassword import abstract
 
 
-class EncryptedItem(defaultdict):
+class EncryptedAgileKeychainItem(defaultdict):
     def __init__(self, data):
         self.update(data)
 
@@ -11,7 +11,7 @@ class EncryptedItem(defaultdict):
         return None
 
 
-class DecryptedItem(defaultdict):
+class AgileKeychainItem(defaultdict):
     def __init__(self, data):
         self.update(data)
 

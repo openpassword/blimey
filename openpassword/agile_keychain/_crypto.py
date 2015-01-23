@@ -8,7 +8,7 @@ import json
 
 from openpassword.exceptions import KeyValidationException
 from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
-from openpassword.agile_keychain.agile_keychain_item import EncryptedItem, DecryptedItem
+from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
 
 
 def generate_id():
@@ -90,7 +90,7 @@ def decrypt_item(item, decrypted_key):
     decrypted = _strip_byte_padding(decrypted)
     decrypted_data = json.loads(decrypted.decode('utf8'))
 
-    decrypted_item = DecryptedItem(item)
+    decrypted_item = AgileKeychainItem(item)
     decrypted_item['encrypted'] = decrypted_data
 
     return decrypted_item
@@ -106,7 +106,7 @@ def encrypt_item(item, decrypted_key):
 
     encrypted_data = b64encode(b'Salted__' + init_vector + data).decode('ascii')
 
-    encrypted_item = EncryptedItem(item)
+    encrypted_item = EncryptedAgileKeychainItem(item)
     encrypted_item['encrypted'] = encrypted_data
 
     return encrypted_item

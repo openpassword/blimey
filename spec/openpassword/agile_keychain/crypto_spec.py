@@ -2,7 +2,7 @@ from nose.tools import raises
 
 from openpassword.agile_keychain._crypto import decrypt_key, encrypt_key, create_key, decrypt_item, encrypt_item
 from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
-from openpassword.agile_keychain.agile_keychain_item import EncryptedItem, DecryptedItem
+from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
 from openpassword.exceptions import KeyValidationException
 
 
@@ -89,7 +89,7 @@ class CryptoSpec:
         })
 
     def get_item(self):
-        return EncryptedItem({
+        return EncryptedAgileKeychainItem({
             'uuid': '9E7673CCBB5B4AC9A7A8838835CB7E83',
             'updatedAt': 1383517778,
             'locationKey': 'somewebsite.com',

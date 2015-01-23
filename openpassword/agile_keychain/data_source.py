@@ -11,7 +11,7 @@ from openpassword.agile_keychain._key_manager import KeyManager
 from openpassword.agile_keychain._item_manager import ItemManager
 from openpassword.agile_keychain._crypto import create_key, decrypt_key, encrypt_key, \
     decrypt_item, encrypt_item, generate_id
-from openpassword.agile_keychain.agile_keychain_item import DecryptedItem
+from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
 
 DEFAULT_ITERATIONS = 25000
 
@@ -66,7 +66,7 @@ class DataSource(abstract.DataSource):
         item['uuid'] = generate_id()
         item['keyID'] = self._get_default_key().identifier
 
-        return DecryptedItem(item)
+        return AgileKeychainItem(item)
 
     def save_item(self, decrypted_item):
         self._assert_data_source_is_authenticated()

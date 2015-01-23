@@ -3,7 +3,7 @@ import shutil
 from nose.tools import raises
 
 from openpassword.agile_keychain._item_manager import ItemManager
-from openpassword.agile_keychain.data_source import DecryptedItem
+from openpassword.agile_keychain.data_source import AgileKeychainItem
 
 
 class ItemManagerTest:
@@ -43,7 +43,7 @@ class ItemManagerTest:
         self._init_default_data_dir()
         item_manager = ItemManager(self._temporary_path)
 
-        item = DecryptedItem({'uuid': '123abc'})
+        item = AgileKeychainItem({'uuid': '123abc'})
         item_manager.save_item(item)
 
         retrieved_item = item_manager.get_by_id(item['uuid'])

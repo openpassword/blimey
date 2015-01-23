@@ -2,7 +2,7 @@ import os
 import json
 import glob
 
-from openpassword.agile_keychain.agile_keychain_item import EncryptedItem
+from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem
 
 
 class ItemManager:
@@ -15,7 +15,7 @@ class ItemManager:
         with open(item_path, 'r') as file:
             data = json.load(file)
 
-        return EncryptedItem(data)
+        return EncryptedAgileKeychainItem(data)
 
     def get_all_items(self):
         item_paths = glob.glob(os.path.join(self._base_path, "data", "default", "*.1password"))
