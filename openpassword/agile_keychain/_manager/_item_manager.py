@@ -34,3 +34,27 @@ class ItemManager:
 
         with open(os.path.join(self._base_path, "data", "default", "{0}.1password".format(item['uuid'])), "w") as file:
             json.dump(item, file)
+
+        self._update_contents_file()
+
+    def _update_contents_file(self):
+        item_paths = glob.glob(os.path.join(self._base_path, "data", "default", "*.1password"))
+
+        contents = []
+        for item_path in item_paths:
+            basename = os.path.basename(item_path)
+            item_id, _ = os.path.splitext(basename)
+            item = self.get_by_id(item_id)
+
+            contents.append([
+                item['uuid'],
+                item['typeName'],
+                item['title'],
+                item['locationKey'],
+                item['folderUuid'],
+                0,
+                'Y' if item['trashed'] is True else 'N'
+            ])
+
+        with open(os.path.join(self._base_path, "data", "default", "contents.js"), "w") as file:
+            json.dump(contents, file)

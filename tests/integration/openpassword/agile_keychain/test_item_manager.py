@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import json
 from nose.tools import raises
 
 from openpassword.agile_keychain._manager._item_manager import ItemManager
@@ -44,7 +45,7 @@ class ItemManagerTest:
         self._init_default_data_dir()
         item_manager = ItemManager(self._temporary_path)
 
-        item = AgileKeychainItem({'uuid': '123abc'})
+        item = self._get_item()
         item_manager.save_item(item)
 
         retrieved_item = item_manager.get_by_id(item['uuid'])
@@ -55,13 +56,42 @@ class ItemManagerTest:
         self._init_default_data_dir()
         item_manager = ItemManager(self._temporary_path)
 
-        item = AgileKeychainItem({'uuid': '123abc'})
+        item = self._get_item()
         item_manager.save_item(item)
 
         retrieved_item = item_manager.get_by_id(item['uuid'])
 
         assert item['updatedAt'] > 0
         assert item['updatedAt'] <= time.time()
+
+    def it_updates_contents_file_when_items_are_saved(self):
+        self._init_default_data_dir()
+
+        item_manager = ItemManager(self._temporary_path)
+
+        item = self._get_item()
+        item_manager.save_item(item)
+
+        with open(os.path.join(self._temporary_path, 'data', 'default', 'contents.js')) as file:
+            contents = json.load(file)
+
+        assert contents[0][0] == item['uuid']
+        assert contents[0][1] == item['typeName']
+        assert contents[0][2] == item['title']
+        assert contents[0][3] == item['locationKey']
+        assert contents[0][4] == item['folderUuid']
+        assert contents[0][5] == 0  # No idea what this value is
+        assert contents[0][6] == 'Y'  # Corresponds to 'trashed'
+
+    def _get_item(self):
+        return AgileKeychainItem({
+            'uuid': 'abcdef',
+            'typeName': 'typename',
+            'title': 'Title',
+            'locationKey': 'locationkey',
+            'folderUuid': 'undefined',
+            'trashed': True
+        })
 
     def _init_default_data_dir(self):
         os.makedirs(os.path.join(self._temporary_path, 'data', 'default'))
