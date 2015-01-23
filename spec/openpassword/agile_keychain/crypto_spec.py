@@ -8,28 +8,28 @@ from openpassword.exceptions import KeyValidationException
 
 class CryptoSpec:
     @raises(KeyValidationException)
-    def it_throws_if_decryption_fails(self):
+    def it_throws_if_key_decryption_fails(self):
         key = self.get_key()
         decrypt_key(key, 'wrongpassword')
 
-    def it_silently_validates_with_correct_password(self):
+    def it_silently_decrypts_keys_with_correct_password(self):
         key = self.get_key()
         decrypt_key(key, 'masterpassword123')
 
-    def it_reencrypts_with_new_password(self):
+    def it_reencrypts_keys_with_new_password(self):
         key = self.get_key()
         decrypted_key = decrypt_key(key, 'masterpassword123')
         encrypted_key = encrypt_key(decrypted_key, 'new_and_better_password')
         decrypt_key(encrypted_key, 'new_and_better_password')
 
-    def it_creates_key(self):
+    def it_creates_keys(self):
         encrypted_key = create_key('password', 'SL4', 10)
         decrypt_key(encrypted_key, 'password')
 
         assert encrypted_key.level == 'SL4'
         assert encrypted_key.iterations == 10
 
-    def it_decrypts_item(self):
+    def it_decrypts_items(self):
         encrypted_key = self.get_key()
         decrypted_key = decrypt_key(encrypted_key, 'masterpassword123')
         encrypted_item = self.get_item()
@@ -38,14 +38,13 @@ class CryptoSpec:
         assert decrypted_item['encrypted']['fields'][0]['value'] == 'someuser'
         assert decrypted_item['encrypted']['fields'][1]['value'] == 'password123'
 
-    def it_encrypts_item(self):
+    def it_encrypts_items(self):
         encrypted_key = self.get_key()
         decrypted_key = decrypt_key(encrypted_key, 'masterpassword123')
         decrypted_item = self.get_item()
         decrypted_item['encrypted'] = {'fields': [{'value': 'foo'}, {'value': 'bar'}, {'ball': '⚽'}]}
 
         encrypted_item = encrypt_item(decrypted_item, decrypted_key)
-
         redecrypted_item = decrypt_item(encrypted_item, decrypted_key)
 
         assert redecrypted_item['encrypted']['fields'][0]['value'] == 'foo'
