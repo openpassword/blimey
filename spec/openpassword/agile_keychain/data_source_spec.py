@@ -86,22 +86,51 @@ class DataSourceSpec:
         assert data_source.is_authenticated() is False
 
     @patch("openpassword.agile_keychain.data_source.generate_id")
-    def it_creates_items(self, generate_id):
+    @patch("openpassword.agile_keychain.data_source.time")
+    def it_creates_items(self, time, generate_id):
         generate_id.return_value = 'random'
+        time.return_value = 1400000000.00
+
+        key3 = Mock()
+        key3.identifier = 'abcd'
+        key3.level = 'SL3'
+
+        key5 = Mock()
+        key5.identifier = 'efgh'
+        key5.level = 'SL5'
+
         data_source = DataSource('some_path')
+        data_source._keys = [key3, key5]
+
         item = data_source.create_item()
 
         assert type(item) is DecryptedItem
         assert item['uuid'] == 'random'
+        assert item['createdAt'] == 1400000000
+        assert item['location'] == ''
+        assert item['locationKey'] == ''
+        assert item['title'] == 'Untitled'
+        assert item['typeName'] == 'passwords.Password'
+        assert item['keyID'] == 'efgh'
 
     @patch("openpassword.agile_keychain.data_source.generate_id")
     def it_creates_items_item_initialised_with_data(self, generate_id):
         generate_id.return_value = 'random'
+
+        key3 = Mock()
+        key3.identifier = 'abcd'
+        key3.level = 'SL3'
+
+        key5 = Mock()
+        key5.identifier = 'efgh'
+        key5.level = 'SL5'
+
         data_source = DataSource('some_path')
+        data_source._keys = [key3, key5]
+
         item = data_source.create_item({'title': 'Thing'})
 
         assert type(item) is DecryptedItem
-        assert item['uuid'] == 'random'
         assert item['title'] == 'Thing'
 
     @raises(UnauthenticatedDataSourceException)

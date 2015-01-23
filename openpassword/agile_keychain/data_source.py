@@ -1,6 +1,7 @@
 import os
 import gc
 import glob
+from time import time
 
 from openpassword import abstract
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
@@ -60,27 +61,27 @@ class DataSource(abstract.DataSource):
         if type(data) is not dict:
             data = {}
 
-        data['uuid'] = generate_id()
-        return DecryptedItem(data)
+        item = self._get_default_item()
+        item.update(data)
+        item['uuid'] = generate_id()
+        item['keyID'] = self._get_default_key().identifier
+
+        return DecryptedItem(item)
 
     def save_item(self, decrypted_item):
-        if self.is_authenticated() is False:
-            raise UnauthenticatedDataSourceException()
+        self._assert_data_source_is_authenticated()
 
         encrypted_item = encrypt_item(decrypted_item, self._get_key_for_item(decrypted_item))
         self._item_manager.save_item(encrypted_item)
 
     def get_item_by_id(self, item_id):
-        if self.is_authenticated() is False:
-            raise UnauthenticatedDataSourceException()
+        self._assert_data_source_is_authenticated()
 
         encrypted_item = self._item_manager.get_by_id(item_id)
-
         return decrypt_item(encrypted_item, self._get_key_for_item(encrypted_item))
 
     def get_all_items(self):
-        if self.is_authenticated() is False:
-            raise UnauthenticatedDataSourceException()
+        self._assert_data_source_is_authenticated()
 
         items = []
         for encrypted_item in self._item_manager.get_all_items():
@@ -88,6 +89,10 @@ class DataSource(abstract.DataSource):
             items.append(decrypt_item(encrypted_item, key))
 
         return items
+
+    def _assert_data_source_is_authenticated(self):
+        if self.is_authenticated() is False:
+            raise UnauthenticatedDataSourceException()
 
     def _get_key_for_item(self, item):
         if item['openContents'] is None:
@@ -112,3 +117,12 @@ class DataSource(abstract.DataSource):
             return config['iterations']
 
         return DEFAULT_ITERATIONS
+
+    def _get_default_item(self):
+        return {
+            'createdAt': time(),
+            'location': '',
+            'locationKey': '',
+            'typeName': 'passwords.Password',
+            'title': 'Untitled'
+        }
