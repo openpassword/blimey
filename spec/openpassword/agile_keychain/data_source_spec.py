@@ -5,9 +5,9 @@ from openpassword.agile_keychain import DataSource
 from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
     UnauthenticatedDataSourceException
 from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
-from openpassword.agile_keychain._file_system_manager import FileSystemManager
-from openpassword.agile_keychain._key_manager import KeyManager
-from openpassword.agile_keychain._item_manager import ItemManager
+from openpassword.agile_keychain._manager._file_system_manager import FileSystemManager
+from openpassword.agile_keychain._manager._key_manager import KeyManager
+from openpassword.agile_keychain._manager._item_manager import ItemManager
 from openpassword.agile_keychain._key import EncryptedKey
 
 

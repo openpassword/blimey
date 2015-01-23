@@ -1,6 +1,6 @@
 import os
 import shutil
-from openpassword.agile_keychain._key_manager import KeyManager
+from openpassword.agile_keychain._manager._key_manager import KeyManager
 from nose.tools import raises
 
 from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException

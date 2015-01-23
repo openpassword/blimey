@@ -2,7 +2,7 @@ import os
 import shutil
 from nose.tools import raises
 
-from openpassword.agile_keychain._item_manager import ItemManager
+from openpassword.agile_keychain._manager._item_manager import ItemManager
 from openpassword.agile_keychain.data_source import AgileKeychainItem
 
 

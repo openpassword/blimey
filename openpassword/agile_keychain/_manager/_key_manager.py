@@ -43,7 +43,7 @@ class KeyManager:
         keys.append(new_key)
         keys = [self._serialize_key(key) for key in keys]
 
-        template_path = os.path.join(os.path.dirname(__file__), '1password.keys.template')
+        template_path = os.path.join(os.path.dirname(__file__), '..', 'template', '1password.keys.template')
 
         with open(template_path, 'r') as file:
             plist_template = Template(file.read())
