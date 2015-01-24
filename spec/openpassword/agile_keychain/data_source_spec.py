@@ -48,7 +48,7 @@ class DataSourceSpec:
 
         assert data_source.is_initialised() is True
 
-    @patch("openpassword.agile_keychain.data_source.decrypt_key")
+    @patch("openpassword.agile_keychain.data_source.crypto.decrypt_key")
     @patch.object(KeyManager, 'get_keys')
     def it_authenticates_against_all_keys(self, get_keys, decrypt_key):
         key3 = Mock()
@@ -61,7 +61,7 @@ class DataSourceSpec:
         decrypt_key.assert_has_calls([call(key3, 'password'), call(key5, 'password')])
         assert data_source.is_authenticated() is True
 
-    @patch("openpassword.agile_keychain.data_source.decrypt_key")
+    @patch("openpassword.agile_keychain.data_source.crypto.decrypt_key")
     @patch.object(KeyManager, 'get_keys')
     @raises(IncorrectPasswordException)
     def it_fails_authentication_if_a_key_can_not_be_validated(self, get_keys, decrypt_key):
@@ -84,7 +84,7 @@ class DataSourceSpec:
         assert data_source._keys == []
         assert data_source.is_authenticated() is False
 
-    @patch("openpassword.agile_keychain.data_source.generate_id")
+    @patch("openpassword.agile_keychain.data_source.crypto.generate_id")
     @patch("openpassword.agile_keychain.data_source.time")
     def it_creates_items(self, time, generate_id):
         generate_id.return_value = 'random'
@@ -112,7 +112,7 @@ class DataSourceSpec:
         assert item['typeName'] == 'passwords.Password'
         assert item['keyID'] == 'efgh'
 
-    @patch("openpassword.agile_keychain.data_source.generate_id")
+    @patch("openpassword.agile_keychain.data_source.crypto.generate_id")
     def it_creates_items_item_initialised_with_data(self, generate_id):
         generate_id.return_value = 'random'
 
@@ -139,8 +139,8 @@ class DataSourceSpec:
 
     @patch.object(KeyManager, 'get_keys')
     @patch.object(KeyManager, 'save_key')
-    @patch("openpassword.agile_keychain.data_source.encrypt_key")
-    @patch("openpassword.agile_keychain.data_source.decrypt_key")
+    @patch("openpassword.agile_keychain.data_source.crypto.encrypt_key")
+    @patch("openpassword.agile_keychain.data_source.crypto.decrypt_key")
     def it_re_encrypts_keys_when_password_is_changed(self, decrypt_key, encrypt_key, save_keys, get_keys):
         key3_encrypted = Mock()
         key3_decrypted = Mock()
