@@ -23,7 +23,7 @@ class DataSource(metaclass=ABCMeta):
         return NotImplemented
 
     @abstractmethod
-    def set_password(self):
+    def set_password(self, password):
         return NotImplemented
 
     @abstractmethod
@@ -35,5 +35,5 @@ class DataSource(metaclass=ABCMeta):
         return NotImplemented
 
     @abstractmethod
-    def get_all_items(self, item):
+    def get_all_items(self):
         return NotImplemented

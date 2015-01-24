@@ -1,10 +1,4 @@
-import os
-from pbkdf2 import PBKDF2
-from Crypto.Cipher import AES
-from Crypto.Hash import MD5
-from base64 import b64encode, b64decode
-
-from openpassword.exceptions import KeyValidationException
+from base64 import b64decode
 
 
 class EncryptedKey():

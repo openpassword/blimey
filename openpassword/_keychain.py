@@ -1,5 +1,5 @@
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    IncorrectPasswordException, KeychainLockedException, UnauthenticatedDataSourceException
+    KeychainLockedException, UnauthenticatedDataSourceException
 
 
 class Keychain(object):

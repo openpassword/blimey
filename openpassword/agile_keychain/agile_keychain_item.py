@@ -1,11 +1,9 @@
 from collections import defaultdict
 
-from openpassword import abstract
-
 
 class EncryptedAgileKeychainItem(defaultdict):
     def __init__(self, data):
-        self.update(data)
+        super().__init__(None, data)
 
     def __missing__(self, key):
         return None
@@ -16,7 +14,7 @@ class EncryptedAgileKeychainItem(defaultdict):
 
 class AgileKeychainItem(defaultdict):
     def __init__(self, data):
-        self.update(data)
+        super().__init__(None, data)
 
     def __missing__(self, key):
         return None

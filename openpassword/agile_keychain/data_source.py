@@ -1,6 +1,4 @@
-import os
 import gc
-import glob
 from time import time
 
 from openpassword import abstract
