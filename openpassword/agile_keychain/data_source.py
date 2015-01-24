@@ -113,7 +113,8 @@ class DataSource(abstract.DataSource):
             'location': '',
             'locationKey': '',
             'typeName': 'passwords.Password',
-            'title': 'Untitled'
+            'title': 'Untitled',
+            'encrypted': {}
         }
 
         default_data.update(data)

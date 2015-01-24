@@ -112,6 +112,7 @@ class DataSourceSpec:
         assert item['title'] == 'Untitled'
         assert item['typeName'] == 'passwords.Password'
         assert item['keyID'] == 'efgh'
+        assert item['encrypted'] == {}
 
     @patch("openpassword.agile_keychain.data_source.crypto.generate_id")
     def it_creates_items_item_initialised_with_data(self, generate_id):
