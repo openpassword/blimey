@@ -49,12 +49,8 @@ class DataSource(abstract.DataSource):
             self._key_manager.save_key(crypto.encrypt_key(key, password))
 
     def create_item(self, data=None):
-        if type(data) is not dict:
-            data = {}
-
-        item = self._get_default_item()
-        item.update(data)
-        item['uuid'] = crypto.generate_id()
+        item = self._initialise_new_item(data)
+        item['uuid'] = self._create_unique_item_id()
         item['keyID'] = self._get_default_key().identifier
 
         return AgileKeychainItem(item)
@@ -70,6 +66,15 @@ class DataSource(abstract.DataSource):
     def get_all_items(self):
         self._assert_data_source_is_authenticated()
         return [self._decrypt_item(item) for item in self._item_manager.get_all_items()]
+
+    def _create_unique_item_id(self):
+        item_id = crypto.generate_id()
+
+        try:
+            self._item_manager.get_by_id(item_id)
+            return self._create_unique_item_id()
+        except:
+            return item_id
 
     def _encrypt_item(self, item):
         return crypto.encrypt_item(item, self._get_key_for_item(item))
@@ -99,11 +104,17 @@ class DataSource(abstract.DataSource):
         except (KeyError, TypeError):
             return DEFAULT_ITERATIONS
 
-    def _get_default_item(self):
-        return {
+    def _initialise_new_item(self, data=None):
+        if type(data) is not dict:
+            data = {}
+
+        default_data = {
             'createdAt': time(),
             'location': '',
             'locationKey': '',
             'typeName': 'passwords.Password',
             'title': 'Untitled'
         }
+
+        default_data.update(data)
+        return default_data
