@@ -1,4 +1,5 @@
 import os
+from openpassword.exceptions import ItemNotFoundException
 
 TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 
@@ -24,6 +25,14 @@ def step_impl(context):
     context.retrieved_items.append(item['uuid'])
 
 
+@when('I get an item by non-existent id')
+def step_impl(context):
+    try:
+        context.keychain['nonexistingitemid']
+    except ItemNotFoundException:
+        context.exception_was_raised = True
+
+
 @then('I should get the added item')
 def step_impl(context):
     assert context.retrieved_items[0] == context.added_items[0]
@@ -42,6 +51,12 @@ def step_impl(context):
 def step_impl(context):
     for item in context.retrieved_items:
         assert item in context.added_items
+
+
+@then('an ItemNotFoundException should be raised')
+def step_impl(context):
+    if not context.exception_was_raised:
+        assert False
 
 
 def _add_item(context, item):

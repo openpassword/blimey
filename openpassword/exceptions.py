@@ -28,3 +28,7 @@ class InvalidKeyFileException(Exception):
 
 class UnauthenticatedDataSourceException(Exception):
     pass
+
+
+class ItemNotFoundException(Exception):
+    pass

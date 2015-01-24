@@ -9,6 +9,11 @@ Feature: Retrieving items from the keychain
     When I get an item by the same id
     Then I should get the added item
 
+  Scenario: Retrieving a non-existent item
+    Given I have an unlocked keychain
+    When I get an item by non-existent id
+    Then an ItemNotFoundException should be raised
+
   Scenario: Retrieving all items from the keychain
     Given I have an unlocked keychain
     And a number of items is added to the keychain

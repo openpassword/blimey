@@ -4,6 +4,7 @@ import glob
 import time
 
 from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem
+from openpassword.exceptions import ItemNotFoundException
 
 
 class ItemManager:
@@ -13,8 +14,11 @@ class ItemManager:
     def get_by_id(self, item_id):
         item_path = os.path.join(self._base_path, "data", "default", item_id + ".1password")
 
-        with open(item_path, 'r') as file:
-            data = json.load(file)
+        try:
+            with open(item_path, 'r') as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            raise ItemNotFoundException
 
         return EncryptedAgileKeychainItem(data)
 

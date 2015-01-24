@@ -6,6 +6,7 @@ from nose.tools import raises
 
 from openpassword.agile_keychain._manager._item_manager import ItemManager
 from openpassword.agile_keychain.data_source import AgileKeychainItem
+from openpassword.exceptions import ItemNotFoundException
 
 
 class ItemManagerTest:
@@ -19,6 +20,11 @@ class ItemManagerTest:
         item = item_manager.get_by_id('5F7210FD2F3F460692B7083C60854A02')
 
         assert item['uuid'] == "5F7210FD2F3F460692B7083C60854A02"
+
+    @raises(ItemNotFoundException)
+    def it_throws_if_requested_item_is_not_found(self):
+        item_manager = ItemManager(self._fixture_path)
+        item_manager.get_by_id('notfoundid')
 
     def it_gets_all_items(self):
         item_manager = ItemManager(self._fixture_path)
