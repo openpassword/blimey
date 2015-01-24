@@ -2,8 +2,7 @@ from unittest.mock import patch, Mock, MagicMock, call
 from nose.tools import raises
 
 from openpassword.agile_keychain import DataSource
-from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
-    UnauthenticatedDataSourceException
+from openpassword.exceptions import IncorrectPasswordException, UnauthenticatedDataSourceException
 from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
 from openpassword.agile_keychain._manager._file_system_manager import FileSystemManager
 from openpassword.agile_keychain._manager._key_manager import KeyManager
@@ -67,7 +66,7 @@ class DataSourceSpec:
     @raises(IncorrectPasswordException)
     def it_fails_authentication_if_a_key_can_not_be_validated(self, get_keys, decrypt_key):
         get_keys.return_value = [Mock()]
-        decrypt_key.side_effect = KeyValidationException
+        decrypt_key.side_effect = IncorrectPasswordException
 
         data_source = DataSource('some_path')
         data_source.authenticate('password')

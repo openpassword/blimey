@@ -2,8 +2,7 @@ import gc
 from time import time
 
 from openpassword import abstract
-from openpassword.exceptions import KeyValidationException, IncorrectPasswordException, \
-    UnauthenticatedDataSourceException
+from openpassword.exceptions import IncorrectPasswordException, UnauthenticatedDataSourceException
 from openpassword.agile_keychain._manager._file_system_manager import FileSystemManager
 from openpassword.agile_keychain._manager._key_manager import KeyManager
 from openpassword.agile_keychain._manager._item_manager import ItemManager
@@ -32,10 +31,7 @@ class DataSource(abstract.DataSource):
         return self._file_system_manager.is_initialised()
 
     def authenticate(self, password):
-        try:
-            self._keys = [decrypt_key(key, password) for key in self._key_manager.get_keys()]
-        except KeyValidationException:
-            raise IncorrectPasswordException
+        self._keys = [decrypt_key(key, password) for key in self._key_manager.get_keys()]
 
     def is_authenticated(self):
         if len(self._keys) == 0:
@@ -89,13 +85,10 @@ class DataSource(abstract.DataSource):
             raise UnauthenticatedDataSourceException()
 
     def _get_key_for_item(self, item):
-        if item['openContents'] is None:
+        try:
+            return self._get_key_by_security_level(item['openContents']['securityLevel'])
+        except (KeyError, TypeError):
             return self._get_default_key()
-
-        if 'securityLevel' not in item['openContents']:
-            return self._get_default_key()
-
-        return self._get_key_by_security_level(item['openContents']['securityLevel'])
 
     def _get_key_by_security_level(self, security_level):
         return [key for key in self._keys if key.level == security_level][0]
@@ -104,13 +97,10 @@ class DataSource(abstract.DataSource):
         return self._get_key_by_security_level('SL5')
 
     def _read_iterations_from_config(self, config):
-        if type(config) is not dict:
-            return DEFAULT_ITERATIONS
-
-        if 'iterations' in config:
+        try:
             return config['iterations']
-
-        return DEFAULT_ITERATIONS
+        except (KeyError, TypeError):
+            return DEFAULT_ITERATIONS
 
     def _get_default_item(self):
         return {

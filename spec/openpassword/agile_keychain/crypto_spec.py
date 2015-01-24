@@ -3,11 +3,11 @@ from nose.tools import raises
 from openpassword.agile_keychain._crypto import decrypt_key, encrypt_key, create_key, decrypt_item, encrypt_item
 from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
 from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
-from openpassword.exceptions import KeyValidationException
+from openpassword.exceptions import IncorrectPasswordException
 
 
 class CryptoSpec:
-    @raises(KeyValidationException)
+    @raises(IncorrectPasswordException)
     def it_throws_if_key_decryption_fails(self):
         key = self.get_key()
         decrypt_key(key, 'wrongpassword')

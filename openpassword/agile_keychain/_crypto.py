@@ -6,7 +6,7 @@ from base64 import b64encode, b64decode
 from math import fmod
 import json
 
-from openpassword.exceptions import KeyValidationException
+from openpassword.exceptions import IncorrectPasswordException
 from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
 from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
 
@@ -23,7 +23,7 @@ def decrypt_key(encrypted_key, password):
     validation_key = _aes_decrypt(validation_key_iv[0:16], validation_key_iv[16:], encrypted_key.validation[16:])
 
     if master_key != validation_key:
-        raise KeyValidationException()
+        raise IncorrectPasswordException()
 
     return DecryptedKey({
         'identifier': encrypted_key.identifier,
