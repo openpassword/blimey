@@ -68,25 +68,21 @@ class DataSource(abstract.DataSource):
 
     def save_item(self, decrypted_item):
         self._assert_data_source_is_authenticated()
-
-        encrypted_item = encrypt_item(decrypted_item, self._get_key_for_item(decrypted_item))
-        self._item_manager.save_item(encrypted_item)
+        self._item_manager.save_item(self._encrypt_item(decrypted_item))
 
     def get_item_by_id(self, item_id):
         self._assert_data_source_is_authenticated()
-
-        encrypted_item = self._item_manager.get_by_id(item_id)
-        return decrypt_item(encrypted_item, self._get_key_for_item(encrypted_item))
+        return self._decrypt_item(self._item_manager.get_by_id(item_id))
 
     def get_all_items(self):
         self._assert_data_source_is_authenticated()
+        return [self._decrypt_item(item) for item in self._item_manager.get_all_items()]
 
-        items = []
-        for encrypted_item in self._item_manager.get_all_items():
-            key = self._get_key_for_item(encrypted_item)
-            items.append(decrypt_item(encrypted_item, key))
+    def _encrypt_item(self, item):
+        return encrypt_item(item, self._get_key_for_item(item))
 
-        return items
+    def _decrypt_item(self, item):
+        return decrypt_item(item, self._get_key_for_item(item))
 
     def _assert_data_source_is_authenticated(self):
         if self.is_authenticated() is False:
