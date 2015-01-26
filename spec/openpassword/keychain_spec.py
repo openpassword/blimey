@@ -1,58 +1,23 @@
 from unittest.mock import patch
-from nose.tools import eq_, raises
+from nose.tools import raises
 
 from openpassword._keychain import Keychain
-from openpassword.abstract import DataSource
+from openpassword.abstract import DataSource, Item
 from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
-    MissingIdAttributeException, IncorrectPasswordException, KeychainLockedException
+    IncorrectPasswordException, KeychainLockedException, UnauthenticatedDataSourceException
 
 
 class KeychainSpec:
-    def it_is_created_locked(self):
-        keychain = self._get_simple_keychain()
-        eq_(keychain.is_locked(), True)
-
-    def it_unlocks_the_keychain_with_the_right_password(self):
-        keychain = self._get_simple_keychain()
-        keychain.unlock('rightpassword')
-        eq_(keychain.is_locked(), False)
-
-    def it_is_iterable_as_list_of_items_when_unlocked(self):
-        keychain = self._get_simple_keychain()
-        keychain.unlock("righpassowrd")
-
-        try:
-            iter(keychain)
-        except TypeError:
-            raise AssertionError("Keychain is not iterable")
-
-    def it_locks_the_keychain(self):
-        keychain = self._get_simple_keychain()
-        keychain.unlock('rightpassword')
-        eq_(keychain.is_locked(), False)
-
-        keychain.lock()
-        eq_(keychain.is_locked(), True)
-
-    @raises(NonInitialisedKeychainException)
-    def it_throws_noninitialisedkeychainexception_when_unlocking_uninitialized_keychain(self):
-        keychain = self._get_non_initialised_keychain()
-        keychain.unlock("somepassword")
+    # Initialisation
 
     @patch("openpassword.abstract.DataSource")
-    @raises(IncorrectPasswordException)
-    def it_throws_incorrectpasswordexception_when_unlocking_with_incorrect_password(self, data_source):
-        data_source.authenticate.side_effect = IncorrectPasswordException
-
+    def it_is_initialisable_using_a_password(self, data_source):
         keychain = Keychain(data_source)
-        keychain.unlock("wrongpassword")
-
-    def it_is_initialisable_using_a_password(self):
-        keychain = self._get_non_initialised_keychain()
         keychain.initialise("somepassword")
-        eq_(keychain.is_initialised(), True)
 
-    @patch('openpassword.agile_keychain.data_source')
+        data_source.initialise.assert_called()
+
+    @patch("openpassword.abstract.DataSource")
     def it_passes_initialisation_configuraton_to_data_source(self, data_source):
         password = "somepassword"
         config = {"iterations": 10}
@@ -61,80 +26,175 @@ class KeychainSpec:
 
         data_source.initialise.assert_called_with(password, config)
 
-    def it_keeps_uninitialised_if_we_dont_initialise_it(self):
-        keychain = self._get_non_initialised_keychain()
-        eq_(keychain.is_initialised(), False)
+    @patch("openpassword.abstract.DataSource")
+    def it_remains_uninitialised_if_not_initialised(self, data_source):
+        data_source.is_initialised.return_value = False
+        keychain = Keychain(data_source)
 
-    @patch.object(DataSource, "initialise")
+        assert keychain.is_initialised() is False
+
+    @patch("openpassword.abstract.DataSource")
     def it_delegates_initialisation_to_the_data_source(self, data_source):
         keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
         assert data_source.initialise.called is True
 
-    @patch.object(DataSource, "add_item")
-    def it_delegates_item_creation_to_the_data_source(self, data_source):
+    @patch("openpassword.abstract.DataSource")
+    def it_is_created_initialised_for_an_initialised_data_source(self, data_source):
+        data_source.is_initialised.return_value = True
         keychain = Keychain(data_source)
-        keychain.append({"id": "someitem_id"})
 
-        assert data_source.add_item.called is True
+        assert keychain.is_initialised() is True
 
-    def it_is_created_initialised_for_an_initialised_data_source(self):
-        keychain = self._get_simple_keychain()
-        eq_(keychain.is_initialised(), True)
-
-    @patch.object(DataSource, 'is_keychain_initialised')
+    @patch("openpassword.abstract.DataSource")
     def it_is_created_non_initialised_for_a_non_initialised_data_source(self, data_source):
-        data_source.is_keychain_initialised.return_value = False
+        data_source.is_initialised.return_value = False
 
         keychain = Keychain(data_source)
-        eq_(keychain.is_initialised(), False)
 
+        assert keychain.is_initialised() is False
+
+    @patch("openpassword.abstract.DataSource")
     @raises(KeychainAlreadyInitialisedException)
-    def it_throws_keychainalreadyinitialisedexception_if_initialising_existing_keychain(self):
-        keychain = self._get_simple_keychain()
+    def it_throws_if_initialising_existing_keychain(self, data_source):
+        data_source.is_initialised.return_value = True
+        keychain = Keychain(data_source)
         keychain.initialise("somepassword")
 
-    def it_adds_the_item_to_the_keychain_with_the_item_id_as_key(self):
-        keychain = self._get_simple_keychain()
-        item = {'id': 'new_item_id'}
-        keychain.append(item)
-        eq_(keychain['new_item_id'], item)
+    # Unlocking
 
-    def it_allows_for_items_to_be_appended(self):
-        keychain = self._get_simple_keychain()
-        new_item = {"id": "new_item"}
-        keychain.append(new_item)
-        eq_(new_item in keychain, True)
+    @patch("openpassword.abstract.DataSource")
+    def it_is_locked_if_the_data_source_has_not_been_authenticated(self, data_source):
+        data_source.is_authenticated.return_value = False
+        keychain = Keychain(data_source)
 
-    def it_iterates_over_items(self):
-        keychain = self._get_simple_keychain()
-        items = [
-            {'id': '123'},
-            {'id': '456'},
-            {'id': '789'}
-        ]
+        assert keychain.is_locked() is True
 
-        for item in items:
-            keychain.append(item)
+    @patch("openpassword.abstract.DataSource")
+    def it_is_unlocked_if_the_data_source_has_been_authenticated(self, data_source):
+        data_source.is_authenticated.return_value = True
+        keychain = Keychain(data_source)
 
-        for item in keychain:
-            assert item in items
+        assert keychain.is_locked() is False
 
-    @raises(MissingIdAttributeException)
-    def it_throws_an_missingidattributeexception_when_id_attribute_is_missing_from_item(self):
-        keychain = self._get_simple_keychain()
-        new_item = {}
-        keychain.append(new_item)
+    @patch("openpassword.abstract.DataSource")
+    def it_locks_itself_by_deauthenticating_the_data_source(self, data_source):
+        keychain = Keychain(data_source)
 
+        data_source.deauthenticate.assert_called()
+
+    @patch("openpassword.abstract.DataSource")
+    def it_unlocks_the_keychain_with_the_right_password(self, data_source):
+        keychain = Keychain(data_source)
+        keychain.unlock('rightpassword')
+
+        data_source.authenticate.assert_called_with('rightpassword')
+
+    @patch("openpassword.abstract.DataSource")
+    @raises(IncorrectPasswordException)
+    def it_throws_if_unlocking_with_incorrect_password(self, data_source):
+        data_source.authenticate.side_effect = IncorrectPasswordException
+
+        keychain = Keychain(data_source)
+        keychain.unlock("wrongpassword")
+
+    @patch("openpassword.abstract.DataSource")
+    @raises(NonInitialisedKeychainException)
+    def it_throws_if_unlocking_uninitialized_keychain(self, data_source):
+        data_source.is_initialised.return_value = False
+        keychain = Keychain(data_source)
+
+        keychain.unlock("somepassword")
+
+    # Item access
+
+    @patch("openpassword.abstract.DataSource")
+    def it_is_iterable_as_list_of_items_when_unlocked(self, data_source):
+        data_source.is_authenticated.return_value = True
+        keychain = Keychain(data_source)
+
+        try:
+            iter(keychain)
+        except TypeError:
+            raise AssertionError("Keychain is not iterable")
+
+    @patch("openpassword.abstract.DataSource")
     @raises(KeychainLockedException)
-    def it_throws_a_keychainlockedexception_when_setting_password_on_a_locked_keychain(self):
-        keychain = self._get_simple_keychain()
+    def it_is_not_iterable_as_list_of_items_when_locked(self, data_source):
+        data_source.is_authenticated.return_value = False
+        keychain = Keychain(data_source)
+
+        iter(keychain)
+
+    @patch("openpassword.abstract.Item")
+    @patch("openpassword.abstract.DataSource")
+    def it_gets_items_by_id_from_data_source(self, data_source, item):
+        data_source.is_initialised.return_value = True
+        data_source.is_authenticated.return_value = True
+        data_source.get_item_by_id.return_value = item
+
+        keychain = Keychain(data_source)
+
+        assert keychain[item.get_id()] == item
+
+    # Creating items
+
+    @patch("openpassword.abstract.Item")
+    @patch("openpassword.abstract.DataSource")
+    def it_delegates_creating_items_to_the_data_source(self, data_source, item):
+        data_source.create_item.return_value = item
+        keychain = Keychain(data_source)
+
+        assert keychain.create_item() == item
+        data_source.create_item.assert_called_with(None)
+
+    @patch("openpassword.abstract.Item")
+    @patch("openpassword.abstract.DataSource")
+    def it_passes_initialisation_data_to_create_item(self, data_source, item):
+        keychain = Keychain(data_source)
+        keychain.create_item('some data')
+
+        data_source.create_item.assert_called_with('some data')
+
+    # Saving items
+
+    @patch("openpassword.abstract.DataSource")
+    @raises(KeychainLockedException)
+    def it_throws_if_adding_items_to_a_locked_keychain(self, data_source):
+        data_source.save_item.side_effect = UnauthenticatedDataSourceException
+
+        keychain = Keychain(data_source)
+        keychain.save_item({"id": "someitem_id"})
+
+    @patch("openpassword.abstract.DataSource")
+    @raises(KeychainLockedException)
+    def it_throws_if_gettings_items_from_a_locked_keychain(self, data_source):
+        data_source.is_authenticated.return_value = False
+
+        keychain = Keychain(data_source)
+        keychain['ABC']
+
+    @patch("openpassword.abstract.Item")
+    @patch("openpassword.abstract.DataSource")
+    def it_delegates_saving_items_to_the_data_source(self, data_source, item):
+        keychain = Keychain(data_source)
+        keychain.save_item(item)
+
+        data_source.save_item.assert_called_with(item)
+
+    # Changing password
+
+    @patch("openpassword.abstract.DataSource")
+    @raises(KeychainLockedException)
+    def it_throws_if_setting_password_on_a_locked_keychain(self, data_source):
+        data_source.is_authenticated.return_value = False
+        keychain = Keychain(data_source)
+
         keychain.set_password("foobar")
 
     @patch("openpassword.abstract.DataSource")
-    def it_changes_password(self, data_source_class):
-        data_source = data_source_class.return_value
+    def it_changes_password(self, data_source):
         data_source.authenticate.return_value = None
         data_source.set_password.return_value = None
 
@@ -143,14 +203,3 @@ class KeychainSpec:
         keychain.set_password("foobar")
 
         data_source.set_password.assert_called_with("foobar")
-
-    def _get_non_initialised_keychain(self):
-        keychain = self._get_simple_keychain()
-        keychain.initialised = False
-        return keychain
-
-    @patch.object(DataSource, 'is_keychain_initialised')
-    def _get_simple_keychain(self, data_source):
-        data_source.is_keychain_initialised.return_value = True
-
-        return Keychain(data_source)

@@ -1,93 +1,121 @@
-import os
-import json
+import gc
+from time import time
 
 from openpassword import abstract
-from openpassword.exceptions import KeyValidationException, IncorrectPasswordException
-from openpassword.agile_keychain._key_manager import KeyManager
+from openpassword.exceptions import UnauthenticatedDataSourceException
+from openpassword.agile_keychain._manager import FileSystemManager, KeyManager, ItemManager
+from openpassword.agile_keychain import _crypto as crypto
+from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
 
-AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 DEFAULT_ITERATIONS = 25000
 
 
 class DataSource(abstract.DataSource):
-    BUILD_NUMBER_FILE = 'buildnum'
-    BUILD_NUMBER = '32009'
-
-    def __init__(self, path, key_manager=KeyManager):
-        self._base_path = path
-        self._default_folder = os.path.join(self._base_path, "data", "default")
-        self._config_folder = os.path.join(self._base_path, "config")
-        self._key_manager = key_manager(self._base_path)
+    def __init__(self, path):
+        self._file_system_manager = FileSystemManager(path)
+        self._key_manager = KeyManager(path)
+        self._item_manager = ItemManager(path)
         self._keys = []
 
-    def create_buildnum_file(self):
-        buildnum_file = os.path.join(self._config_folder, self.BUILD_NUMBER_FILE)
-        buildnum_file = open(buildnum_file, "w+")
-        buildnum_file.write(self.BUILD_NUMBER)
-        buildnum_file.close()
-
     def initialise(self, password, config=None):
-        os.makedirs(self._default_folder)
-        os.makedirs(self._config_folder)
+        self._file_system_manager.initialise()
 
-        self.create_buildnum_file()
+        iterations = self._read_iterations_from_config(config)
+        self._key_manager.save_key(crypto.create_key(password, 'SL3', iterations))
+        self._key_manager.save_key(crypto.create_key(password, 'SL5', iterations))
 
-        for agile_keychain_base_file in AGILE_KEYCHAIN_BASE_FILES:
-            open(os.path.join(self._default_folder, agile_keychain_base_file), "w+").close()
-
-        self._initialise_key_files(password, self._read_iterations_from_config(config))
-
-        self.set_password(password)
-
-    def is_keychain_initialised(self):
-        return self._validate_agile_keychain_base_files() and self._is_valid_folder(self._default_folder)
-
-    def add_item(self, item):
-        file_handle = open(os.path.join(self._default_folder, "{0}.1password".format(item['id'])), "w")
-        json.dump(item, file_handle)
-        file_handle.close()
+    def is_initialised(self):
+        return self._file_system_manager.is_initialised()
 
     def authenticate(self, password):
-        keys = self._key_manager.get_keys()
+        self._keys = [crypto.decrypt_key(key, password) for key in self._key_manager.get_keys()]
 
-        for key in keys:
-            try:
-                key.decrypt_with_password(password)
-            except KeyValidationException:
-                raise IncorrectPasswordException
+    def is_authenticated(self):
+        if len(self._keys) == 0:
+            return False
 
-            self._keys.append(key)
+        for key in self._keys:
+            if key.key is None:
+                return False
+
+        return True
+
+    def deauthenticate(self):
+        self._keys = []
+        gc.collect()
 
     def set_password(self, password):
         for key in self._keys:
-            key.encrypt_with_password(password)
-            self._key_manager.save_key(key)
+            self._key_manager.save_key(crypto.encrypt_key(key, password))
+
+    def create_item(self, data=None):
+        item = self._initialise_new_item(data)
+        item['uuid'] = self._create_unique_item_id()
+        item['keyID'] = self._get_default_key().identifier
+
+        return AgileKeychainItem(item)
+
+    def save_item(self, decrypted_item):
+        self._assert_data_source_is_authenticated()
+        self._item_manager.save_item(self._encrypt_item(decrypted_item))
+
+    def get_item_by_id(self, item_id):
+        self._assert_data_source_is_authenticated()
+        return self._decrypt_item(self._item_manager.get_by_id(item_id))
+
+    def get_all_items(self):
+        self._assert_data_source_is_authenticated()
+        return [self._decrypt_item(item) for item in self._item_manager.get_all_items()]
+
+    def _create_unique_item_id(self):
+        item_id = crypto.generate_id()
+
+        try:
+            self._item_manager.get_by_id(item_id)
+            return self._create_unique_item_id()
+        except:
+            return item_id
+
+    def _encrypt_item(self, item):
+        return crypto.encrypt_item(item, self._get_key_for_item(item))
+
+    def _decrypt_item(self, item):
+        return crypto.decrypt_item(item, self._get_key_for_item(item))
+
+    def _assert_data_source_is_authenticated(self):
+        if self.is_authenticated() is False:
+            raise UnauthenticatedDataSourceException()
+
+    def _get_key_for_item(self, item):
+        try:
+            return self._get_key_by_security_level(item['openContents']['securityLevel'])
+        except (KeyError, TypeError):
+            return self._get_default_key()
+
+    def _get_key_by_security_level(self, security_level):
+        return [key for key in self._keys if key.level == security_level][0]
+
+    def _get_default_key(self):
+        return self._get_key_by_security_level('SL5')
 
     def _read_iterations_from_config(self, config):
-        if type(config) is not dict:
+        try:
+            return config['iterations']
+        except (KeyError, TypeError):
             return DEFAULT_ITERATIONS
 
-        if 'iterations' in config:
-            return config['iterations']
+    def _initialise_new_item(self, data=None):
+        if type(data) is not dict:
+            data = {}
 
-        return DEFAULT_ITERATIONS
+        default_data = {
+            'createdAt': time(),
+            'location': '',
+            'locationKey': '',
+            'typeName': 'passwords.Password',
+            'title': 'Untitled',
+            'encrypted': {}
+        }
 
-    def _validate_agile_keychain_base_files(self):
-        is_initialised = True
-        for base_file in AGILE_KEYCHAIN_BASE_FILES:
-            current_file = os.path.join(self._default_folder, base_file)
-            is_initialised = is_initialised and self._is_valid_file(current_file)
-        return is_initialised
-
-    def _is_valid_file(self, file):
-        return os.path.exists(file) and os.path.isfile(file)
-
-    def _is_valid_folder(self, folder):
-        return os.path.exists(folder) and os.path.isdir(folder)
-
-    def _initialise_key_files(self, password, iterations):
-        level3_key = self._key_manager.create_key(password, security_level='SL3', iterations=iterations)
-        level5_key = self._key_manager.create_key(password, security_level='SL5', iterations=iterations)
-
-        self._key_manager.save_key(level3_key)
-        self._key_manager.save_key(level5_key)
+        default_data.update(data)
+        return default_data

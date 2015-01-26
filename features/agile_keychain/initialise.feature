@@ -11,8 +11,7 @@ Feature: Initialise a keychain
   Scenario: Initialising a keychain
     Given I have a non-initialised keychain
     When I initialise it using "mypassword"
-    Then the agile keychain folder structure should be created
-    And I should be able to unlock the agile keychain with "mypassword"
+    Then I should be able to unlock it with "mypassword"
 
   Scenario: Checking status of an initialised keychain
     Given I have an initialised keychain

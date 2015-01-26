@@ -1,10 +1,11 @@
 import os
 import shutil
-from openpassword.agile_keychain._key_manager import KeyManager
+from openpassword.agile_keychain._manager._key_manager import KeyManager
 from nose.tools import raises
 
 from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
-from openpassword.agile_keychain._key import Key
+from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
+from openpassword.agile_keychain._crypto import decrypt_key, create_key
 
 
 class KeyManagerTest:
@@ -16,22 +17,22 @@ class KeyManagerTest:
         key_manager = KeyManager(self._fixture_path)
         level3_key, level5_key = key_manager.get_keys()
 
-        level3_key.decrypt_with_password('masterpassword123')
-        level5_key.decrypt_with_password('masterpassword123')
+        decrypted_level3_key = decrypt_key(level3_key, 'masterpassword123')
+        decrypted_level5_key = decrypt_key(level5_key, 'masterpassword123')
 
         # Asserting that the key manager correctly loads and populates keys from the 1Password 3
         # generated fixture keychain. The identifiers are arbitrary, but security levels 3 and 5
         # are what 1Password uses internally, and the 25000 iteration PBKDF2 run is what
         # 1Password used as the default at the time the fixture was created.
-        self._assert_key_properties(level3_key, 'BE4CC37CD7C044E79B5CC1CC19A82A13', 'SL3', 25000)
-        self._assert_key_properties(level5_key, '98EB2E946008403280A3A8D9261018A4', 'SL5', 25000)
+        self._assert_key_properties(decrypted_level3_key, 'BE4CC37CD7C044E79B5CC1CC19A82A13', 'SL3', 25000)
+        self._assert_key_properties(decrypted_level5_key, '98EB2E946008403280A3A8D9261018A4', 'SL5', 25000)
 
     def it_adds_a_key(self):
         self._init_key_file_with('')
 
         key_manager = KeyManager(self._temporary_path)
 
-        key = Key.create(self._password, 'SL3', 10)
+        key = create_key(self._password, 'SL3', 10)
         key_manager.save_key(key)
 
         keys = key_manager.get_keys()
@@ -42,10 +43,10 @@ class KeyManagerTest:
 
         key_manager = KeyManager(self._temporary_path)
 
-        key1 = Key.create(self._password, 'SL3', 10)
+        key1 = create_key(self._password, 'SL3', 10)
         key_manager.save_key(key1)
 
-        key2 = Key.create(self._password, 'SL5', 10)
+        key2 = create_key(self._password, 'SL5', 10)
         key2.identifier = key1.identifier
         key_manager.save_key(key2)
 
@@ -53,15 +54,15 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(KeyAlreadyExistsForLevelException)
-    def it_throws_keyalreadyexistsforlevelexception_if_different_keys_are_on_same_level(self):
+    def it_throws_if_different_keys_are_on_same_level(self):
         self._init_key_file_with('')
 
         key_manager = KeyManager(self._temporary_path)
 
-        key1 = Key.create(self._password, 'SL3', 10)
+        key1 = create_key(self._password, 'SL3', 10)
         key_manager.save_key(key1)
 
-        key2 = Key.create(self._password, 'SL3', 10)
+        key2 = create_key(self._password, 'SL3', 10)
         key_manager.save_key(key2)
 
     def it_replaces_existing_key_with_same_identifier_and_security_level(self):
@@ -69,10 +70,10 @@ class KeyManagerTest:
 
         key_manager = KeyManager(self._temporary_path)
 
-        key1 = Key.create(self._password, 'SL3', 10)
+        key1 = create_key(self._password, 'SL3', 10)
         key_manager.save_key(key1)
 
-        key2 = Key.create(self._password, 'SL3', 10)
+        key2 = create_key(self._password, 'SL3', 10)
         key2.identifier = key1.identifier
         key_manager.save_key(key2)
 
@@ -80,14 +81,14 @@ class KeyManagerTest:
         assert len(keys) == 1
 
     @raises(InvalidKeyFileException)
-    def it_raises_invalidkeyfileexception_if_key_file_can_not_be_parsed(self):
+    def it_throws_if_key_file_can_not_be_parsed(self):
         self._init_key_file_with('<foobar>!')
         key_manager = KeyManager(self._temporary_path)
         key_manager.get_keys()
 
-    def _assert_key_properties(self, key, identifier, security_level, iterations):
+    def _assert_key_properties(self, key, identifier, level, iterations):
         assert key.identifier == identifier
-        assert key.security_level == security_level
+        assert key.level == level
         assert key.iterations == iterations
 
     def _init_key_file_with(self, contents):

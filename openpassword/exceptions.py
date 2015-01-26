@@ -6,10 +6,6 @@ class KeychainAlreadyInitialisedException(Exception):
     pass
 
 
-class MissingIdAttributeException(Exception):
-    pass
-
-
 class IncorrectPasswordException(Exception):
     pass
 
@@ -27,4 +23,12 @@ class KeyAlreadyExistsForLevelException(Exception):
 
 
 class InvalidKeyFileException(Exception):
+    pass
+
+
+class UnauthenticatedDataSourceException(Exception):
+    pass
+
+
+class ItemNotFoundException(Exception):
     pass
