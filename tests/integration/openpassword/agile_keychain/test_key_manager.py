@@ -1,11 +1,11 @@
 import os
 import shutil
-from openpassword.agile_keychain._manager._key_manager import KeyManager
+from blimey.agile_keychain._manager._key_manager import KeyManager
 from nose.tools import raises
 
-from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
-from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
-from openpassword.agile_keychain._crypto import decrypt_key, create_key
+from blimey.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
+from blimey.agile_keychain._key import EncryptedKey, DecryptedKey
+from blimey.agile_keychain._crypto import decrypt_key, create_key
 
 
 class KeyManagerTest:

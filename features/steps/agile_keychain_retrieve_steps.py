@@ -1,5 +1,5 @@
 import os
-from openpassword.exceptions import ItemNotFoundException
+from blimey.exceptions import ItemNotFoundException
 
 TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 

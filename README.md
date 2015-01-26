@@ -1,13 +1,13 @@
-OpenPasswordLib
+blimey
 ============
-![License MIT](http://b.repl.ca/v1/License-MIT-blue.png), stable [![Build Status](https://secure.travis-ci.org/OpenPassword/OpenPasswordLib.png?branch=master)](http://travis-ci.org/OpenPassword/OpenPasswordLib), unstable [![Build Status](https://secure.travis-ci.org/OpenPassword/OpenPasswordLib.png?branch=develop)](http://travis-ci.org/OpenPassword/OpenPasswordLib)
+![License MIT](http://b.repl.ca/v1/License-MIT-blue.png), stable [![Build Status](https://secure.travis-ci.org/OpenPassword/blimey.png?branch=master)](http://travis-ci.org/OpenPassword/blimey), unstable [![Build Status](https://secure.travis-ci.org/OpenPassword/blimey.png?branch=develop)](http://travis-ci.org/OpenPassword/blimey)
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/OpenPassword/OpenPasswordLib/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/OpenPassword/OpenPasswordLib/?branch=develop)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/OpenPassword/blimey/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/OpenPassword/blimey/?branch=develop)
 
 Usage
 =====
 
-    from openpassword import AgileKeychain
+    from blimey import AgileKeychain
 
     # Construct a keychain with either a path to an existing keychain,
     # or the path to where you want your keychain created

@@ -4,9 +4,9 @@ import time
 import json
 from nose.tools import raises
 
-from openpassword.agile_keychain._manager._item_manager import ItemManager
-from openpassword.agile_keychain.data_source import AgileKeychainItem
-from openpassword.exceptions import ItemNotFoundException
+from blimey.agile_keychain._manager._item_manager import ItemManager
+from blimey.agile_keychain.data_source import AgileKeychainItem
+from blimey.exceptions import ItemNotFoundException
 
 
 class ItemManagerTest:

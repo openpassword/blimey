@@ -1,11 +1,11 @@
 import gc
 from time import time
 
-from openpassword import abstract
-from openpassword.exceptions import UnauthenticatedDataSourceException
-from openpassword.agile_keychain._manager import FileSystemManager, KeyManager, ItemManager
-from openpassword.agile_keychain import _crypto as crypto
-from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
+from blimey import abstract
+from blimey.exceptions import UnauthenticatedDataSourceException
+from blimey.agile_keychain._manager import FileSystemManager, KeyManager, ItemManager
+from blimey.agile_keychain import _crypto as crypto
+from blimey.agile_keychain.agile_keychain_item import AgileKeychainItem
 
 DEFAULT_ITERATIONS = 25000
 

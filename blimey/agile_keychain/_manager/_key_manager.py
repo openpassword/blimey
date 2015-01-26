@@ -4,9 +4,9 @@ import plistlib
 from jinja2 import Template
 from base64 import b64encode
 
-from openpassword.agile_keychain._crypto import create_key
-from openpassword.agile_keychain._key import EncryptedKey
-from openpassword.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
+from blimey.agile_keychain._crypto import create_key
+from blimey.agile_keychain._key import EncryptedKey
+from blimey.exceptions import KeyAlreadyExistsForLevelException, InvalidKeyFileException
 
 DEFAULT_ITERATIONS = 25000
 

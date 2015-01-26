@@ -1,20 +1,20 @@
 from unittest.mock import patch, Mock, MagicMock, call
 from nose.tools import raises
 
-from openpassword.agile_keychain import DataSource
-from openpassword.exceptions import IncorrectPasswordException, UnauthenticatedDataSourceException, \
+from blimey.agile_keychain import DataSource
+from blimey.exceptions import IncorrectPasswordException, UnauthenticatedDataSourceException, \
     ItemNotFoundException
-from openpassword.agile_keychain.agile_keychain_item import AgileKeychainItem
-from openpassword.agile_keychain._manager._file_system_manager import FileSystemManager
-from openpassword.agile_keychain._manager._key_manager import KeyManager
-from openpassword.agile_keychain._manager._item_manager import ItemManager
-from openpassword.agile_keychain._key import EncryptedKey
+from blimey.agile_keychain.agile_keychain_item import AgileKeychainItem
+from blimey.agile_keychain._manager._file_system_manager import FileSystemManager
+from blimey.agile_keychain._manager._key_manager import KeyManager
+from blimey.agile_keychain._manager._item_manager import ItemManager
+from blimey.agile_keychain._key import EncryptedKey
 
 
 class DataSourceSpec:
-    @patch('openpassword.agile_keychain.data_source.FileSystemManager')
-    @patch('openpassword.agile_keychain.data_source.KeyManager')
-    @patch('openpassword.agile_keychain.data_source.ItemManager')
+    @patch('blimey.agile_keychain.data_source.FileSystemManager')
+    @patch('blimey.agile_keychain.data_source.KeyManager')
+    @patch('blimey.agile_keychain.data_source.ItemManager')
     def it_initialises_paths(self, item_manager, key_manager, file_system_manager):
         DataSource('some_path')
 
@@ -49,7 +49,7 @@ class DataSourceSpec:
 
         assert data_source.is_initialised() is True
 
-    @patch("openpassword.agile_keychain.data_source.crypto.decrypt_key")
+    @patch("blimey.agile_keychain.data_source.crypto.decrypt_key")
     @patch.object(KeyManager, 'get_keys')
     def it_authenticates_against_all_keys(self, get_keys, decrypt_key):
         key3 = Mock()
@@ -62,7 +62,7 @@ class DataSourceSpec:
         decrypt_key.assert_has_calls([call(key3, 'password'), call(key5, 'password')])
         assert data_source.is_authenticated() is True
 
-    @patch("openpassword.agile_keychain.data_source.crypto.decrypt_key")
+    @patch("blimey.agile_keychain.data_source.crypto.decrypt_key")
     @patch.object(KeyManager, 'get_keys')
     @raises(IncorrectPasswordException)
     def it_fails_authentication_if_a_key_can_not_be_validated(self, get_keys, decrypt_key):
@@ -74,7 +74,7 @@ class DataSourceSpec:
 
         assert data_source.is_authenticated() is False
 
-    @patch("openpassword.agile_keychain.data_source.gc")
+    @patch("blimey.agile_keychain.data_source.gc")
     def it_unsets_keys_and_triggers_garbage_collection_on_deauthentication(self, gc):
         data_source = DataSource('some_path')
         data_source._keys = [1, 2, 3]
@@ -85,8 +85,8 @@ class DataSourceSpec:
         assert data_source._keys == []
         assert data_source.is_authenticated() is False
 
-    @patch("openpassword.agile_keychain.data_source.crypto.generate_id")
-    @patch("openpassword.agile_keychain.data_source.time")
+    @patch("blimey.agile_keychain.data_source.crypto.generate_id")
+    @patch("blimey.agile_keychain.data_source.time")
     def it_creates_items(self, time, generate_id):
         generate_id.return_value = 'random'
         time.return_value = 1400000000.00
@@ -114,7 +114,7 @@ class DataSourceSpec:
         assert item['keyID'] == 'efgh'
         assert item['encrypted'] == {}
 
-    @patch("openpassword.agile_keychain.data_source.crypto.generate_id")
+    @patch("blimey.agile_keychain.data_source.crypto.generate_id")
     def it_creates_items_item_initialised_with_data(self, generate_id):
         generate_id.return_value = 'random'
 
@@ -135,7 +135,7 @@ class DataSourceSpec:
         assert item['title'] == 'Thing'
 
     @patch.object(ItemManager, 'get_by_id')
-    @patch("openpassword.agile_keychain.data_source.crypto.generate_id")
+    @patch("blimey.agile_keychain.data_source.crypto.generate_id")
     def it_guarantees_generated_item_id_is_unique(self, generate_id, get_item_by_id):
         get_item_by_id = [ItemNotFoundException, Mock()]
         generate_id.side_effect = ['123', '567']
@@ -162,8 +162,8 @@ class DataSourceSpec:
 
     @patch.object(KeyManager, 'get_keys')
     @patch.object(KeyManager, 'save_key')
-    @patch("openpassword.agile_keychain.data_source.crypto.encrypt_key")
-    @patch("openpassword.agile_keychain.data_source.crypto.decrypt_key")
+    @patch("blimey.agile_keychain.data_source.crypto.encrypt_key")
+    @patch("blimey.agile_keychain.data_source.crypto.decrypt_key")
     def it_re_encrypts_keys_when_password_is_changed(self, decrypt_key, encrypt_key, save_keys, get_keys):
         key3_encrypted = Mock()
         key3_decrypted = Mock()
