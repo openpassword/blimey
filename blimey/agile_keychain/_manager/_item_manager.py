@@ -3,8 +3,8 @@ import json
 import glob
 import time
 
-from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem
-from openpassword.exceptions import ItemNotFoundException
+from blimey.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem
+from blimey.exceptions import ItemNotFoundException
 
 
 class ItemManager:

@@ -2,17 +2,17 @@
 
 ## The Development Philosophy
 
-OpenPassword is developed under the MIT license, which means it's Open Source and that we're accepting contributions to the project.
+Blimey is developed under the MIT license, which means it's Open Source and that we're accepting contributions to the project.
 
-If you're thinking about contributing to OpenPassword, this page is the place to start.
+If you're thinking about contributing to blimey, this page is the place to start.
 
-We try to build OpenPassword as a robust piece of software, with a simple and elegant design. To try and achieve this we apply the principles of emergent design, and expect contributions to do so as well.
+We try to build blimey as a robust piece of software, with a simple and elegant design. To try and achieve this we apply the principles of emergent design, and expect contributions to do so as well.
 
 Quoting "The RSpec Book":
 
 > "BDD calls Test-Driven Development coding by example, which places emphasis on using examples to drive out the behaviour of the code. The fact that these examples become tests once the code is written is a secondary concern"
 
-So, what does this mean in the context of OnePassword?
+So, what does this mean in the context of blimey?
 It means that we couldn't care less about "code coverage" or writing tests for the sake of doing it.
 It means that we write examples of how we imagine our code will be used, before writing our code, and then we write the minimum amount of code to make the expectations of those examples to pass.
 It means that we don't do a lot of upfront design, instead, we let it emerge as a response to our examples.
@@ -21,7 +21,7 @@ The consequences of this are often: small, simple and clean methods and classes.
 
 ## Tools
 
-OpenPassword is developed in **Python 3**. We try to keep the number of dependencies low, so currently we're using the following tools to help us achieve our goals:
+Blimey is developed in **Python 3**. We try to keep the number of dependencies low, so currently we're using the following tools to help us achieve our goals:
 
 * nose - A testing framework for Python
 * spec - A nose plugin to allow for a more BBD like output
@@ -49,13 +49,13 @@ This will run nosetests and pep8 with the appropriate parameters.
 ## Writing a feature
 
 Here's a guide for how to develop a feature following the development philosophy described above.
-Let's imagine we're writing a class called *LightBulb* inside the *openpassword* package:
+Let's imagine we're writing a class called *LightBulb* inside the *blimey* package:
 
-- Create a file called `spec/openpassword/light_bulb_spec.py`
+- Create a file called `spec/blimey/light_bulb_spec.py`
 - Import the (still inexistent) class you're going to write:
 
 ```python
-from openpassword.light_bulb import LightBulb
+from blimey.light_bulb import LightBulb
 ```
 
 - Inside that file, create a class called *LightBulbSpec*
@@ -63,22 +63,22 @@ from openpassword.light_bulb import LightBulb
 
 ```python
 from nose.tools import *
-from openpassword.light_bulb import LightBulb
+from blimey.light_bulb import LightBulb
 
 
 class LightBulbSpec:
     def it_should_be_lit_after_being_turned_on(self):
         bulb = LightBulb()
         bulb.turn_on()
-    
+
         eq_(bulb.turned_on(), True)
 
 ```
 - Run `bin/tests`
 - Fix any code styling issues that it may report
-- At this point you should get the following error `ImportError: No module named 'openpassword.light_bulb'`. Fix it by creating the file `openpassword/light_bulb.py`.
+- At this point you should get the following error `ImportError: No module named 'blimey.light_bulb'`. Fix it by creating the file `blimey/light_bulb.py`.
 - Run `bin/tests` again. You should now get the error `ImportError: cannot import name LightBulb`.
-- Create the *LightBulb* class inside the `openpassword.light_bulb`. At this point your class should have nothing else other then a *pass* statement.
+- Create the *LightBulb* class inside the `blimey.light_bulb`. At this point your class should have nothing else other then a *pass* statement.
 
 ```python
 class LightBulb:
@@ -101,23 +101,23 @@ class LightBulb:
 
     def turn_on(self):
         pass
-        
+
     def turned_on(self):
         return True
 
 ```
 - Run `bin/tests` and all our tests should now pass. But..., our LightBulb class doesn't seem all that useful. turned_on always return *True*. What's up with that? Well, that's all we need it to do for now, but our light bulb does more that just stay lit. So, let's describe another behaviour. Let's say, `it_should_not_lit_before_being_turned_on`.
- 
+
 ```python
 from nose.tools import *
-from openpassword.light_bulb import LightBulb
+from blimey.light_bulb import LightBulb
 
 
 class LightBulbSpec:
     def it_should_be_lit_after_being_turned_on(self):
         bulb = LightBulb()
         bulb.turn_on()
-    
+
         eq_(bulb.turned_on(), True)
 
     def it_should_not_lit_before_being_turned_on(self):

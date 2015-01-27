@@ -13,10 +13,13 @@ mv .coverage .coverage.integration && \
 echo "### Acceptance tests" && \
 behave && \
 
-pep8 && \
+pep8
 
-coverage combine
+tests_status=$?
 
 if test "$TRAVIS" = "true"; then
+    coverage combine
     ocular
 fi
+
+exit $tests_status

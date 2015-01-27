@@ -1,9 +1,9 @@
 from nose.tools import raises
 
-from openpassword.agile_keychain._crypto import decrypt_key, encrypt_key, create_key, decrypt_item, encrypt_item
-from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
-from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
-from openpassword.exceptions import IncorrectPasswordException
+from blimey.agile_keychain._crypto import decrypt_key, encrypt_key, create_key, decrypt_item, encrypt_item
+from blimey.agile_keychain._key import EncryptedKey, DecryptedKey
+from blimey.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
+from blimey.exceptions import IncorrectPasswordException
 
 
 class CryptoSpec:

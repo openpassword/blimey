@@ -1,5 +1,5 @@
-from openpassword._keychain import Keychain
-from openpassword.agile_keychain import DataSource
+from blimey._keychain import Keychain
+from blimey.agile_keychain import DataSource
 
 
 class AgileKeychain(Keychain):

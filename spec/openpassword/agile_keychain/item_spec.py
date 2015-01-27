@@ -1,6 +1,6 @@
 from nose.tools import raises
 
-from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
+from blimey.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
 
 
 class AgileKeychainItemSpec:

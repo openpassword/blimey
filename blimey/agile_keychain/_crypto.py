@@ -6,9 +6,9 @@ from base64 import b64encode, b64decode
 from math import fmod
 import json
 
-from openpassword.exceptions import IncorrectPasswordException
-from openpassword.agile_keychain._key import EncryptedKey, DecryptedKey
-from openpassword.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
+from blimey.exceptions import IncorrectPasswordException
+from blimey.agile_keychain._key import EncryptedKey, DecryptedKey
+from blimey.agile_keychain.agile_keychain_item import EncryptedAgileKeychainItem, AgileKeychainItem
 
 
 def generate_id():

@@ -1,4 +1,4 @@
-from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
+from blimey.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException, \
     KeychainLockedException, UnauthenticatedDataSourceException
 
 

@@ -2,7 +2,7 @@ import os
 import shutil
 from nose.tools import raises
 
-from openpassword.agile_keychain._manager._file_system_manager import FileSystemManager
+from blimey.agile_keychain._manager._file_system_manager import FileSystemManager
 
 AGILE_KEYCHAIN_BASE_FILES = ['1password.keys', 'contents.js', 'encryptionKeys.js']
 

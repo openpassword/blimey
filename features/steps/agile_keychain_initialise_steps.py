@@ -1,7 +1,7 @@
 from behave import given, when, then, step
 import os
-import openpassword
-from openpassword.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
+import blimey
+from blimey.exceptions import NonInitialisedKeychainException, KeychainAlreadyInitialisedException
 
 TEMP_KEYCHAIN_PATH = os.path.join('tests', 'fixtures', 'temp.agilekeychain')
 CORRECT_PASSWORD = "correctpassword"
@@ -10,12 +10,12 @@ INCORRECT_PASSWORD = "incorrectpassword"
 
 @given('I have a non-initialised keychain')
 def step_impl(context):
-    context.keychain = openpassword.AgileKeychain(TEMP_KEYCHAIN_PATH)
+    context.keychain = blimey.AgileKeychain(TEMP_KEYCHAIN_PATH)
 
 
 @given('I have an initialised keychain')
 def step_impl(context):
-    context.keychain = openpassword.AgileKeychain(TEMP_KEYCHAIN_PATH)
+    context.keychain = blimey.AgileKeychain(TEMP_KEYCHAIN_PATH)
     context.keychain.initialise(CORRECT_PASSWORD, {'iterations': 10})
     context.remove_path = TEMP_KEYCHAIN_PATH
 
