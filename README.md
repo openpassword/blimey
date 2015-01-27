@@ -1,8 +1,8 @@
 blimey
 ============
-![License MIT](http://b.repl.ca/v1/License-MIT-blue.png), stable [![Build Status](https://secure.travis-ci.org/OpenPassword/blimey.png?branch=master)](http://travis-ci.org/OpenPassword/blimey), unstable [![Build Status](https://secure.travis-ci.org/OpenPassword/blimey.png?branch=develop)](http://travis-ci.org/OpenPassword/blimey)
+![License MIT](http://b.repl.ca/v1/License-MIT-blue.png), stable [![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=master)](http://travis-ci.org/openpassword/blimey), unstable [![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=develop)](http://travis-ci.org/openpassword/blimey)
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/OpenPassword/blimey/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/OpenPassword/blimey/?branch=develop)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop)
 
 Usage
 =====
