@@ -3,6 +3,7 @@ import sys
 import plistlib
 from jinja2 import Template
 from base64 import b64encode
+from xml.parsers.expat import ExpatError
 
 from blimey.agile_keychain._crypto import create_key
 from blimey.agile_keychain._key import EncryptedKey
@@ -15,6 +16,13 @@ DEFAULT_ITERATIONS = 25000
 # Python versions
 if sys.version_info < (3, 4, 0):
     plistlib.loads = plistlib.readPlistFromBytes
+
+# In python 3.4 plistlib wraps the generic ExpatError in an exception of its own.
+# Accept either to ensure Python 3.3 compatibility
+if hasattr(plistlib, "InvalidFileException"):
+    PLIST_EXCEPTIONS = (ExpatError, plistlib.InvalidFileException)
+else:
+    PLIST_EXCEPTIONS = ExpatError
 
 
 class KeyManager:
@@ -82,7 +90,7 @@ class KeyManager:
     def _parse_plist(self, plist_contents):
         try:
             return plistlib.loads(plist_contents)
-        except plistlib.InvalidFileException:
+        except PLIST_EXCEPTIONS:
             raise InvalidKeyFileException
 
     def _remove_null_bytes(self, data):
