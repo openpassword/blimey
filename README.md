@@ -1,8 +1,9 @@
 blimey
 ============
-![License MIT](http://b.repl.ca/v1/License-MIT-blue.png), stable [![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=master)](http://travis-ci.org/openpassword/blimey), unstable [![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=develop)](http://travis-ci.org/openpassword/blimey)
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop)
+| [Stable](http://travis-ci.org/openpassword/blimey) | [Unstable](http://travis-ci.org/openpassword/blimey) | [Scrutinizer](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop) | [License](https://tldrlegal.com/license/mit-license) |
+| --- | --- | --- | --- |
+| ![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=master) |  ![!Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=develop) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop) | ![!License MIT](http://b.repl.ca/v1/License-MIT-blue.png) |
 
 Usage
 =====
