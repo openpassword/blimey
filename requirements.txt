@@ -1,0 +1,9 @@
+spec
+nose
+pep8
+behave
+coverage
+scrutinizer-ocular
+pbkdf2
+pycrypto
+jinja2

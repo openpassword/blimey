@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+rm -f .coverage && \
+rm -f .coverage.* && \
+
+echo "### Specs" && \
+nosetests spec && \
+mv .coverage .coverage.spec && \
+
+echo "### Integration tests" && \
+nosetests tests/integration && \
+mv .coverage .coverage.integration && \
+
+echo "### Acceptance tests" && \
+behave && \
+
+pep8
+
+tests_status=$?
+
+if test "$TRAVIS" = "true"; then
+    coverage combine
+    ocular
+fi
+
+exit $tests_status
