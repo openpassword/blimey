@@ -1,9 +1,12 @@
 blimey
 ============
 
-| [Stable](https://github.com/openpassword/blimey/tree/master) | [Unstable](https://github.com/openpassword/blimey/tree/develop) | [Scrutinizer](https://scrutinizer-ci.com/g/openpassword/blimey/) | [License](https://tldrlegal.com/license/mit-license) |
+| Branch | Build | Quality | Coverage |
 | --- | --- | --- | --- |
-| ![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=master) |  ![!Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=develop) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/openpassword/blimey/) | ![!License MIT](http://b.repl.ca/v1/License-MIT-blue.png) |
+| [Stable](https://github.com/openpassword/blimey/tree/master) | [![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=master)](https://travis-ci.org/openpassword/blimey) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=master) | [![Coverage](https://scrutinizer-ci.com/g/openpassword/blimey/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=master) |
+| [Unstable](https://github.com/openpassword/blimey/tree/develop) | [![Build Status](https://secure.travis-ci.org/openpassword/blimey.png?branch=develop)](https://travis-ci.org/openpassword/blimey) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop) | [![Coverage](https://scrutinizer-ci.com/g/openpassword/blimey/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop) |
+
+![!License MIT](http://b.repl.ca/v1/License-MIT-blue.png)
 
 Usage
 =====
