@@ -32,6 +32,7 @@ class ItemManagerTest:
 
         expected_item_uuids = [
             '2E21D652E0754BD59F6B94B0323D0142',
+            '320BE3D1B490458F82314E1A2B99552A',
             '4A3D784D115F4279BDFCE46D0A162D57',
             '5F7210FD2F3F460692B7083C60854A02',
             '6371E49FEFA042EDB335421459E5B29F',
@@ -42,7 +43,7 @@ class ItemManagerTest:
             'D05009E62D7D401CB8ACF2FE6981C031'
         ]
 
-        assert len(items) == 9
+        assert len(items) == len(expected_item_uuids)
 
         for item in items:
             assert item['uuid'] in expected_item_uuids
