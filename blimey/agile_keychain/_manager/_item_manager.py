@@ -20,7 +20,12 @@ class ItemManager:
         except FileNotFoundError:
             raise ItemNotFoundException
 
-        return EncryptedAgileKeychainItem(data)
+        item = EncryptedAgileKeychainItem(data)
+
+        if self._is_deleted(item):
+            raise ItemNotFoundException
+
+        return item
 
     def get_all_items(self):
         item_paths = glob.glob(os.path.join(self._base_path, "data", "default", "*.1password"))
@@ -29,7 +34,11 @@ class ItemManager:
         for item_path in item_paths:
             basename = os.path.basename(item_path)
             item_id, _ = os.path.splitext(basename)
-            items.append(self.get_by_id(item_id))
+
+            try:
+                items.append(self.get_by_id(item_id))
+            except ItemNotFoundException:
+                continue
 
         return items
 
@@ -62,3 +71,10 @@ class ItemManager:
 
         with open(os.path.join(self._base_path, "data", "default", "contents.js"), "w") as file:
             json.dump(contents, file)
+
+    def _is_deleted(self, item):
+        if item['uuid'] is None:
+            return True
+
+        if item['typeName'] == 'system.Tombstone':
+            return True

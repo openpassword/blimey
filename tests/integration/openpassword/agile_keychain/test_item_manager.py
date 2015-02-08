@@ -26,7 +26,21 @@ class ItemManagerTest:
         item_manager = ItemManager(self._fixture_path)
         item_manager.get_by_id('notfoundid')
 
-    def it_gets_all_items(self):
+    # 1Password 3 changes deleted item type to system.Tombstone
+    # Refer to the item in the fixture for an example of this
+    @raises(ItemNotFoundException)
+    def it_throws_if_requested_item_is_of_type_tombstone(self):
+        item_manager = ItemManager(self._fixture_path)
+        item_manager.get_by_id('320BE3D1B490458F82314E1A2B99552A')
+
+    # 1Password 4+ replaces the item contents with "{}"
+    # Refer to the item in the fixture for an example of this
+    @raises(ItemNotFoundException)
+    def it_throws_if_requested_item_is_empty(self):
+        item_manager = ItemManager(self._fixture_path)
+        item_manager.get_by_id('CAF7A781A71E44CFBB63F9356B46A0C9')
+
+    def it_gets_all_non_null_and_non_tombstoned_items(self):
         item_manager = ItemManager(self._fixture_path)
         items = item_manager.get_all_items()
 
@@ -39,10 +53,11 @@ class ItemManagerTest:
             '97019BEBCF9E402F8F0C033474B1B85D',
             '9E7673CCBB5B4AC9A7A8838835CB7E83',
             'B851D6E3232842B0858BC10968632A9C',
-            'D05009E62D7D401CB8ACF2FE6981C031'
+            'D05009E62D7D401CB8ACF2FE6981C031',
+            'ECE79F0A4BDF44CE8E7986897D84D1EC'
         ]
 
-        assert len(items) == 9
+        assert len(items) == len(expected_item_uuids)
 
         for item in items:
             assert item['uuid'] in expected_item_uuids
