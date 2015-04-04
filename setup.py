@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='blimey',
-      version='0.1',
+      version='0.9.2',
       description='Library for reading AgileKeychain files',
       author='openpassword',
       url='https://github.com/openpassword/blimey',
