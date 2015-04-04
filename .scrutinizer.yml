@@ -158,10 +158,13 @@ build:
     dependencies:
         override:
             - "pip3 install -r requirements.txt"
+    tests:
+        override:
+            - true
 
 tools:
     external_code_coverage: true
-    
+
 before_commands:
     - "pip3 install -r requirements.txt"
 
