@@ -1,3 +1,6 @@
+setuptools
+twine
+wheel
 spec
 nose
 pep8
