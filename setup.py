@@ -20,7 +20,7 @@ setup(
         'Programming Language :: Python :: 3.4'
     ],
     keywords='password management 1password agilekeychain',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=find_packages(include=['blimey']),
     package_data={
         'blimey': ['agile_keychain/template/*.template']
     },
