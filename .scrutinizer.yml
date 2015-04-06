@@ -148,7 +148,7 @@ checks:
 
 filter:
     excluded_paths:
-        - spec/*
+        - specs/*
         - tests/*
         - features/*
 
