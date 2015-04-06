@@ -1,0 +1,19 @@
+Metadata-Version: 1.1
+Name: blimey
+Version: 0.9.3
+Summary: A password management library with AgileKeychain (1Password) support
+Home-page: https://github.com/openpassword/blimey
+Author: Open Password Team
+Author-email: niko@nevala.fi
+License: MIT
+Description: UNKNOWN
+Keywords: password management 1password agilekeychain
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Security
+Classifier: Topic :: Security :: Cryptography
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
