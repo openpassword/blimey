@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: blimey
-Version: 0.9.3
+Version: 0.9.4
 Summary: A password management library with AgileKeychain (1Password) support
 Home-page: https://github.com/openpassword/blimey
 Author: Open Password Team

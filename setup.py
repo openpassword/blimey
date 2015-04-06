@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blimey',
-    version='0.9.3',
+    version='0.9.4',
     description='A password management library with AgileKeychain (1Password) support',
     author='Open Password Team',
     author_email='niko@nevala.fi',
