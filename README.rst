@@ -20,32 +20,38 @@ Development status
 
 Stable (master)
 
-.. image:: https://secure.travis-ci.org/openpassword/blimey.png?branch=master
-  :alt: Build status
+* .. image:: https://secure.travis-ci.org/openpassword/blimey.png?branch=master
+    :alt: Build status
+    :target: https://travis-ci.org/openpassword/blimey
 
-.. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=master
-  :alt: Quality
+* .. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=master
+    :alt: Quality
+    :target: https://scrutinizer-ci.com/g/openpassword/blimey/?branch=master
 
-.. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/coverage.png?b=master
-  :alt: Coverage
-
+* .. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/coverage.png?b=master
+    :alt: Coverage
+    :target: https://scrutinizer-ci.com/g/openpassword/blimey/?branch=master
 
 Unstable (develop)
 
-.. image:: https://secure.travis-ci.org/openpassword/blimey.png?branch=develop
-  :alt: Build status
+* .. image:: https://secure.travis-ci.org/openpassword/blimey.png?branch=develop
+    :alt: Build status
+    :target: https://travis-ci.org/openpassword/blimey
 
-.. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop
-  :alt: Quality
+* .. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/quality-score.png?b=develop
+    :alt: Quality
+    :target: https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop
 
-.. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/coverage.png?b=develop
-  :alt: Coverage
+* .. image:: https://scrutinizer-ci.com/g/openpassword/blimey/badges/coverage.png?b=develop
+    :alt: Coverage
+    :target: https://scrutinizer-ci.com/g/openpassword/blimey/?branch=develop
 
 License
 -------
 
 .. image:: http://b.repl.ca/v1/License-MIT-blue.png
   :alt: MIT License
+  :target: http://opensource.org/licenses/MIT
 
 Usage
 -----
