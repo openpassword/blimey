@@ -3,7 +3,7 @@ rm -f .coverage && \
 rm -f .coverage.* && \
 
 echo "### Specs" && \
-nosetests spec && \
+nosetests specs && \
 mv .coverage .coverage.spec && \
 
 echo "### Integration tests" && \
